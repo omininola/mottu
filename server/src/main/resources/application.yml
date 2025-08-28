@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: mottu
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:mottu}
+    username: ${MYSQL_USER:mottu}
+    password: ${MYSQL_PASS:mottu}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    
+  data:
+    mongodb:
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      database: ${MONGO_DATABASE:mottu}
+      username: ${MONGO_USER:mottu}
+      password: ${MONGO_PASS:mottu}
+      authentication-database: admin
+      auto-index-creation: true

@@ -33,6 +33,6 @@ public class Apriltag {
     @JoinColumn(name = "subsidiary_id")
     private Subsidiary subsidiary;
 
-    @OneToOne(mappedBy = "apriltag", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "tag", cascade = CascadeType.ALL)
     private Bike bike;
 }

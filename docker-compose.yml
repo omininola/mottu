@@ -1,31 +1,27 @@
-version: '1.0'
-
 services:
   server:
     container_name: server
     build:
-      context: ./server/mottu
-      target: dev
+      context: ./server
     depends_on:
       - db_mongo
       - db_mysql
     restart: always
-    # TODO
     environment:
-      MYSQL_ROOT_PASSWORD: MOTTU
+      MYSQL_HOST: db_mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: mottu
+      MYSQL_USER: mottu
+      MYSQL_PASS: mottu
+      MONGO_HOST: db_mongo
+      MONGO_PORT: 27017
+      MONGO_DATABASE: mottu
+      MONGO_USER: mottu
+      MONGO_PASS: mottu
     ports:
       - "8080:8080"
     networks:
       - front-tier
-      - back-tier
-
-  tags_python:
-    container_name: tags_python
-    build:
-      context: ./tag_detection
-    depends_on:
-      - server
-    networks:
       - back-tier
 
   db_mongo:
@@ -35,6 +31,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
+    ports:
+      - "27017:27017"
     volumes:
       - db_mongo:/var/lib/mongo
     networks:
@@ -50,9 +48,9 @@ services:
       MYSQL_USER: mottu
       MYSQL_PASSWORD: mottu
     ports:
-    - "3306:3306"
+      - "3306:3306"
     volumes:
-    - db_mysql:/var/lib/mysql
+      - db_mysql:/var/lib/mysql
     networks:
       - back-tier
 
