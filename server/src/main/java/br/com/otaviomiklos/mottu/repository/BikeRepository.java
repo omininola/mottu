@@ -4,10 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import br.com.otaviomiklos.mottu.entity.Bike;
-import java.util.Optional;
-import java.util.List;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
+
+import java.util.Optional;
+import java.util.List;
 
 
 @Repository

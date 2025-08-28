@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagRequest;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,15 +37,26 @@ public class SubsidiaryController {
     public ResponseEntity<SubsidiaryResponse> readById(@RequestParam Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
     @PutMapping("/{id}")
     public ResponseEntity<SubsidiaryResponse> update(@Valid @RequestBody SubsidiaryRequest request, @RequestParam Long id) {
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
     @DeleteMapping("/{id}")
     public ResponseEntity<SubsidiaryResponse> delete(@RequestParam Long id) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    // Tag Related
+    @PostMapping("/{id}/tags")
+    public ResponseEntity<SubsidiaryResponse> updateSubsidiaryTagPositions(@RequestBody SubsidiaryTagRequest request) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/tags")
+    public ResponseEntity<SubsidiaryTagResponse> readTags(@RequestParam Long id) {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
 }
