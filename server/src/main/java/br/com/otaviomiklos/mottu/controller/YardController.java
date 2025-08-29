@@ -1,7 +1,6 @@
 package br.com.otaviomiklos.mottu.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,12 +11,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardTagRequest;
+import br.com.otaviomiklos.mottu.dto.yard.YardTagResponse;
 import br.com.otaviomiklos.mottu.service.YardService;
+import br.com.otaviomiklos.mottu.service.YardTagService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -26,6 +28,9 @@ public class YardController {
 
     @Autowired
     private YardService service;
+
+    @Autowired
+    private YardTagService yardTagService;
  
     @PostMapping
     public ResponseEntity<YardResponse> create(@Valid @RequestBody YardRequest request) {
@@ -40,24 +45,34 @@ public class YardController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<YardResponse> readById(@RequestParam Long id) {
-        Optional<YardResponse> response = service.findById(id);
-        if (response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+    public ResponseEntity<YardResponse> readById(@PathVariable Long id) {
+        YardResponse response = service.findById(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<YardResponse> update(@Valid @RequestBody YardRequest request, @RequestParam Long id) {
-        Optional<YardResponse> response = service.update(request, id);
-        if (response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+    public ResponseEntity<YardResponse> update(@Valid @RequestBody YardRequest request, @PathVariable Long id) {
+        YardResponse response = service.update(request, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<YardResponse> delete(@RequestParam Long id) {
-        boolean wasDeleted = service.delete(id);
-        if (!wasDeleted) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<YardResponse> delete(@PathVariable Long id) {
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    // Tag Related
+    @PostMapping("/{id}/tags")
+    public ResponseEntity<YardTagResponse> updateSubsidiaryTagPositions(@RequestBody YardTagRequest request) {
+        YardTagResponse response = yardTagService.postOrUpdatePositions(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/tags")
+    public ResponseEntity<YardTagResponse> readTags(@PathVariable Long id) {
+        YardTagResponse response = yardTagService.readAllFromYard(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

@@ -26,7 +26,6 @@ RUN groupadd --system springboot && useradd --system --gid springboot springboot
 USER springboot
 
 # Set environment variables for the JVM and active Spring profiles.
-ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=80.0"
 ENV SPRING_PROFILES_ACTIVE=prod
 
 # Expose the application's default port.

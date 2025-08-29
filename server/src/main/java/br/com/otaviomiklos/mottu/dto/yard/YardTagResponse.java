@@ -1,4 +1,4 @@
-package br.com.otaviomiklos.mottu.dto.subsidiary;
+package br.com.otaviomiklos.mottu.dto.yard;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubsidiaryTagResponse {
+public class YardTagResponse {
     
-    private SubsidiaryResponse subsidiary;
+    private YardResponse yard;
     private List<TagPositionResponse> tags;
 }

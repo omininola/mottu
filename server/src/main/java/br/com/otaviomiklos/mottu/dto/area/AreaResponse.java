@@ -17,5 +17,5 @@ public class AreaResponse {
     private AreaStatus status;
     private List<BikeResponse> bikes;
     private String yard;
-    private String delimenter;
+    private Delimiter delimiter;
 }

@@ -15,5 +15,5 @@ public class YardRequest {
     private String name;
 
     @NotNull(message = "O Id da filial é obrigatório")
-    private String subsidiaryId;
+    private Long subsidiaryId;
 }

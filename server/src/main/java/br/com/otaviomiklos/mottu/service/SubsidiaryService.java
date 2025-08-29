@@ -8,24 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 
+import br.com.otaviomiklos.mottu.dto.address.AddressRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
-import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagRequest;
-import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagResponse;
+import br.com.otaviomiklos.mottu.entity.Address;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
-import br.com.otaviomiklos.mottu.entity.SubsidiaryTag;
-import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
-import br.com.otaviomiklos.mottu.repository.SubsidiaryTagRepository;
 
 @Service
 public class SubsidiaryService {
     
     @Autowired
-    private static SubsidiaryRepository repository;
-
-    @Autowired
-    private SubsidiaryTagRepository mongoRepository;
+    private SubsidiaryRepository repository;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
 
@@ -63,43 +57,13 @@ public class SubsidiaryService {
         repository.deleteById(id);
     }
 
-    // Tag Related
-    public SubsidiaryTagResponse postOrUpdatePositions(SubsidiaryTagRequest request) {
-        SubsidiaryTag subsidiaryTag = mongoRepository.save(toSubsidiaryTag(request));
-        return toTagResponse(subsidiaryTag);
-    }
-
-    public SubsidiaryTagResponse readAllFromSubsidiary(Long subsidiaryId) {
-        Optional<SubsidiaryTag> subsidiaryTag = mongoRepository.findById(subsidiaryId);
-        if (subsidiaryTag.isEmpty()) throw new ResourceAccessException(NOT_FOUND_MESSAGE);
-        return toTagResponse(subsidiaryTag.get());
-    }
-
-    // TODO: WTF this method does????
-    public static SubsidiaryTagResponse toTagResponse(SubsidiaryTag subsidiaryTag) {
-        Optional<Subsidiary> subsidiary = repository.findById(subsidiaryTag.getSubsidiaryId());
-        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
-
-        SubsidiaryTagResponse response = new SubsidiaryTagResponse();
-        // response.setTags(subsidiaryTag.getTags());
-        return response;
-    }
-
-    // TODO: WTF part II
-    public static SubsidiaryTag toSubsidiaryTag(SubsidiaryTagRequest request) {
-        SubsidiaryTag subsidiaryTag = new SubsidiaryTag();
-        subsidiaryTag.setSubsidiaryId(request.getSubsidiaryId());
-        // subsidiaryTag.setTags(request.getTags());
-        return subsidiaryTag;
-    }
-
     public static SubsidiaryResponse toResponse(Subsidiary subsidiary) {
         SubsidiaryResponse response = new SubsidiaryResponse();
         response.setId(subsidiary.getId());
         response.setName(subsidiary.getName());
         response.setAddress(subsidiary.getAddress().toString());
         response.setTags(subsidiary.getApriltags());
-        response.setYards(YardService.toResponse(subsidiary.getYards()));
+        response.setYards(subsidiary.getYards());
         return response;
     }
 
@@ -108,8 +72,17 @@ public class SubsidiaryService {
     }
 
     public static Subsidiary toSubsidiary(SubsidiaryRequest request) {
+        Address address = new Address();
+        AddressRequest addressRequest = request.getAddress();
+        address.setStreet(addressRequest.getStreet());
+        address.setZipCode(addressRequest.getZipCode());
+        address.setCity(addressRequest.getCity());
+        address.setState(addressRequest.getState());
+        address.setCountry(addressRequest.getCountry());
+        
         Subsidiary subsidiary = new Subsidiary();
         subsidiary.setName(request.getName());
+        subsidiary.setAddress(address);
         return subsidiary;
     }
 }

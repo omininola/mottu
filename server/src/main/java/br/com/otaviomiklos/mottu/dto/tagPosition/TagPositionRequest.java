@@ -17,5 +17,5 @@ public class TagPositionRequest {
     private String tagCode;
 
     @Valid
-    private Position position;
+    private Point position;
 }

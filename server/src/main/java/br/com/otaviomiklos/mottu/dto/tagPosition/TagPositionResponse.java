@@ -16,7 +16,7 @@ public class TagPositionResponse {
     
     private ApriltagResponse tag;
     private BikeResponse bike;
-    private Position position;
+    private Point position;
     private AreaStatus areaStatus;
     private boolean isInRightArea;
 }

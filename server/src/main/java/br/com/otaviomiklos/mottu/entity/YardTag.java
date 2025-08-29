@@ -11,15 +11,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Document(collection = "CL_MOTTU_SUBSIDIARY_TAGS")
+@Document(collection = "CL_MOTTU_YARD_TAGS")
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SubsidiaryTag {
+public class YardTag {
     
     @Id
-    private Long subsidiaryId;
+    private Long yardId;
     private List<TagPositionRequest> tags;
 }

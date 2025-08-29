@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
+import br.com.otaviomiklos.mottu.entity.Subsidiary;
 import br.com.otaviomiklos.mottu.entity.Yard;
+import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
+import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
 import br.com.otaviomiklos.mottu.repository.YardRepository;
 
 @Service
@@ -17,6 +20,12 @@ public class YardService {
     
     @Autowired
     private YardRepository repository;
+    
+    @Autowired
+    private static SubsidiaryRepository subsidiaryRepository;
+
+    private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
+    private static final String SUBSIDIARY_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
 
     public YardResponse save(YardRequest request) {
         Yard yard = repository.save(toYard(request));
@@ -28,32 +37,36 @@ public class YardService {
         return toResponse(yards);
     }
 
-    public Optional<YardResponse> findById(Long id) {
+    public YardResponse findById(Long id) {
         Optional<Yard> yard = repository.findById(id);
-        return Optional.ofNullable(toResponse(yard.get()));
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return toResponse(yard.get());
     }
 
-    public Optional<YardResponse> update(YardRequest request, Long id) {
+    public YardResponse update(YardRequest request, Long id) {
         Optional<Yard> yard = repository.findById(id);
-        if (yard.isEmpty()) return null;
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         Yard newYard = toYard(request);
         newYard.setId(id);
 
         Yard savedYard = repository.save(newYard);
-        return Optional.of(toResponse(savedYard));
+        return toResponse(savedYard);
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         Optional<Yard> yard = repository.findById(id);
-        if (yard.isEmpty()) return false;
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         
         repository.deleteById(id);
-        return true;
     }
 
     public static YardResponse toResponse(Yard yard) {
         YardResponse response = new YardResponse();
+        response.setId(yard.getId());
+        response.setName(yard.getName());
+        response.setAreas(AreaService.toResponse(yard.getAreas()));
+        response.setSubsidiary(yard.getSubsidiary().getName());
         return response;
     }
 
@@ -62,7 +75,12 @@ public class YardService {
     }
 
     public static Yard toYard(YardRequest request) {
+        Optional<Subsidiary> subsidiary = subsidiaryRepository.findById(request.getSubsidiaryId());
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(SUBSIDIARY_NOT_FOUND_MESSAGE);
+
         Yard yard = new Yard();
+        yard.setName(request.getName());
+        yard.setSubsidiary(subsidiary.get());
         return yard;
     }
 }

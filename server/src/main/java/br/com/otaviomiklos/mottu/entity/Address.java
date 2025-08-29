@@ -1,6 +1,5 @@
 package br.com.otaviomiklos.mottu.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,7 +38,7 @@ public class Address {
     @Column(name = "ds_country", nullable = false)
     private String country;
 
-    @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "address")
     private Subsidiary subsidiary;
 
     @Override

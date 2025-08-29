@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagRequest;
@@ -39,19 +39,19 @@ public class ApriltagController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApriltagResponse> readById(@RequestParam Long id) {
+    public ResponseEntity<ApriltagResponse> readById(@PathVariable Long id) {
         ApriltagResponse response = service.findById(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApriltagResponse> update(@Valid @RequestBody ApriltagRequest request, @RequestParam Long id) {
+    public ResponseEntity<ApriltagResponse> update(@Valid @RequestBody ApriltagRequest request, @PathVariable Long id) {
         ApriltagResponse response = service.update(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApriltagResponse> delete(@RequestParam Long id) {
+    public ResponseEntity<ApriltagResponse> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

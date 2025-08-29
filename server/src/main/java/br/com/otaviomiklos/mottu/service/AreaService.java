@@ -64,7 +64,7 @@ public class AreaService {
     public static AreaResponse toResponse(Area area) {
         AreaResponse response = new AreaResponse();
         response.setId(area.getId());
-        response.setDelimenter(area.getDelimiter());
+        response.setDelimiter(area.getDelimiter());
         response.setStatus(area.getStatus());
         response.setBikes(BikeService.toResponse(area.getBikes()));
         response.setYard(area.getYard().getName());

@@ -42,45 +42,45 @@ public class BikeController {
     }
 
     @GetMapping("/plate/{plate}")
-    public ResponseEntity<BikeResponse> readByPlate(@RequestParam String plate) {
+    public ResponseEntity<BikeResponse> readByPlate(@PathVariable String plate) {
         BikeResponse bike = service.findByPlate(plate);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BikeResponse>> readByFilter(@PathVariable AreaStatus status, @PathVariable BikeModel model) {
+    public ResponseEntity<List<BikeResponse>> readByFilter(@RequestParam AreaStatus status, @RequestParam BikeModel model) {
         List<BikeResponse> bikes = service.findByFilter(status, model);
         return new ResponseEntity<>(bikes, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BikeResponse> readById(@RequestParam Long id) {
+    public ResponseEntity<BikeResponse> readById(@PathVariable Long id) {
         BikeResponse bike = service.findById(id);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BikeResponse> update(@Valid @RequestBody BikeRequest request, @RequestParam Long id) {
+    public ResponseEntity<BikeResponse> update(@Valid @RequestBody BikeRequest request, @PathVariable Long id) {
         BikeResponse bike = service.update(request, id);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BikeResponse> delete(@RequestParam Long id) {
+    public ResponseEntity<BikeResponse> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Link tag
     @PostMapping("/{id}/tag/{tagId}")
-    public ResponseEntity<BikeResponse> linkBikeToTag(@RequestParam Long id, @RequestParam Long tagId) {
+    public ResponseEntity<BikeResponse> linkBikeToTag(@PathVariable Long id, @PathVariable Long tagId) {
         service.linkBikeToTag(id, tagId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Unlink tag
     @DeleteMapping("/{id}/tag")
-    public ResponseEntity<BikeResponse> unlinkBikeFromTag(@RequestParam Long id) {
+    public ResponseEntity<BikeResponse> unlinkBikeFromTag(@PathVariable Long id) {
         service.unlinkBikeFromTag(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
