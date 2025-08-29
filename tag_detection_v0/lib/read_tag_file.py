@@ -2,38 +2,10 @@ import cv2 as cv
 from pupil_apriltags import Detector
 import numpy as np
 
-
-def draw_rounded_rect(img, top_left, bottom_right, color, radius=10, thickness=-1):
-    x1, y1 = top_left
-    x2, y2 = bottom_right
-
-    cv.rectangle(img, (x1 + radius, y1), (x2 - radius, y2), color, thickness)
-    cv.rectangle(img, (x1, y1 + radius), (x2, y2 - radius), color, thickness)
-
-    cv.ellipse(
-        img, (x1 + radius, y1 + radius), (radius, radius), 180, 0, 90, color, thickness
-    )
-    cv.ellipse(
-        img, (x2 - radius, y1 + radius), (radius, radius), 270, 0, 90, color, thickness
-    )
-    cv.ellipse(
-        img, (x1 + radius, y2 - radius), (radius, radius), 90, 0, 90, color, thickness
-    )
-    cv.ellipse(
-        img, (x2 - radius, y2 - radius), (radius, radius), 0, 0, 90, color, thickness
-    )
-
+from .draw import draw_rounded_rect
+from .detector import detector
 
 img = cv.imread("tags/tags.jpg")
-
-detector = Detector(
-    families="tag16h5",
-    nthreads=1,
-    quad_decimate=1,
-    quad_sigma=0,
-    refine_edges=1,
-    decode_sharpening=0.25,
-)
 
 img = cv.resize(img, (640, 480))
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
