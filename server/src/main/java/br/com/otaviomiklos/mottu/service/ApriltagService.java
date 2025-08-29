@@ -10,13 +10,22 @@ import org.springframework.stereotype.Service;
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagRequest;
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
+import br.com.otaviomiklos.mottu.entity.Subsidiary;
+import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.ApriltagRepository;
+import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
 
 @Service
 public class ApriltagService {
     
     @Autowired
     private ApriltagRepository repository;
+
+    @Autowired
+    private static SubsidiaryRepository subsidiaryRepository;
+
+    private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma apriltag com esse ID";
+    private static final String SUBSIDIARY_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
 
     public ApriltagResponse save(ApriltagRequest request) {
         Apriltag apriltag = repository.save(toApriltag(request));
@@ -28,41 +37,50 @@ public class ApriltagService {
         return toResponse(apriltags);
     }
 
-    public Optional<ApriltagResponse> findById(Long id) {
+    public ApriltagResponse findById(Long id) {
         Optional<Apriltag> apriltag = repository.findById(id);
-        return Optional.ofNullable(toResponse(apriltag.get()));
+        if (apriltag.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return toResponse(apriltag.get());
     }
 
-    public Optional<ApriltagResponse> update(ApriltagRequest request, Long id) {
+    public ApriltagResponse update(ApriltagRequest request, Long id) {
         Optional<Apriltag> apriltag = repository.findById(id);
-        if (apriltag.isEmpty()) return null;
+        if (apriltag.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         Apriltag newApriltag = toApriltag(request);
         newApriltag.setId(id);
 
         Apriltag savedApriltag = repository.save(newApriltag);
-        return Optional.of(toResponse(savedApriltag));
+        return toResponse(savedApriltag);
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         Optional<Apriltag> apriltag = repository.findById(id);
-        if (apriltag.isEmpty()) return false;
+        if (apriltag.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         
         repository.deleteById(id);
-        return true;
     }
 
-    private static ApriltagResponse toResponse(Apriltag apriltag) {
+    public static ApriltagResponse toResponse(Apriltag apriltag) {
         ApriltagResponse response = new ApriltagResponse();
+        response.setId(apriltag.getId());
+        response.setCode(apriltag.getCode());
+        response.setBike(apriltag.getBike().getPlate());
+        response.setSubsiadiary(apriltag.getSubsidiary().getName());
         return response;
     }
 
-    private static List<ApriltagResponse> toResponse(List<Apriltag> apriltags) {
+    public static List<ApriltagResponse> toResponse(List<Apriltag> apriltags) {
         return apriltags.stream().map(ApriltagService::toResponse).collect(Collectors.toList());
     }
 
-    private static Apriltag toApriltag(ApriltagRequest request) {
+    public static Apriltag toApriltag(ApriltagRequest request) {
+        Optional<Subsidiary> subsidiary = subsidiaryRepository.findById(request.getSubsidiaryId());
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(SUBSIDIARY_NOT_FOUND_MESSAGE);
+
         Apriltag apriltag = new Apriltag();
+        apriltag.setCode(request.getCode());
+        apriltag.setSubsidiary(subsidiary.get());
         return apriltag;
     }
 }

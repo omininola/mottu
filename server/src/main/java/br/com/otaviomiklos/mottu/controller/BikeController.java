@@ -1,7 +1,6 @@
 package br.com.otaviomiklos.mottu.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,9 +43,8 @@ public class BikeController {
 
     @GetMapping("/plate/{plate}")
     public ResponseEntity<BikeResponse> readByPlate(@RequestParam String plate) {
-        Optional<BikeResponse> bike = service.findByPlate(plate);
-        if (bike.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(bike.get(), HttpStatus.OK);
+        BikeResponse bike = service.findByPlate(plate);
+        return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @GetMapping("/search")
@@ -57,38 +55,33 @@ public class BikeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<BikeResponse> readById(@RequestParam Long id) {
-        Optional<BikeResponse> bike = service.findById(id);
-        if (bike.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(bike.get(), HttpStatus.OK);
+        BikeResponse bike = service.findById(id);
+        return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<BikeResponse> update(@Valid @RequestBody BikeRequest request, @RequestParam Long id) {
-        Optional<BikeResponse> bike = service.update(request, id);
-        if (bike.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(bike.get(), HttpStatus.OK);
+        BikeResponse bike = service.update(request, id);
+        return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<BikeResponse> delete(@RequestParam Long id) {
-        boolean wasDeleted = service.delete(id);
-        if (!wasDeleted) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Link tag
     @PostMapping("/{id}/tag/{tagId}")
     public ResponseEntity<BikeResponse> linkBikeToTag(@RequestParam Long id, @RequestParam Long tagId) {
-        boolean wasLinked = service.linkBikeToTag(id, tagId);
-        if (!wasLinked) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.linkBikeToTag(id, tagId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Unlink tag
     @DeleteMapping("/{id}/tag")
     public ResponseEntity<BikeResponse> unlinkBikeFromTag(@RequestParam Long id) {
-        boolean wasUnlinked = service.unlinkBikeFromTag(id);
-        if (!wasUnlinked) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.unlinkBikeFromTag(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

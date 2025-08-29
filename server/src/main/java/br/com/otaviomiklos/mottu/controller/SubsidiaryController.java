@@ -2,6 +2,7 @@ package br.com.otaviomiklos.mottu.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,46 +18,57 @@ import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTagResponse;
+import br.com.otaviomiklos.mottu.service.SubsidiaryService;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/subsidiaries")
 public class SubsidiaryController {
     
+    @Autowired
+    private SubsidiaryService service;
+
     @PostMapping
     public ResponseEntity<SubsidiaryResponse> create(@Valid @RequestBody SubsidiaryRequest request) {
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        SubsidiaryResponse response = service.save(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<List<SubsidiaryResponse>> readll() {
-        return new ResponseEntity<>(HttpStatus.OK);
+        List<SubsidiaryResponse> responses = service.findAll();
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<SubsidiaryResponse> readById(@RequestParam Long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        SubsidiaryResponse response = service.findById(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     @PutMapping("/{id}")
     public ResponseEntity<SubsidiaryResponse> update(@Valid @RequestBody SubsidiaryRequest request, @RequestParam Long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        SubsidiaryResponse response = service.update(request, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<SubsidiaryResponse> delete(@RequestParam Long id) {
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Tag Related
     @PostMapping("/{id}/tags")
-    public ResponseEntity<SubsidiaryResponse> updateSubsidiaryTagPositions(@RequestBody SubsidiaryTagRequest request) {
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<SubsidiaryTagResponse> updateSubsidiaryTagPositions(@RequestBody SubsidiaryTagRequest request) {
+        SubsidiaryTagResponse response = service.postOrUpdatePositions(request);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/tags")
     public ResponseEntity<SubsidiaryTagResponse> readTags(@RequestParam Long id) {
-        return new ResponseEntity<>(HttpStatus.OK);
+        SubsidiaryTagResponse response = service.readAllFromSubsidiary(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
 }

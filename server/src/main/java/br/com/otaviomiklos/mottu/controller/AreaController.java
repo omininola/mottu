@@ -1,7 +1,6 @@
 package br.com.otaviomiklos.mottu.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,22 +40,19 @@ public class AreaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<AreaResponse> readById(@RequestParam Long id) {
-        Optional<AreaResponse> response = service.findById(id);
-        if (response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+        AreaResponse response = service.findById(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<AreaResponse> update(@Valid @RequestBody AreaRequest request, @RequestParam Long id) {
-        Optional<AreaResponse> response = service.update(request, id);
-        if (response.isEmpty()) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(response.get(), HttpStatus.OK);
+        AreaResponse response = service.update(request, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<AreaResponse> delete(@RequestParam Long id) {
-        boolean wasDeleted = service.delete(id);
-        if (!wasDeleted) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

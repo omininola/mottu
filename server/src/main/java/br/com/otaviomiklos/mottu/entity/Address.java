@@ -41,4 +41,9 @@ public class Address {
 
     @OneToOne(mappedBy = "address", cascade = CascadeType.ALL)
     private Subsidiary subsidiary;
+
+    @Override
+    public String toString() {
+        return street + ", " + city + " - " + state + " | " + country + ". " + zipCode; 
+    }
 }

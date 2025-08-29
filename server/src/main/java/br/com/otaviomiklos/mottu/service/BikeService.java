@@ -13,6 +13,8 @@ import br.com.otaviomiklos.mottu.entity.Apriltag;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
+import br.com.otaviomiklos.mottu.exception.AlreadyLinkedException;
+import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.ApriltagRepository;
 import br.com.otaviomiklos.mottu.repository.BikeRepository;
 
@@ -25,6 +27,12 @@ public class BikeService {
     @Autowired
     private ApriltagRepository tagRepository;
 
+    private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID";
+    private static final String TAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma tag com esse ID";
+    private static final String BOTH_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID e nem uma tag com o ID passado";
+    private static final String ALREADY_LINKED_MESSAGE = "A moto já está vinculada a uma outra tag";
+    private static final String TAG_ALREADY_LINKED_MESSAGE = "A tag já está vinculada a uma outra moto";
+
     public BikeResponse save(BikeRequest request) {
         Bike bike = repository.save(toBike(request));
         return toResponse(bike);
@@ -35,9 +43,10 @@ public class BikeService {
         return toResponse(bikes);
     }
 
-    public Optional<BikeResponse> findByPlate(String plate) {
+    public BikeResponse findByPlate(String plate) {
         Optional<Bike> bike = repository.findByPlate(plate);
-        return Optional.ofNullable(toResponse(bike.get()));
+        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return toResponse(bike.get());
     }
 
     public List<BikeResponse> findByFilter(AreaStatus status, BikeModel model) {
@@ -45,63 +54,78 @@ public class BikeService {
         return toResponse(bikes);
     }
 
-    public Optional<BikeResponse> findById(Long id) {
+    public BikeResponse findById(Long id) {
         Optional<Bike> bike = repository.findById(id);
-        return Optional.ofNullable(toResponse(bike.get()));
+        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return toResponse(bike.get());
     }
 
-    public Optional<BikeResponse> update(BikeRequest request, Long id) {
+    public BikeResponse update(BikeRequest request, Long id) {
         Optional<Bike> bike = repository.findById(id);
-        if (bike.isEmpty()) return null;
+        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         Bike newBike = toBike(request);
         newBike.setId(id);
 
         Bike savedBike = repository.save(newBike);
-        return Optional.of(toResponse(savedBike));
+        return toResponse(savedBike);
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         Optional<Bike> bike = repository.findById(id);
-        if (bike.isEmpty()) return false;
+        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         
         repository.deleteById(id);
-        return true;
     }
 
-    public boolean linkBikeToTag(Long id, Long tagId) {
+    public void linkBikeToTag(Long id, Long tagId) {
         Optional<Bike> bike = repository.findById(id);
         Optional<Apriltag> tag = tagRepository.findById(id);
 
-        if (bike.isEmpty() || tag.isEmpty()) return false;
+        boolean hasBike = bike.isPresent();
+        boolean hasTag = tag.isPresent();
 
-        bike.get().setTag(tag.get());
+        if (!hasBike && !hasTag) throw new ResourceNotFoundException(BOTH_NOT_FOUND_MESSAGE);
+        if (!hasBike && hasTag) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        if (hasBike && !hasTag) throw new ResourceNotFoundException(TAG_NOT_FOUND_MESSAGE);
         
+        if (bike.get().getTag() != null) throw new AlreadyLinkedException(ALREADY_LINKED_MESSAGE);
+        if (tag.get().getBike() != null) throw new AlreadyLinkedException(TAG_ALREADY_LINKED_MESSAGE);
+
+        bike.get().setTag(tag.get());        
         repository.save(bike.get());
-        return true;
     }
 
-    public boolean unlinkBikeFromTag(Long id) {
+    public void unlinkBikeFromTag(Long id) {
         Optional<Bike> bike = repository.findById(id);
-        if (bike.isEmpty()) return false;
+        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         bike.get().setTag(null);
         
         repository.save(bike.get());
-        return true;
     }
 
-    private static BikeResponse toResponse(Bike bike) {
+    public static BikeResponse toResponse(Bike bike) {
         BikeResponse response = new BikeResponse();
+        response.setId(bike.getId());
+        response.setPlate(bike.getPlate());
+        response.setChassis(bike.getChassis());
+        response.setModel(bike.getModel());
+        response.setStatus(bike.getStatus());
+        response.setTagCode(bike.getTag().getCode());
         return response;
     }
 
-    private static List<BikeResponse> toResponse(List<Bike> bikes) {
+    public static List<BikeResponse> toResponse(List<Bike> bikes) {
         return bikes.stream().map(BikeService::toResponse).collect(Collectors.toList());
     }
 
-    private static Bike toBike(BikeRequest request) {
+    public static Bike toBike(BikeRequest request) {
         Bike bike = new Bike();
+        bike.setPlate(request.getPlate());
+        bike.setChassis(request.getChassis());
+        bike.setModel(request.getModel());
+        bike.setStatus(request.getStatus());
         return bike;
     }
 }

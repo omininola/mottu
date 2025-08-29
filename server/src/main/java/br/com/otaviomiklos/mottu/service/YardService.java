@@ -52,16 +52,16 @@ public class YardService {
         return true;
     }
 
-    private static YardResponse toResponse(Yard yard) {
+    public static YardResponse toResponse(Yard yard) {
         YardResponse response = new YardResponse();
         return response;
     }
 
-    private static List<YardResponse> toResponse(List<Yard> yards) {
+    public static List<YardResponse> toResponse(List<Yard> yards) {
         return yards.stream().map(YardService::toResponse).collect(Collectors.toList());
     }
 
-    private static Yard toYard(YardRequest request) {
+    public static Yard toYard(YardRequest request) {
         Yard yard = new Yard();
         return yard;
     }
