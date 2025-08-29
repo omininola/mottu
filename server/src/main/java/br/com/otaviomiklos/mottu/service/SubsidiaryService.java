@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
 
 import br.com.otaviomiklos.mottu.dto.address.AddressRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
 import br.com.otaviomiklos.mottu.entity.Address;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
+import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
 
 @Service
@@ -35,13 +35,13 @@ public class SubsidiaryService {
 
     public SubsidiaryResponse findById(Long id) {
         Optional<Subsidiary> subsidiary = repository.findById(id);
-        if (subsidiary.isEmpty()) throw new ResourceAccessException(NOT_FOUND_MESSAGE);
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         return toResponse(subsidiary.get());
     }
 
     public SubsidiaryResponse update(SubsidiaryRequest request, Long id) {
         Optional<Subsidiary> subsidiary = repository.findById(id);
-        if (subsidiary.isEmpty()) throw new ResourceAccessException(NOT_FOUND_MESSAGE);
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         Subsidiary newSubsidiary = toSubsidiary(request);
         newSubsidiary.setId(id);
@@ -52,7 +52,7 @@ public class SubsidiaryService {
 
     public void delete(Long id) {
         Optional<Subsidiary> subsidiary = repository.findById(id);
-        if (subsidiary.isEmpty()) throw new ResourceAccessException(NOT_FOUND_MESSAGE);
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         
         repository.deleteById(id);
     }
