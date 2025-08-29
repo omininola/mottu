@@ -24,6 +24,28 @@ services:
       - front-tier
       - back-tier
 
+  # tag_detection:
+  #   container_name: tag_detection
+  #   build:
+  #     context: ./tag_detection
+  #   depends_on:
+  #     - server
+  #   restart: always
+  #   networks:
+  #     - back-tier
+
+  client:
+    container_name: client
+    build:
+      context: ./client
+    depends_on:
+      - server
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - front-tier
+
   db_mongo:
     container_name: db_mongo
     image: mongo
