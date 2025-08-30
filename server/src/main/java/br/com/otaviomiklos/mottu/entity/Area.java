@@ -2,12 +2,12 @@ package br.com.otaviomiklos.mottu.entity;
 
 import java.util.List;
 
-import br.com.otaviomiklos.mottu.dto.area.Delimiter;
-import br.com.otaviomiklos.mottu.dto.tagPosition.Point;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,11 +31,11 @@ public class Area {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ds_status", nullable = false)
     private AreaStatus status;
 
     @Embedded
-    @Column(name = "ds_delimiter", nullable = false)
     private Delimiter delimiter;
     
     @OneToMany(mappedBy = "area")

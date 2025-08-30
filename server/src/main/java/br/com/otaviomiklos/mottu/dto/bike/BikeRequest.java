@@ -3,6 +3,7 @@ package br.com.otaviomiklos.mottu.dto.bike;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,9 +19,9 @@ public class BikeRequest {
     @NotBlank(message = "O número do chassi da moto é obrigatório")
     private String chassis;
 
-    @NotBlank(message = "O modelo da moto é obrigatório")
+    @NotNull(message = "O modelo da moto é obrigatório")
     private BikeModel model;
 
-    @NotBlank(message = "O status da moto é obrigatório")
+    @NotNull(message = "O status da moto é obrigatório")
     private AreaStatus status;
 }

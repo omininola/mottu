@@ -52,8 +52,8 @@ services:
     image: mongo
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_ROOT_USERNAME: mottu
+      MONGO_INITDB_ROOT_PASSWORD: mottu
     ports:
       - "27017:27017"
     volumes:

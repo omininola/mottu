@@ -1,8 +1,7 @@
-package br.com.otaviomiklos.mottu.dto.tagPosition;
+package br.com.otaviomiklos.mottu.dto.delimiter;
 
 import br.com.otaviomiklos.mottu.dto.point.PointRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagPositionRequest {
+public class DelimiterRequest {
     
-    @NotBlank(message = "O código da tag é obrigatório")
-    private String tagCode;
-
     @Valid
-    private PointRequest position;
+    private PointRequest upLeft;
+    
+    @Valid
+    private PointRequest upRight;
+    
+    @Valid
+    private PointRequest downRight;
+    
+    @Valid
+    private PointRequest downLeft;
 }

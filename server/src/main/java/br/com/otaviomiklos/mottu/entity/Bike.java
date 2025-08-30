@@ -4,6 +4,8 @@ import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,9 +35,11 @@ public class Bike {
     @Column(name = "ds_chassis", nullable = false, unique = true)
     private String chassis;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ds_model", nullable = false)
     private BikeModel model;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "ds_status", nullable = false)
     private AreaStatus status;
 

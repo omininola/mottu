@@ -20,6 +20,7 @@ import lombok.Setter;
 public class YardTag {
     
     @Id
-    private Long yardId;
+    private String yardId;
+    private Long mysqlYardId;
     private List<TagPositionRequest> tags;
 }

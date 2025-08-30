@@ -80,7 +80,7 @@ public class BikeService {
 
     public void linkBikeToTag(Long id, Long tagId) {
         Optional<Bike> bike = repository.findById(id);
-        Optional<Apriltag> tag = tagRepository.findById(id);
+        Optional<Apriltag> tag = tagRepository.findById(tagId);
 
         boolean hasBike = bike.isPresent();
         boolean hasTag = tag.isPresent();
@@ -106,13 +106,16 @@ public class BikeService {
     }
 
     public static BikeResponse toResponse(Bike bike) {
+        String tagCode = null;
+        if (bike.getTag() != null) tagCode = bike.getTag().getCode();
+
         BikeResponse response = new BikeResponse();
         response.setId(bike.getId());
         response.setPlate(bike.getPlate());
         response.setChassis(bike.getChassis());
         response.setModel(bike.getModel());
         response.setStatus(bike.getStatus());
-        response.setTagCode(bike.getTag().getCode());
+        response.setTagCode(tagCode);
         return response;
     }
 
@@ -120,7 +123,7 @@ public class BikeService {
         return bikes.stream().map(BikeService::toResponse).collect(Collectors.toList());
     }
 
-    public static Bike toBike(BikeRequest request) {
+    public Bike toBike(BikeRequest request) {
         Bike bike = new Bike();
         bike.setPlate(request.getPlate());
         bike.setChassis(request.getChassis());

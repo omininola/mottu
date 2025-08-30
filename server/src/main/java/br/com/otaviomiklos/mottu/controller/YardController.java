@@ -64,8 +64,8 @@ public class YardController {
 
     // Tag Related
     @PostMapping("/{id}/tags")
-    public ResponseEntity<YardTagResponse> updateSubsidiaryTagPositions(@RequestBody YardTagRequest request) {
-        YardTagResponse response = yardTagService.postOrUpdatePositions(request);
+    public ResponseEntity<YardTagResponse> updateSubsidiaryTagPositions(@RequestBody YardTagRequest request, @PathVariable Long id) {
+        YardTagResponse response = yardTagService.postOrUpdatePositions(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

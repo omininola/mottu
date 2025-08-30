@@ -1,5 +1,6 @@
 package br.com.otaviomiklos.mottu.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -7,28 +8,41 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
 import br.com.otaviomiklos.mottu.entity.Yard;
+import br.com.otaviomiklos.mottu.entity.YardTag;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
 import br.com.otaviomiklos.mottu.repository.YardRepository;
+import br.com.otaviomiklos.mottu.repository.YardTagRepository;
 
 @Service
 public class YardService {
     
     @Autowired
     private YardRepository repository;
+
+    @Autowired
+    private YardTagRepository mongoRepository;
     
     @Autowired
-    private static SubsidiaryRepository subsidiaryRepository;
+    private SubsidiaryRepository subsidiaryRepository;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
     private static final String SUBSIDIARY_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
 
     public YardResponse save(YardRequest request) {
         Yard yard = repository.save(toYard(request));
+
+        YardTag yardMongo = new YardTag();
+        yardMongo.setMysqlYardId(yard.getId());
+        yardMongo.setTags(new ArrayList<>()); 
+
+        mongoRepository.save(yardMongo);
+
         return toResponse(yard);
     }
 
@@ -62,11 +76,14 @@ public class YardService {
     }
 
     public static YardResponse toResponse(Yard yard) {
+        List<AreaResponse> areas = new ArrayList<>();
+        if (yard.getAreas() != null) areas = AreaService.toResponse(yard.getAreas());
+        
         YardResponse response = new YardResponse();
         response.setId(yard.getId());
         response.setName(yard.getName());
-        response.setAreas(AreaService.toResponse(yard.getAreas()));
         response.setSubsidiary(yard.getSubsidiary().getName());
+        response.setAreas(areas);
         return response;
     }
 
@@ -74,7 +91,7 @@ public class YardService {
         return yards.stream().map(YardService::toResponse).collect(Collectors.toList());
     }
 
-    public static Yard toYard(YardRequest request) {
+    public Yard toYard(YardRequest request) {
         Optional<Subsidiary> subsidiary = subsidiaryRepository.findById(request.getSubsidiaryId());
         if (subsidiary.isEmpty()) throw new ResourceNotFoundException(SUBSIDIARY_NOT_FOUND_MESSAGE);
 

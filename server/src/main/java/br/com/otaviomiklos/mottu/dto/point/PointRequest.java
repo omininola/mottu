@@ -1,6 +1,5 @@
-package br.com.otaviomiklos.mottu.dto.tagPosition;
+package br.com.otaviomiklos.mottu.dto.point;
 
-import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,13 +10,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+public class PointRequest {
 
-@Embeddable
-public class Point {
-    
-    @NotNull(message = "O eixo x é obrigatório")
+    @NotNull(message = "O eixo X é obrigatório")
     private float x;
-    
-    @NotNull(message = "O eixo y é obrigatório")
+
+    @NotNull(message = "O eixo Y é obrigatório")
     private float y;
 }

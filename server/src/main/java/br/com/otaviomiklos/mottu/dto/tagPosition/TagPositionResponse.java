@@ -2,6 +2,7 @@ package br.com.otaviomiklos.mottu.dto.tagPosition;
 
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagResponse;
 import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.entity.Point;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -22,7 +22,7 @@ public class ApriltagService {
     private ApriltagRepository repository;
 
     @Autowired
-    private static SubsidiaryRepository subsidiaryRepository;
+    private SubsidiaryRepository subsidiaryRepository;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma apriltag com esse ID";
     private static final String SUBSIDIARY_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
@@ -62,10 +62,13 @@ public class ApriltagService {
     }
 
     public static ApriltagResponse toResponse(Apriltag apriltag) {
+        String bikePlate = null;
+        if (apriltag.getBike() != null) bikePlate = apriltag.getBike().getPlate();
+
         ApriltagResponse response = new ApriltagResponse();
         response.setId(apriltag.getId());
         response.setCode(apriltag.getCode());
-        response.setBike(apriltag.getBike().getPlate());
+        response.setBike(bikePlate);
         response.setSubsiadiary(apriltag.getSubsidiary().getName());
         return response;
     }
@@ -74,7 +77,7 @@ public class ApriltagService {
         return apriltags.stream().map(ApriltagService::toResponse).collect(Collectors.toList());
     }
 
-    public static Apriltag toApriltag(ApriltagRequest request) {
+    public Apriltag toApriltag(ApriltagRequest request) {
         Optional<Subsidiary> subsidiary = subsidiaryRepository.findById(request.getSubsidiaryId());
         if (subsidiary.isEmpty()) throw new ResourceNotFoundException(SUBSIDIARY_NOT_FOUND_MESSAGE);
 
