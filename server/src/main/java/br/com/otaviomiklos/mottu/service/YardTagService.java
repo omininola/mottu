@@ -1,6 +1,7 @@
 package br.com.otaviomiklos.mottu.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,6 @@ public class YardTagService {
     private ApriltagRepository apriltagRepository;
     
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
-    private static final String APRILTAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma apriltag com esse código dentro desse pátio";
 
     public YardTagResponse postOrUpdatePositions(YardTagRequest request, Long yardId) {
         Optional<YardTag> yard = mongoRepository.findByMysqlYardId(yardId);
@@ -69,7 +69,7 @@ public class YardTagService {
 
     private TagPositionResponse toResponse(TagPositionRequest request, Yard yard) {
         Optional<Apriltag> apriltagOptional = apriltagRepository.findByCodeAndSubsidiaryId(request.getTagCode(), yard.getSubsidiary().getId());
-        if (apriltagOptional.isEmpty()) return new TagPositionResponse();
+        if (apriltagOptional.isEmpty()) return null;
         
         Apriltag apriltag = apriltagOptional.get();
         
@@ -84,11 +84,11 @@ public class YardTagService {
         AreaStatus areaStatus;
         if (area.isEmpty()) areaStatus = null;
         else areaStatus = area.get().getStatus();
-        
+
         boolean isInRightArea = false;
         if (areaStatus == null) isInRightArea = true;
         else if (bike != null && areaStatus == bike.getStatus()) isInRightArea = true;
-        
+
         TagPositionResponse response =  new TagPositionResponse();
         response.setTag(ApriltagService.toResponse(apriltag));
         response.setBike(bike);
@@ -99,7 +99,10 @@ public class YardTagService {
     }
 
     private List<TagPositionResponse> toResponse(List<TagPositionRequest> requests, Yard yard) {
-        return requests.stream().map(request -> toResponse(request, yard)).collect(Collectors.toList());
+        return requests.stream()
+            .map(request -> toResponse(request, yard))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     public YardTag toYardTag(YardTagRequest request) {

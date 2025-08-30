@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import br.com.otaviomiklos.mottu.entity.YardTag;
 
 @Repository
-public interface YardTagRepository extends MongoRepository<YardTag, Long> {
+public interface YardTagRepository extends MongoRepository<YardTag, String> {
     Optional<YardTag> findByMysqlYardId (Long mysqlYardId);
 }
