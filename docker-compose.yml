@@ -24,16 +24,20 @@ services:
       - front-tier
       - back-tier
 
-  # tag_detection:
-  #   container_name: tag_detection
-  #   build:
-  #     context: ./tag_detection
-  #   depends_on:
-  #     - server
-  #   restart: always
-  #   privileged: true
-  #   networks:
-  #     - back-tier
+  tag_detection:
+    container_name: tag_detection
+    build:
+      context: ./tag_detection
+    depends_on:
+      - server
+    restart: always
+    privileged: true
+    ports:
+      - "8000:8000"
+    networks:
+      - back-tier
+    devices:
+      - /dev/video0:/dev/video0
 
   client:
     container_name: client
