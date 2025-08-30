@@ -52,9 +52,9 @@ public class YardTagService {
     }
 
     public YardTagResponse readAllFromYard(Long yardId) {
-        Optional<YardTag> yardTag = mongoRepository.findByMysqlYardId(yardId);
-        if (yardTag.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
-        return toResponse(yardTag.get());
+        Optional<YardTag> yard = mongoRepository.findByMysqlYardId(yardId);
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return toResponse(yard.get());
     }
 
     public YardTagResponse toResponse(YardTag yardTag) {
@@ -69,7 +69,7 @@ public class YardTagService {
 
     private TagPositionResponse toResponse(TagPositionRequest request, Yard yard) {
         Optional<Apriltag> apriltagOptional = apriltagRepository.findByCodeAndSubsidiaryId(request.getTagCode(), yard.getSubsidiary().getId());
-        if (apriltagOptional.isEmpty()) throw new ResourceNotFoundException(APRILTAG_NOT_FOUND_MESSAGE);
+        if (apriltagOptional.isEmpty()) return new TagPositionResponse();
         
         Apriltag apriltag = apriltagOptional.get();
         

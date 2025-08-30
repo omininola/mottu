@@ -1,53 +1,54 @@
 import cv2
-from flask import Flask, Response
+import time
+import os
 
+from flask import Flask, Response
 from detections.detector import TagDetector
-from positions.estimator import PositionEstimator
 from communication.client import JavaAPIClient
+from draw.draw import draw_tags
 
 app = Flask(__name__)
 
-YARD_ID = 1
+VIDEO_CAPTURE_ID = int(os.getenv("VIDEO_CAPTURE_ID", "0"))
+JAVA_HOST = os.getenv("JAVA_HOST", "server")
+JAVA_PORT = os.getenv("JAVA_PORT", "8080")
+YARD_ID = int(os.getenv("YARD_ID", "1"))
+UPDATE_TAG_INTERVAL = int(os.getenv("UPDATE_TAG_INTERVAL", "10"))
 
 def gen_frames():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(VIDEO_CAPTURE_ID)
     detector = TagDetector()
-    java_client = JavaAPIClient("http://server:8080/", YARD_ID)
-
+    java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}/", YARD_ID)
+    
+    send_interval = UPDATE_TAG_INTERVAL
+    last_sent = time.time()
+    
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        # Step 1: Detect tags
-        detections = detector.detect_tags(frame)
+        detections_parsed_for_java, detections = detector.detect_tags(frame)
 
-        print("Detections: ", detections)
+        # Only send to Java API every 10 seconds
+        now = time.time()
+        if detections_parsed_for_java and (now - last_sent) > send_interval:
+            payload = {"tags": detections_parsed_for_java}
+            response = java_client.send_detections(payload)
+            last_sent = now  # reset timer
 
-        # Step 2: Normalize positions
-        estimator = PositionEstimator(frame.shape[1], frame.shape[0])
-        enriched = [estimator.normalize_position(d) for d in detections]
-
-        print("Enriched: ", enriched)
-
-        # Step 3: Send to Java API (disabled by 'and False')
-        if enriched and False:
-            response = java_client.send_detections(enriched)
-            print("Java API Response:", response)
-
-        # Visualization (optional)
-        for d in detections:
-            cx, cy = map(int, d["center"])
-            cv2.circle(frame, (cx, cy), 5, (0, 255, 0), -1)
-            cv2.putText(frame, f"ID: {d['id']}", (cx+10, cy), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+        # Step 4: Draw overlay
+        frame = draw_tags(frame, detections)
 
         _, buffer = cv2.imencode(".jpg", frame)
-        frame = buffer.tobytes()
+        frame_bytes = buffer.tobytes()
 
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+        )
 
-    cap.release()  # Always release!
+    cap.release()
 
 @app.route('/video')
 def video():

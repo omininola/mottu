@@ -39,7 +39,7 @@ public class YardService {
 
         YardTag yardMongo = new YardTag();
         yardMongo.setMysqlYardId(yard.getId());
-        yardMongo.setTags(new ArrayList<>()); 
+        yardMongo.setTags(new ArrayList<>());
 
         mongoRepository.save(yardMongo);
 
