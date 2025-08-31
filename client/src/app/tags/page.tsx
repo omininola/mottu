@@ -9,6 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { clearNotification } from "@/lib/utils";
 import axios from "axios";
@@ -23,6 +25,10 @@ export default function Tags() {
     undefined
   );
 
+  const [subsidiary, setSubsidiary] = React.useState<number>(1);
+  const [tagCode, setTagCode] = React.useState<string | undefined>(undefined);
+  const [plate, setPlate] = React.useState<string | undefined>(undefined);
+
   function capture() {
     if (webcamRef.current == null) return;
     const image = webcamRef.current.getScreenshot();
@@ -35,34 +41,38 @@ export default function Tags() {
     setUploadStatus("Uploading...");
 
     const response = await fetch(imageSrc);
-
-    console.log(response);
-
     const blob = await response.blob();
 
-    console.log(blob);
-
     const formData = new FormData();
-    formData.append("image", blob, "tag.png");
-
-    console.log(formData);
+    formData.append("file", blob, "tag.png");
 
     try {
       const response = await axios.post(
-        `${NEXT_PUBLIC_JAVA_URL}/apriltag/detection`,
+        `${NEXT_PUBLIC_JAVA_URL}/apriltags/detect`,
         formData
       );
+      setTagCode(response.data);
       setUploadStatus(JSON.stringify(response.data));
     } catch {
       setUploadStatus("Falha ao tentar enviar imagem para o servidor");
     } finally {
-      setUploadStatus("Operação finalizada");
       clearNotification<string | undefined>(setUploadStatus, undefined);
     }
   }
 
+  async function linkTagToBike() {
+    try {
+      const response = await axios.post(`${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tagCode}/subsidiary/${subsidiary}`);
+      console.log(response.data);
+    } catch {
+      console.log("Bigodou")
+    } finally {
+      console.log("Finzalizou")
+    }
+  }
+
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
       {uploadStatus && <Notification title="Status" message={uploadStatus} />}
 
       <div className="flex items-center justify-center gap-4">
@@ -81,7 +91,7 @@ export default function Tags() {
             />
           </CardContent>
           <CardFooter>
-            <Button onClick={capture}>Tirar foto</Button>
+            <Button variant="secondary" onClick={capture}>Tirar foto</Button>
           </CardFooter>
         </Card>
 
@@ -94,11 +104,19 @@ export default function Tags() {
               <Image src={imageSrc} alt="Foto tirada" style={{ width: 320 }} />
             </CardContent>
             <CardFooter>
-              <Button onClick={upload}>Resgatar o código da Tag</Button>
+              <Button variant="secondary" onClick={upload}>Resgatar o código da Tag</Button>
             </CardFooter>
           </Card>
         )}
       </div>
+
+      {tagCode && (
+        <div className="flex items-center justify-center gap-4">
+          <Label>Placa</Label>
+          <Input type="text" placeholder="123-ABC" value={plate} onChange={(e) => setPlate(e.target.value)}/>
+          <Button onClick={linkTagToBike}>Vincular {tagCode} com a moto</Button>
+        </div>
+      )}
     </div>
   );
 }
