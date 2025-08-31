@@ -1,14 +1,20 @@
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
+import Link from "next/link";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu";
 
 export default function Navigation() {
     return (
-        <NavigationMenu>
+        <NavigationMenu className="p-4">
             <NavigationMenuList>
                 <NavigationMenuItem>
-                    <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                    <NavigationMenuLink>Link</NavigationMenuLink>
-                </NavigationMenuContent>
+                    <NavigationMenuLink asChild>
+                        <Link href="/">Mapa 2D</Link>
+                    </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                    <NavigationMenuLink asChild>
+                        <Link href="/tags">Reconhecer Tags</Link>
+                    </NavigationMenuLink>
                 </NavigationMenuItem>
             </NavigationMenuList>
         </NavigationMenu>

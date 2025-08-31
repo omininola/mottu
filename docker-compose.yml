@@ -49,6 +49,8 @@ services:
     container_name: client
     build:
       context: ./client
+      args:
+        NEXT_PUBLIC_JAVA_URL: http://localhost:8080
     depends_on:
       - server
     restart: always
@@ -67,7 +69,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - db_mongo:/var/lib/mongo
+      - db_mongo:/data/db
     networks:
       - back-tier
 

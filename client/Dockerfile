@@ -13,12 +13,16 @@ RUN \
 
 COPY . .
 
+ARG NEXT_PUBLIC_JAVA_URL
+ENV NEXT_PUBLIC_JAVA_URL=$NEXT_PUBLIC_JAVA_URL
+
 RUN npm run build
 
 # Stage 2: Create the production image
 FROM node:20-alpine AS runner
 
 WORKDIR /app
+
 
 ENV NODE_ENV=production
 
