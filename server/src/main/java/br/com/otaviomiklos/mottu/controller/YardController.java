@@ -16,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
-import br.com.otaviomiklos.mottu.dto.yard.YardTagRequest;
-import br.com.otaviomiklos.mottu.dto.yard.YardTagResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardMongoRequest;
+import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.service.YardService;
-import br.com.otaviomiklos.mottu.service.YardTagService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -28,9 +27,6 @@ public class YardController {
 
     @Autowired
     private YardService service;
-
-    @Autowired
-    private YardTagService yardTagService;
  
     @PostMapping
     public ResponseEntity<YardResponse> create(@Valid @RequestBody YardRequest request) {
@@ -64,14 +60,14 @@ public class YardController {
 
     // Tag Related
     @PostMapping("/{id}/tags")
-    public ResponseEntity<YardTagResponse> updateSubsidiaryTagPositions(@RequestBody YardTagRequest request, @PathVariable Long id) {
-        YardTagResponse response = yardTagService.postOrUpdatePositions(request, id);
+    public ResponseEntity<YardMongoResponse> updateSubsidiaryTagPositions(@RequestBody YardMongoRequest request, @PathVariable Long id) {
+        YardMongoResponse response = service.postOrUpdatePositions(request, id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/tags")
-    public ResponseEntity<YardTagResponse> readTags(@PathVariable Long id) {
-        YardTagResponse response = yardTagService.readAllFromYard(id);
+    public ResponseEntity<YardMongoResponse> readTags(@PathVariable Long id) {
+        YardMongoResponse response = service.readAllFromYard(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

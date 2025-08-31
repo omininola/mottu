@@ -1,6 +1,8 @@
 package br.com.otaviomiklos.mottu.dto.area;
 
-import br.com.otaviomiklos.mottu.dto.delimiter.DelimiterRequest;
+import java.util.List;
+
+import br.com.otaviomiklos.mottu.dto.point.PointRequest;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +19,7 @@ public class AreaRequest {
     private AreaStatus status;
 
     @Valid
-    private DelimiterRequest delimiter;
+    private List<PointRequest> boundary;
 
     @NotNull(message = "O Id do pátio é obrigatório")
     private Long yardId;

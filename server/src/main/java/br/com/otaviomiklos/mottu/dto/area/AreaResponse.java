@@ -1,6 +1,8 @@
 package br.com.otaviomiklos.mottu.dto.area;
 
-import br.com.otaviomiklos.mottu.dto.delimiter.DelimiterResponse;
+import java.util.List;
+
+import br.com.otaviomiklos.mottu.dto.point.PointResponse;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +16,5 @@ public class AreaResponse {
     private Long id;
     private AreaStatus status;
     private String yard;
-    private DelimiterResponse delimiter;
+    private List<PointResponse> boundary;
 }

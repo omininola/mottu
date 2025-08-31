@@ -2,7 +2,6 @@ package br.com.otaviomiklos.mottu.entity;
 
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,24 +31,7 @@ public class Area {
     @Column(name = "ds_status", nullable = false)
     private AreaStatus status;
 
-    @Embedded
-    private Delimiter delimiter;
-
     @ManyToOne
     @JoinColumn(name = "yard_id")
     private Yard yard;
-
-    public boolean checkInside (Point point) {
-        float x = point.getX();
-        float y = point.getX();
-
-        float upLeftX = delimiter.getUpLeft().getX();
-        float upRightX = delimiter.getUpRight().getX();
-        float upLeftY = delimiter.getUpLeft().getY();
-        float downLeftY = delimiter.getDownLeft().getY();
-
-        if (upLeftX < x || upRightX > x) return false;
-        if (upLeftY < y || downLeftY > y) return false;
-        return true;
-    }
 }

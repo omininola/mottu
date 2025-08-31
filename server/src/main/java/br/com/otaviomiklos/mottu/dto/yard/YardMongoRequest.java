@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class YardTagRequest {
+public class YardMongoRequest {
     
     @Valid
     private List<TagPositionRequest> tags;

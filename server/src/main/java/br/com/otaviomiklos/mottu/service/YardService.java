@@ -1,23 +1,22 @@
 package br.com.otaviomiklos.mottu.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardMongoRequest;
+import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
-import br.com.otaviomiklos.mottu.entity.Subsidiary;
 import br.com.otaviomiklos.mottu.entity.Yard;
-import br.com.otaviomiklos.mottu.entity.YardTag;
+import br.com.otaviomiklos.mottu.entity.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
-import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
+import br.com.otaviomiklos.mottu.mapper.YardMapper;
+import br.com.otaviomiklos.mottu.mapper.YardMongoMapper;
 import br.com.otaviomiklos.mottu.repository.YardRepository;
-import br.com.otaviomiklos.mottu.repository.YardTagRepository;
+import br.com.otaviomiklos.mottu.repository.YardMongoRepository;
 
 @Service
 public class YardService {
@@ -26,46 +25,43 @@ public class YardService {
     private YardRepository repository;
 
     @Autowired
-    private YardTagRepository mongoRepository;
+    private YardMongoRepository mongoRepository;
     
     @Autowired
-    private SubsidiaryRepository subsidiaryRepository;
+    private YardMapper mapper;
+
+    @Autowired
+    private YardMongoMapper mongoMapper;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
-    private static final String SUBSIDIARY_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma filial com esse ID";
 
     public YardResponse save(YardRequest request) {
-        Yard yard = repository.save(toYard(request));
+        Yard yard = repository.save(mapper.toEntity(request));
+        mongoRepository.save(mapper.toMongoEntity(request, yard.getId()));
 
-        YardTag yardMongo = new YardTag();
-        yardMongo.setMysqlYardId(yard.getId());
-        yardMongo.setTags(new ArrayList<>());
-
-        mongoRepository.save(yardMongo);
-
-        return toResponse(yard);
+        return mapper.toResponse(yard);
     }
 
     public List<YardResponse> findAll() {
         List<Yard> yards = repository.findAll();
-        return toResponse(yards);
+        return mapper.toResponse(yards);
     }
 
     public YardResponse findById(Long id) {
         Optional<Yard> yard = repository.findById(id);
         if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
-        return toResponse(yard.get());
+        return mapper.toResponse(yard.get());
     }
 
     public YardResponse update(YardRequest request, Long id) {
         Optional<Yard> yard = repository.findById(id);
         if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
-        Yard newYard = toYard(request);
+        Yard newYard = mapper.toEntity(request);
         newYard.setId(id);
 
         Yard savedYard = repository.save(newYard);
-        return toResponse(savedYard);
+        return mapper.toResponse(savedYard);
     }
 
     public void delete(Long id) {
@@ -75,29 +71,22 @@ public class YardService {
         repository.deleteById(id);
     }
 
-    public static YardResponse toResponse(Yard yard) {
-        List<AreaResponse> areas = new ArrayList<>();
-        if (yard.getAreas() != null) areas = AreaService.toResponse(yard.getAreas());
+    // Mongo Related
+    public YardMongoResponse postOrUpdatePositions(YardMongoRequest request, Long mysqlId) {
+        Optional<YardMongo> yard = mongoRepository.findByMysqlId(mysqlId);
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
-        YardResponse response = new YardResponse();
-        response.setId(yard.getId());
-        response.setName(yard.getName());
-        response.setSubsidiary(yard.getSubsidiary().getName());
-        response.setAreas(areas);
-        return response;
+        YardMongo yardToSave = yard.get();
+        yardToSave.setTags(request.getTags());
+
+        mongoRepository.save(yardToSave);
+
+        return mongoMapper.toMongoResponse(yardToSave);
     }
 
-    public static List<YardResponse> toResponse(List<Yard> yards) {
-        return yards.stream().map(YardService::toResponse).collect(Collectors.toList());
-    }
-
-    public Yard toYard(YardRequest request) {
-        Optional<Subsidiary> subsidiary = subsidiaryRepository.findById(request.getSubsidiaryId());
-        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(SUBSIDIARY_NOT_FOUND_MESSAGE);
-
-        Yard yard = new Yard();
-        yard.setName(request.getName());
-        yard.setSubsidiary(subsidiary.get());
-        return yard;
+    public YardMongoResponse readAllFromYard(Long mysqlId) {
+        Optional<YardMongo> yard = mongoRepository.findByMysqlId(mysqlId);
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return mongoMapper.toMongoResponse(yard.get());
     }
 }

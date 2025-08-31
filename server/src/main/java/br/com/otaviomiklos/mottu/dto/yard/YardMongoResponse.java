@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class YardTagResponse {
+public class YardMongoResponse {
     
     private YardResponse yard;
     private List<TagPositionResponse> tags;

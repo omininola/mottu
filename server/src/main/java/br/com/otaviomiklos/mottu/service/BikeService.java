@@ -2,20 +2,19 @@ package br.com.otaviomiklos.mottu.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
 import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
-import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
 import br.com.otaviomiklos.mottu.exception.AlreadyLinkedException;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
+import br.com.otaviomiklos.mottu.mapper.BikeMapper;
 import br.com.otaviomiklos.mottu.repository.ApriltagRepository;
 import br.com.otaviomiklos.mottu.repository.BikeRepository;
 
@@ -28,6 +27,9 @@ public class BikeService {
     @Autowired
     private ApriltagRepository tagRepository;
 
+    @Autowired
+    private BikeMapper mapper;
+
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID";
     private static final String PLATE_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com essa placa";
     private static final String TAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma tag com esse ID";
@@ -36,41 +38,41 @@ public class BikeService {
     private static final String TAG_ALREADY_LINKED_MESSAGE = "A tag já está vinculada a uma outra moto";
 
     public BikeResponse save(BikeRequest request) {
-        Bike bike = repository.save(toBike(request));
-        return toResponse(bike);
+        Bike bike = repository.save(mapper.toEntity(request));
+        return mapper.toResponse(bike);
     }
 
     public List<BikeResponse> findAll() {
         List<Bike> bikes = repository.findAll();
-        return toResponse(bikes);
+        return mapper.toResponse(bikes);
     }
 
     public BikeResponse findByPlate(String plate) {
         Optional<Bike> bike = repository.findByPlate(plate);
         if (bike.isEmpty()) throw new ResourceNotFoundException(PLATE_NOT_FOUND_MESSAGE);
-        return toResponse(bike.get());
+        return mapper.toResponse(bike.get());
     }
 
     public List<BikeResponse> findByFilter(AreaStatus status, BikeModel model) {
         List<Bike> bikes = repository.findByStatusAndModel(status, model);
-        return toResponse(bikes);
+        return mapper.toResponse(bikes);
     }
 
     public BikeResponse findById(Long id) {
         Optional<Bike> bike = repository.findById(id);
         if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
-        return toResponse(bike.get());
+        return mapper.toResponse(bike.get());
     }
 
     public BikeResponse update(BikeRequest request, Long id) {
         Optional<Bike> bike = repository.findById(id);
         if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
-        Bike newBike = toBike(request);
+        Bike newBike = mapper.toEntity(request);
         newBike.setId(id);
 
         Bike savedBike = repository.save(newBike);
-        return toResponse(savedBike);
+        return mapper.toResponse(savedBike);
     }
 
     public void delete(Long id) {
@@ -107,41 +109,5 @@ public class BikeService {
         bikeToSave.setYard(null);
 
         repository.save(bikeToSave);
-    }
-
-    public static BikeResponse toResponse(Bike bike) {
-        String tagCode = null;
-        if (bike.getTag() != null) tagCode = bike.getTag().getCode();
-
-        YardResponse yard = null;
-        String subsidiary = null;
-        if (bike.getYard() != null) {
-            yard = YardService.toResponse(bike.getYard());
-            subsidiary = yard.getSubsidiary();
-        }
-
-        BikeResponse response = new BikeResponse();
-        response.setId(bike.getId());
-        response.setPlate(bike.getPlate());
-        response.setChassis(bike.getChassis());
-        response.setModel(bike.getModel());
-        response.setStatus(bike.getStatus());
-        response.setTagCode(tagCode);
-        response.setYard(yard);
-        response.setSubsidiary(subsidiary);
-        return response;
-    }
-
-    public static List<BikeResponse> toResponse(List<Bike> bikes) {
-        return bikes.stream().map(BikeService::toResponse).collect(Collectors.toList());
-    }
-
-    public Bike toBike(BikeRequest request) {
-        Bike bike = new Bike();
-        bike.setPlate(request.getPlate());
-        bike.setChassis(request.getChassis());
-        bike.setModel(request.getModel());
-        bike.setStatus(request.getStatus());
-        return bike;
     }
 }

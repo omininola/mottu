@@ -32,6 +32,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(UnableToProcessImage.class)
+    public ResponseEntity<ErrorResponse> handleUnableToProcessImage(UnableToProcessImage ex) {        
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.setMessage(ex.getMessage());
+        errorResponse.setTimestamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidExceptions(MethodArgumentNotValidException ex){
         Map<String, String> exceptions = new HashMap<>();
