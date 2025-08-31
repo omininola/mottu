@@ -1,8 +1,5 @@
 package br.com.otaviomiklos.mottu.dto.area;
 
-import java.util.List;
-
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
 import br.com.otaviomiklos.mottu.dto.delimiter.DelimiterResponse;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import lombok.Getter;
@@ -16,7 +13,6 @@ public class AreaResponse {
     
     private Long id;
     private AreaStatus status;
-    private List<BikeResponse> bikes;
     private String yard;
     private DelimiterResponse delimiter;
 }

@@ -72,16 +72,16 @@ public class BikeController {
     }
 
     // Link tag
-    @PostMapping("/{id}/tag/{tagId}")
-    public ResponseEntity<BikeResponse> linkBikeToTag(@PathVariable Long id, @PathVariable Long tagId) {
-        service.linkBikeToTag(id, tagId);
+    @PostMapping("/{plate}/tag/{tagCode}/subsidiary/{subsidiaryId}")
+    public ResponseEntity<BikeResponse> linkBikeToTag(@PathVariable String plate, @PathVariable String tagCode, @PathVariable Long subsidiaryId) {
+        service.linkBikeToTag(plate, tagCode, subsidiaryId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Unlink tag
-    @DeleteMapping("/{id}/tag")
-    public ResponseEntity<BikeResponse> unlinkBikeFromTag(@PathVariable Long id) {
-        service.unlinkBikeFromTag(id);
+    @DeleteMapping("/{plate}/tag")
+    public ResponseEntity<BikeResponse> unlinkBikeFromTag(@PathVariable String plate) {
+        service.unlinkBikeFromTag(plate);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

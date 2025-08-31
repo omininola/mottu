@@ -1,7 +1,5 @@
 package br.com.otaviomiklos.mottu.entity;
 
-import java.util.List;
-
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -13,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,10 +34,7 @@ public class Area {
 
     @Embedded
     private Delimiter delimiter;
-    
-    @OneToMany(mappedBy = "area")
-    private List<Bike> bikes;
-    
+
     @ManyToOne
     @JoinColumn(name = "yard_id")
     private Yard yard;

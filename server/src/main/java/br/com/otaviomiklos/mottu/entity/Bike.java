@@ -42,12 +42,12 @@ public class Bike {
     @Enumerated(EnumType.STRING)
     @Column(name = "ds_status", nullable = false)
     private AreaStatus status;
-
-    @ManyToOne
-    @JoinColumn(name = "area_id")
-    private Area area;
     
     @OneToOne
     @JoinColumn(name = "tag_id", nullable = true)
     private Apriltag tag;
+
+    @ManyToOne
+    @JoinColumn(name = "yard_id", nullable = true)
+    private Yard yard;
 }

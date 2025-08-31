@@ -78,7 +78,7 @@ public class YardService {
     public static YardResponse toResponse(Yard yard) {
         List<AreaResponse> areas = new ArrayList<>();
         if (yard.getAreas() != null) areas = AreaService.toResponse(yard.getAreas());
-        
+
         YardResponse response = new YardResponse();
         response.setId(yard.getId());
         response.setName(yard.getName());

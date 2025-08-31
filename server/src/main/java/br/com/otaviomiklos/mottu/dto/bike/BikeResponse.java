@@ -1,5 +1,6 @@
 package br.com.otaviomiklos.mottu.dto.bike;
 
+import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
 import lombok.Getter;
@@ -17,4 +18,6 @@ public class BikeResponse {
     private BikeModel model;
     private AreaStatus status;
     private String tagCode;
+    private YardResponse yard;
+    private String subsidiary;
 }

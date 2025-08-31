@@ -1,6 +1,5 @@
 package br.com.otaviomiklos.mottu.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.area.AreaRequest;
 import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
 import br.com.otaviomiklos.mottu.dto.delimiter.DelimiterRequest;
 import br.com.otaviomiklos.mottu.dto.delimiter.DelimiterResponse;
 import br.com.otaviomiklos.mottu.entity.Area;
@@ -68,9 +66,6 @@ public class AreaService {
     }
 
     public static AreaResponse toResponse(Area area) {
-        List<BikeResponse> bikes = new ArrayList<>();
-        if (area.getBikes() != null) bikes = BikeService.toResponse(area.getBikes()); 
-
         Delimiter areaDelimiter = area.getDelimiter();
         DelimiterResponse delimiter = new DelimiterResponse();
         delimiter.setUpLeft(areaDelimiter.getUpLeft());
@@ -83,7 +78,6 @@ public class AreaService {
         response.setDelimiter(delimiter);
         response.setStatus(area.getStatus());
         response.setYard(area.getYard().getName());
-        response.setBikes(bikes);
         return response;
     }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
 import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
@@ -28,6 +29,7 @@ public class BikeService {
     private ApriltagRepository tagRepository;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID";
+    private static final String PLATE_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com essa placa";
     private static final String TAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma tag com esse ID";
     private static final String BOTH_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID e nem uma tag com o ID passado";
     private static final String ALREADY_LINKED_MESSAGE = "A moto já está vinculada a uma outra tag";
@@ -45,7 +47,7 @@ public class BikeService {
 
     public BikeResponse findByPlate(String plate) {
         Optional<Bike> bike = repository.findByPlate(plate);
-        if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        if (bike.isEmpty()) throw new ResourceNotFoundException(PLATE_NOT_FOUND_MESSAGE);
         return toResponse(bike.get());
     }
 
@@ -78,9 +80,9 @@ public class BikeService {
         repository.deleteById(id);
     }
 
-    public void linkBikeToTag(Long id, Long tagId) {
-        Optional<Bike> bike = repository.findById(id);
-        Optional<Apriltag> tag = tagRepository.findById(tagId);
+    public void linkBikeToTag(String plate, String tagCode, Long subsidiaryId) {
+        Optional<Bike> bike = repository.findByPlate(plate);
+        Optional<Apriltag> tag = tagRepository.findByCodeAndSubsidiaryId(tagCode, subsidiaryId);
 
         boolean hasBike = bike.isPresent();
         boolean hasTag = tag.isPresent();
@@ -92,22 +94,31 @@ public class BikeService {
         if (bike.get().getTag() != null) throw new AlreadyLinkedException(ALREADY_LINKED_MESSAGE);
         if (tag.get().getBike() != null) throw new AlreadyLinkedException(TAG_ALREADY_LINKED_MESSAGE);
 
-        bike.get().setTag(tag.get());        
+        bike.get().setTag(tag.get());
         repository.save(bike.get());
     }
 
-    public void unlinkBikeFromTag(Long id) {
-        Optional<Bike> bike = repository.findById(id);
+    public void unlinkBikeFromTag(String plate) {
+        Optional<Bike> bike = repository.findByPlate(plate);
         if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
-        bike.get().setTag(null);
-        
-        repository.save(bike.get());
+        Bike bikeToSave = bike.get();
+        bikeToSave.setTag(null);
+        bikeToSave.setYard(null);
+
+        repository.save(bikeToSave);
     }
 
     public static BikeResponse toResponse(Bike bike) {
         String tagCode = null;
         if (bike.getTag() != null) tagCode = bike.getTag().getCode();
+
+        YardResponse yard = null;
+        String subsidiary = null;
+        if (bike.getYard() != null) {
+            yard = YardService.toResponse(bike.getYard());
+            subsidiary = yard.getSubsidiary();
+        }
 
         BikeResponse response = new BikeResponse();
         response.setId(bike.getId());
@@ -116,6 +127,8 @@ public class BikeService {
         response.setModel(bike.getModel());
         response.setStatus(bike.getStatus());
         response.setTagCode(tagCode);
+        response.setYard(yard);
+        response.setSubsidiary(subsidiary);
         return response;
     }
 

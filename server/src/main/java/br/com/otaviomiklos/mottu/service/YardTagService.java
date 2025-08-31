@@ -15,12 +15,14 @@ import br.com.otaviomiklos.mottu.dto.yard.YardTagRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardTagResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
 import br.com.otaviomiklos.mottu.entity.Area;
+import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.entity.Point;
 import br.com.otaviomiklos.mottu.entity.Yard;
 import br.com.otaviomiklos.mottu.entity.YardTag;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.ApriltagRepository;
+import br.com.otaviomiklos.mottu.repository.BikeRepository;
 import br.com.otaviomiklos.mottu.repository.YardRepository;
 import br.com.otaviomiklos.mottu.repository.YardTagRepository;
 
@@ -35,6 +37,9 @@ public class YardTagService {
 
     @Autowired
     private ApriltagRepository apriltagRepository;
+
+    @Autowired
+    private BikeRepository bikeRepository;
     
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
 
@@ -74,7 +79,15 @@ public class YardTagService {
         Apriltag apriltag = apriltagOptional.get();
         
         BikeResponse bike = null; 
-        if (apriltag.getBike() != null) bike = BikeService.toResponse(apriltag.getBike());
+        if (apriltag.getBike() != null) {
+            
+            Bike bikeToSave = apriltag.getBike();
+            bikeToSave.setYard(yard);
+
+            bikeRepository.save(bikeToSave);
+
+            bike = BikeService.toResponse(apriltag.getBike());
+        }
 
         Point position = new Point(request.getPosition().getX(), request.getPosition().getY());
         List<Area> areas = yard.getAreas();

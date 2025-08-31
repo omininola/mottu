@@ -36,4 +36,7 @@ public class Yard {
 
     @OneToMany(mappedBy = "yard")
     private List<Area> areas;
+
+    @OneToMany(mappedBy = "yard")
+    private List<Bike> bikes;
 }
