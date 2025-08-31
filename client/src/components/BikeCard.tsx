@@ -7,7 +7,8 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Binoculars, MapPin } from "lucide-react";
+import { Binoculars, Locate, MapPin } from "lucide-react";
+import { Button } from "./ui/button";
 
 export default function BikeCard({ bike }: { bike: Bike }) {
   return (
@@ -30,10 +31,14 @@ export default function BikeCard({ bike }: { bike: Bike }) {
       </CardContent>
       <CardFooter>
         {bike.yard ? (
-          <p className="flex items-center gap-4">
-            <MapPin className="h-4 w-4" /> {bike.yard.name} -{" "}
-            {bike.yard.subsidiary}
-          </p>
+          <div className="flex flex-col justify-items-stretch gap-4">
+            <p className="flex items-center gap-4">
+              <MapPin className="h-4 w-4" />
+              <span>{bike.yard.name} -</span>
+              <span>{bike.yard.subsidiary}</span>
+            </p>
+            <Button><Locate className="h-4 w-4" /> Achar no Mapa</Button>
+          </div>
         ) : (
           <p>Moto não está vinculada a um pátio</p>
         )}

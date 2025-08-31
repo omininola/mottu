@@ -16,11 +16,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Yard } from "@/lib/types";
+import { Yard, YardTag } from "@/lib/types";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
 import Notification from "./Notification";
+import { clearNotification } from "@/lib/utils";
 
 export function YardCombobox() {
   const [open, setOpen] = React.useState(false);
@@ -40,10 +41,7 @@ export function YardCombobox() {
       } catch {
         setError("Não foi possível buscar os pátios");
       } finally {
-        setTimeout(() => {
-          setError(undefined);
-        }, 3000);
-
+        clearNotification<string | undefined>(setError, undefined);
         setLoading(false);
       }
     }
@@ -51,9 +49,24 @@ export function YardCombobox() {
     fetchYards();
   }, []);
 
+  async function fetchYardTags() {
+    try {
+      const response = await axios.get(`${NEXT_PUBLIC_JAVA_URL}/yards/${selectedYard?.id}/tags`);
+      const data: YardTag = response.data;
+      const positions = data.tags.map(tag => tag.position);
+      console.log(positions);
+    } catch {
+      setError("Não foi possível buscar as Tags do pátio: " + selectedYard?.name);
+    } finally {
+      clearNotification<string | undefined>(setError, undefined);
+    }
+  }
+
   return (
     <div className="flex items-center space-x-4 relative">
       {error && <Notification title="Ops!" message={error} />}
+
+      <Button onClick={fetchYardTags}>Buscar as motos do pátio {selectedYard?.name}</Button>
 
       <p className="text-muted-foreground text-sm">Pátio</p>
       <Popover open={open} onOpenChange={setOpen}>

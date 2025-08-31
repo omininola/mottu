@@ -10,6 +10,7 @@ import React from "react";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Bike } from "@/lib/types";
+import { clearNotification } from "@/lib/utils";
 
 export default function SearchBike() {
   const [searchText, setSearchText] = React.useState<string>("");
@@ -34,10 +35,7 @@ export default function SearchBike() {
         setError(err.response.data.message);
       } else setError("Não foi possível se comunicar com o servidor");
     } finally {
-      setTimeout(() => {
-        setError(undefined);
-      }, 3000);
-
+      clearNotification<string | undefined>(setError, undefined);
       setLoading(false);
     }
   }

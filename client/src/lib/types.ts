@@ -33,3 +33,23 @@ export type Bike = {
     tagCode: string | null
     yard: Yard | null
 }
+
+export type Apriltag = {
+    id: number
+    code: string
+    subsidiary: string
+    bike: string
+}
+
+export type TagPosition = {
+    tag: Apriltag
+    bike: Bike
+    position: Point
+    areaStatus: string | null
+    inRightArea: boolean
+}
+
+export type YardTag = {
+    yard: Yard
+    tags: TagPosition[]
+}

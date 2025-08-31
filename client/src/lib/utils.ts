@@ -4,3 +4,9 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function clearNotification<T>(cb: React.Dispatch<React.SetStateAction<T>>, value: T) {
+  setTimeout(() => {
+    cb(value);
+  }, 3000)
+}
