@@ -16,79 +16,55 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Yard, YardTag } from "@/lib/types";
+import { Subsidiary } from "@/lib/types";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
 import { Notification } from "./Notification";
 import { clearNotification } from "@/lib/utils";
 
-export function YardCombobox({
-  setData,
+export function SubsidiaryCombobox({
+  selectedSubsidiary,
+  setSelectedSubsidiary,
 }: {
-  setData: React.Dispatch<React.SetStateAction<YardTag | null>>;
+  selectedSubsidiary: Subsidiary | null;
+  setSelectedSubsidiary: React.Dispatch<
+    React.SetStateAction<Subsidiary | null>
+  >;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [selectedYard, setSelectedYard] = React.useState<Yard | null>(null);
 
-  const [yards, setYards] = React.useState<Yard[]>([]);
+  const [subsidiaries, setSubsidiaries] = React.useState<Subsidiary[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
   );
 
   React.useEffect(() => {
-    async function fetchYards() {
+    async function fetchSubsidiaries() {
       setLoading(true);
 
       try {
-        const response = await axios.get(`${NEXT_PUBLIC_JAVA_URL}/yards`);
-        setYards(response.data);
+        const response = await axios.get(
+          `${NEXT_PUBLIC_JAVA_URL}/subsidiaries`
+        );
+        setSubsidiaries(response.data);
       } catch {
-        setNotification("Não foi possível buscar os pátios");
+        setNotification("Não foi possível buscar as filiais");
       } finally {
         clearNotification<string | undefined>(setNotification, undefined);
         setLoading(false);
       }
     }
 
-    fetchYards();
+    fetchSubsidiaries();
   }, []);
-
-  React.useEffect(() => {
-    async function fetchYardTags() {
-      if (!selectedYard) return;
-
-      console.log("[YARD] Fetching tag data");
-
-      try {
-        const response = await axios.get(
-          `${NEXT_PUBLIC_JAVA_URL}/yards/${selectedYard?.id}/tags`
-        );
-        setData(response.data);
-      } catch {
-        setNotification(
-          "Não foi possível buscar as Tags do pátio: " + selectedYard?.name
-        );
-      } finally {
-        clearNotification<string | undefined>(setNotification, undefined);
-      }
-    }
-
-    const timer = setInterval(() => {
-      fetchYardTags();
-    }, 5000);
-
-    return () => {
-      clearInterval(timer);
-    }
-  }, [setData, selectedYard]);
 
   return (
     <div className="flex items-center space-x-4 relative">
       {notification && <Notification title="Ops!" message={notification} />}
 
-      <p className="text-muted-foreground text-sm">Pátio</p>
+      <p className="text-muted-foreground text-sm">Filial</p>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -96,13 +72,13 @@ export function YardCombobox({
             disabled={loading}
             className="justify-start"
           >
-            {selectedYard ? (
+            {selectedSubsidiary ? (
               <>
-                <MapPin className="h-4 w-4" /> {selectedYard.name}
+                <MapPin className="h-4 w-4" /> {selectedSubsidiary.name}
               </>
             ) : (
               <>
-                <MapPin className="h-4 w-4" /> Selecione o pátio
+                <MapPin className="h-4 w-4" /> Selecione a filial
               </>
             )}
           </Button>
@@ -113,20 +89,20 @@ export function YardCombobox({
             <CommandList>
               <CommandEmpty>Nenhum resultado encontrado.</CommandEmpty>
               <CommandGroup>
-                {yards.map((yard) => (
+                {subsidiaries.map((subsidiary) => (
                   <CommandItem
-                    key={yard.id}
-                    value={yard.name.toString()}
+                    key={subsidiary.id}
+                    value={subsidiary.name.toString()}
                     onSelect={(value) => {
-                      setSelectedYard(
-                        yards.find(
+                      setSelectedSubsidiary(
+                        subsidiaries.find(
                           (priority) => priority.name.toString() === value
                         ) || null
                       );
                       setOpen(false);
                     }}
                   >
-                    {yard.name}
+                    {subsidiary.name}
                   </CommandItem>
                 ))}
               </CommandGroup>

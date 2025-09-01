@@ -1,25 +1,31 @@
 "use client";
 
+import * as React from "react";
+
 import { LoaderIcon, Search } from "lucide-react";
-import Notification from "./Notification";
+import { Notification } from "./Notification";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import BikeCard, { BikeCardEmpty } from "./BikeCard";
-import React from "react";
+import { BikeCardEmpty, BikeCard } from "./BikeCard";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Bike } from "@/lib/types";
 import { clearNotification } from "@/lib/utils";
 
-export default function SearchBike() {
+export function SearchBike() {
   const [searchText, setSearchText] = React.useState<string>("");
   const [bikeSearched, setBikeSearched] = React.useState<Bike | undefined>(
     undefined
   );
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [error, setError] = React.useState<string | undefined>(undefined);
+  const [notification, setNotification] = React.useState<string | undefined>(
+    undefined
+  );
 
+  // TODO: Highlight bike on map if it is searched
+  // 1. Check if bike searched is in the current yard map
+  // 2. Highlight it
   async function searchBike() {
     setLoading(true);
 
@@ -31,20 +37,24 @@ export default function SearchBike() {
       );
       setBikeSearched(response.data);
     } catch (err: unknown) {
-      if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
-        setError(err.response.data.message);
-      } else setError("Não foi possível se comunicar com o servidor");
+      if (
+        axios.isAxiosError(err) &&
+        err.response &&
+        err.response.status === 404
+      ) {
+        setNotification(err.response.data.message);
+      } else setNotification("Não foi possível se comunicar com o servidor");
     } finally {
-      clearNotification<string | undefined>(setError, undefined);
+      clearNotification<string | undefined>(setNotification, undefined);
       setLoading(false);
     }
   }
 
   return (
     <>
-      {error && <Notification title="Ops!" message={error} />}
+      {notification && <Notification title="Ops!" message={notification} />}
 
-      <div className="flex gap-4">
+      <form className="flex gap-4" onSubmit={(e) => e.preventDefault()}>
         <Label htmlFor="plate">Placa</Label>
         <Input
           type="text"
@@ -55,7 +65,7 @@ export default function SearchBike() {
           onChange={(e) => setSearchText(e.target.value)}
         />
 
-        <Button type="button" disabled={loading} onClick={searchBike}>
+        <Button type="submit" disabled={loading} onClick={searchBike}>
           {loading ? (
             <LoaderIcon className="mr-1 h-4 w-4 animate-spin" />
           ) : (
@@ -63,7 +73,7 @@ export default function SearchBike() {
           )}{" "}
           Pesquisar
         </Button>
-      </div>
+      </form>
 
       <div className="w-full">
         {bikeSearched ? <BikeCard bike={bikeSearched} /> : <BikeCardEmpty />}

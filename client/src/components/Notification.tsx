@@ -1,7 +1,9 @@
+import * as React from "react";
+
 import { BadgeInfo } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
-export default function Notification({
+export function Notification({
   title,
   message,
 }: {

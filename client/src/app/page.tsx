@@ -1,21 +1,39 @@
-import AreaSelector from "@/components/AreaSelector";
-import SearchBike from "@/components/SearchBike";
+"use client";
+
+import * as React from "react";
+
+import { AreaDropdownMenu } from "@/components/AreaDropdownMenu";
+import { SearchBike } from "@/components/SearchBike";
 import { YardCombobox } from "@/components/YardCombobox";
+import { Bike, YardTag } from "@/lib/types";
+
+import dynamic from "next/dynamic";
+import { BikeCard } from "@/components/BikeCard";
+const MapView = dynamic(
+  () => import("@/components/MapView").then(mod => mod.MapView),
+  { ssr: false }
+);
 
 export default function Home() {
+  const [bike, setBike] = React.useState<Bike | null>(null);
+  const [data, setData] = React.useState<YardTag | null>(null);
+
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
       <div className="col-span-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <AreaSelector />
-          <YardCombobox />
+          <AreaDropdownMenu />
+          <YardCombobox setData={setData} />
         </div>
 
-        <canvas className="border-2 rounded-2xl w-full"></canvas>
+        <div className="border-2 rounded-2xl w-full p-4">
+          <MapView data={data} setBike={setBike} bike={bike} />
+        </div>
       </div>
 
-      <div className="col-span-1 flex flex-col items-center justify-baseline gap-4">
+      <div className="col-span-1 flex flex-col gap-4">
         <SearchBike />
+        {bike && <BikeCard bike={bike} />}
       </div>
     </div>
   );

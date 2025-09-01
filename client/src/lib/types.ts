@@ -1,27 +1,37 @@
+export type Subsidiary = {
+    id: string
+    name: string
+    address: string
+    yards: Yard[]
+    tags: Apriltag[]
+}
+
 export type Yard = {
     id: number
     name: string
     subsidiary: string
     areas: Area[]
+    boundary: Point[]
+}
+
+export type YardTag = {
+    yard: Yard
+    tags: TagPosition[]
 }
 
 export type Area = {
     id: number
     status: string
     yard: string
-    delimiter: Delimiter
+    boundary: Point[]
 }
 
-export type Delimiter = {
-    upLeft: Point
-    upRight: Point
-    downRight: Point
-    downLeft: Point
-}
-
-export type Point = {
-    x: number
-    y: number
+export type TagPosition = {
+    tag: Apriltag
+    bike: Bike
+    position: Point
+    areaStatus: string | null
+    inRightArea: boolean
 }
 
 export type Bike = {
@@ -41,15 +51,7 @@ export type Apriltag = {
     bike: string
 }
 
-export type TagPosition = {
-    tag: Apriltag
-    bike: Bike
-    position: Point
-    areaStatus: string | null
-    inRightArea: boolean
-}
-
-export type YardTag = {
-    yard: Yard
-    tags: TagPosition[]
+export type Point = {
+    x: number
+    y: number
 }

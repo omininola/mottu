@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { Bike } from "@/lib/types";
 import {
   Card,
@@ -7,43 +9,82 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Binoculars, Locate, MapPin } from "lucide-react";
+import { Binoculars, Locate, MapPin, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
+import axios from "axios";
+import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
+import { clearNotification } from "@/lib/utils";
+import { Notification } from "./Notification";
 
-export default function BikeCard({ bike }: { bike: Bike }) {
+export function BikeCard({ bike }: { bike: Bike }) {
+  const [notification, setNotification] = React.useState<string | undefined>(
+    undefined
+  );
+
+  async function unlinkBikeFromTag() {
+    try {
+      axios.delete(`${NEXT_PUBLIC_JAVA_URL}/bikes/${bike.plate}/tag`);
+      setNotification("A moto foi desvinculada com sucesso!");
+    } catch {
+      setNotification("Não foi possível desvincular a moto da tag");
+    } finally {
+      clearNotification<string | undefined>(setNotification, undefined);
+    }
+  }
+
+  // TODO: Locate bike on map
+  // 1. Check if bike.yard is the same on current map
+  // 2. Check bike position and move camera there
+  async function locateBikeOnMap() {
+    console.log(bike.yard);
+  }
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Binoculars className="mr-2" /> {bike.plate}
-        </CardTitle>
-        <CardDescription>Informações da moto pesquisada</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p>Chassi: {bike.chassis}</p>
-        <p>Modelo: {bike.model}</p>
-        <p>Status: {bike.status}</p>
-        {bike.tagCode ? (
-          <p>Tag: {bike.tagCode}</p>
-        ) : (
-          <p>Moto não está vinculada à uma tag</p>
-        )}
-      </CardContent>
-      <CardFooter>
-        {bike.yard ? (
-          <div className="flex flex-col justify-items-stretch gap-4">
+    <>
+      {notification && (
+        <Notification title="Vinculo de tags" message={notification} />
+      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Binoculars className="mr-2" /> {bike.plate}
+          </CardTitle>
+          <CardDescription>Informações da moto pesquisada</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Chassi: {bike.chassis}</p>
+          <p>Modelo: {bike.model}</p>
+          <p>Status: {bike.status}</p>
+          {bike.tagCode ? <p>Tag: {bike.tagCode}</p> : <p>Sem dados da tag</p>}
+          {bike.yard ? (
             <p className="flex items-center gap-4">
               <MapPin className="h-4 w-4" />
               <span>{bike.yard.name} -</span>
               <span>{bike.yard.subsidiary}</span>
             </p>
-            <Button><Locate className="h-4 w-4" /> Achar no Mapa</Button>
-          </div>
-        ) : (
-          <p>Moto não está vinculada a um pátio</p>
+          ) : (
+            <p>Sem dados da localização</p>
+          )}
+        </CardContent>
+        {(bike.yard || bike.tagCode) && (
+          <CardFooter>
+            <div className="flex flex-col gap-4 w-full">
+              {bike.yard && (
+                <Button variant="secondary" onClick={locateBikeOnMap}>
+                  <Locate className="h-4 w-4" /> Achar no Mapa
+                </Button>
+              )}
+
+              {bike.tagCode && (
+                <Button variant="outline" onClick={unlinkBikeFromTag}>
+                  <Unlink className="h-4 w-4" /> Desvincular tag
+                </Button>
+              )}
+            </div>
+          </CardFooter>
         )}
-      </CardFooter>
-    </Card>
+      </Card>
+    </>
   );
 }
 

@@ -32,10 +32,11 @@ public class BikeService {
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID";
     private static final String PLATE_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com essa placa";
-    private static final String TAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma tag com esse ID";
-    private static final String BOTH_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com esse ID e nem uma tag com o ID passado";
-    private static final String ALREADY_LINKED_MESSAGE = "A moto já está vinculada a uma outra tag";
+    private static final String TAG_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma tag com esse código dentro dessa filial";
+    private static final String BOTH_NOT_FOUND_MESSAGE = "Não foi possível encontrar uma moto com essa placa e nem uma tag com o código passado";
+    private static final String BIKE_ALREADY_LINKED_MESSAGE = "A moto já está vinculada a uma outra tag";
     private static final String TAG_ALREADY_LINKED_MESSAGE = "A tag já está vinculada a uma outra moto";
+    private static final String ALREADY_LINKED_MESSAGE = "A moto já está vinculada a está tag";
 
     public BikeResponse save(BikeRequest request) {
         Bike bike = repository.save(mapper.toEntity(request));
@@ -90,10 +91,16 @@ public class BikeService {
         boolean hasTag = tag.isPresent();
 
         if (!hasBike && !hasTag) throw new ResourceNotFoundException(BOTH_NOT_FOUND_MESSAGE);
-        if (!hasBike && hasTag) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        if (!hasBike && hasTag) throw new ResourceNotFoundException(PLATE_NOT_FOUND_MESSAGE);
         if (hasBike && !hasTag) throw new ResourceNotFoundException(TAG_NOT_FOUND_MESSAGE);
-        
-        if (bike.get().getTag() != null) throw new AlreadyLinkedException(ALREADY_LINKED_MESSAGE);
+
+        if (bike.get().getTag() != null
+        && bike.get().getTag().getCode() == tag.get().getCode() 
+        && bike.get().getTag().getSubsidiary().getId() == tag.get().getSubsidiary().getId()) {
+            throw new AlreadyLinkedException(ALREADY_LINKED_MESSAGE); 
+        }
+
+        if (bike.get().getTag() != null) throw new AlreadyLinkedException(BIKE_ALREADY_LINKED_MESSAGE);
         if (tag.get().getBike() != null) throw new AlreadyLinkedException(TAG_ALREADY_LINKED_MESSAGE);
 
         bike.get().setTag(tag.get());

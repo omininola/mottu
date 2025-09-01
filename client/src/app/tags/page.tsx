@@ -1,6 +1,7 @@
 "use client";
 
-import Notification from "@/components/Notification";
+import { Notification } from "@/components/Notification";
+import { SubsidiaryCombobox } from "@/components/SubsidiaryCombobox";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,22 +13,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
+import { Subsidiary } from "@/lib/types";
 import { clearNotification } from "@/lib/utils";
 import axios from "axios";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 import Webcam from "react-webcam";
 
 export default function Tags() {
-  const webcamRef = useRef<Webcam | null>(null);
-  const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
-  const [uploadStatus, setUploadStatus] = useState<string | undefined>(
+  const webcamRef = React.useRef<Webcam | null>(null);
+  const [imageSrc, setImageSrc] = React.useState<string | undefined>(undefined);
+
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [notification, setNotification] = React.useState<string | undefined>(
     undefined
   );
 
-  const [subsidiary, setSubsidiary] = React.useState<number>(1);
+  const [selectedSubsidiary, setSelectedSubsidiary] =
+    React.useState<Subsidiary | null>(null);
   const [tagCode, setTagCode] = React.useState<string | undefined>(undefined);
   const [plate, setPlate] = React.useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setTagCode(undefined);
+  }, [imageSrc])
 
   function capture() {
     if (webcamRef.current == null) return;
@@ -35,10 +44,8 @@ export default function Tags() {
     if (image) setImageSrc(image);
   }
 
-  async function upload() {
+  async function detect() {
     if (!imageSrc) return;
-
-    setUploadStatus("Uploading...");
 
     const response = await fetch(imageSrc);
     const blob = await response.blob();
@@ -46,77 +53,125 @@ export default function Tags() {
     const formData = new FormData();
     formData.append("file", blob, "tag.png");
 
+    setLoading(true);
     try {
       const response = await axios.post(
         `${NEXT_PUBLIC_JAVA_URL}/apriltags/detect`,
         formData
       );
       setTagCode(response.data);
-      setUploadStatus(JSON.stringify(response.data));
+      setNotification("Tag retornada: " + JSON.stringify(response.data));
     } catch {
-      setUploadStatus("Falha ao tentar enviar imagem para o servidor");
+      setNotification("Falha ao tentar enviar imagem para o servidor");
     } finally {
-      clearNotification<string | undefined>(setUploadStatus, undefined);
+      setLoading(false);
+      clearNotification<string | undefined>(setNotification, undefined);
     }
   }
 
   async function linkTagToBike() {
+    setLoading(true);
     try {
-      const response = await axios.post(`${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tagCode}/subsidiary/${subsidiary}`);
-      console.log(response.data);
-    } catch {
-      console.log("Bigodou")
+      await axios.post(
+        `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tagCode}/subsidiary/${selectedSubsidiary?.id}`
+      );
+      setNotification("Tag foi vinculada com sucesso!");
+    } catch (err: unknown) {
+      if (
+        axios.isAxiosError(err) &&
+        err.response &&
+        (err.response.status === 400 || err.response.status === 404)
+      ) {
+        setNotification(err.response.data.message);
+      } else setNotification("Não foi possível se comunicar com o servidor");
     } finally {
-      console.log("Finzalizou")
+      setLoading(false);
+      clearNotification<string | undefined>(setNotification, undefined);
     }
   }
 
   return (
     <div className="flex flex-col items-center gap-4">
-      {uploadStatus && <Notification title="Status" message={uploadStatus} />}
+      {notification && <Notification title="Status" message={notification} />}
 
       <div className="flex items-center justify-center gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Identificação de Tags</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/png"
-              width={320}
-              height={240}
-              videoConstraints={{ facingMode: "environment" }}
-            />
-          </CardContent>
-          <CardFooter>
-            <Button variant="secondary" onClick={capture}>Tirar foto</Button>
-          </CardFooter>
-        </Card>
+        <CardCapture
+          title="Identificação de Tags"
+          footerText="Tirar foto"
+          footerAction={capture}
+        >
+          <Webcam
+            audio={false}
+            ref={webcamRef}
+            screenshotFormat="image/png"
+            width={320}
+            height={240}
+            videoConstraints={{ facingMode: "environment" }}
+          />
+        </CardCapture>
 
         {imageSrc && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Foto tirada</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Image src={imageSrc} alt="Foto tirada" style={{ width: 320 }} />
-            </CardContent>
-            <CardFooter>
-              <Button variant="secondary" onClick={upload}>Resgatar o código da Tag</Button>
-            </CardFooter>
-          </Card>
+          <CardCapture
+            title="Foto tirada"
+            footerText="Resgatar o código da Tag"
+            footerAction={detect}
+            loading={loading}
+          >
+            <Image src={imageSrc} alt="Foto tirada" style={{ width: 320 }} />
+          </CardCapture>
         )}
       </div>
 
       {tagCode && (
         <div className="flex items-center justify-center gap-4">
           <Label>Placa</Label>
-          <Input type="text" placeholder="123-ABC" value={plate} onChange={(e) => setPlate(e.target.value)}/>
-          <Button onClick={linkTagToBike}>Vincular {tagCode} com a moto</Button>
+          <Input
+            type="text"
+            placeholder="123-ABC"
+            value={plate}
+            onChange={(e) => setPlate(e.target.value)}
+          />
+
+          <SubsidiaryCombobox
+            selectedSubsidiary={selectedSubsidiary}
+            setSelectedSubsidiary={setSelectedSubsidiary}
+          />
+
+          <Button
+            onClick={linkTagToBike}
+            disabled={loading || !selectedSubsidiary || plate == ""}
+          >
+            Vincular {tagCode} com a moto
+          </Button>
         </div>
       )}
     </div>
+  );
+}
+
+function CardCapture({
+  title,
+  footerText,
+  footerAction,
+  children,
+  loading,
+}: {
+  title: string;
+  footerText: string;
+  footerAction: () => void;
+  loading?: boolean;
+} & PropsWithChildren) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+      <CardFooter>
+        <Button variant="secondary" onClick={footerAction} disabled={loading}>
+          {footerText}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }
