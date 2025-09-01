@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BikeResponse {
+public class BikeDetailsDTO {
     
     private Long id;
     private String plate;

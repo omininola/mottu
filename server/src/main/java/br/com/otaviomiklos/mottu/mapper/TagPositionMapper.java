@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.dto.bike.BikeSummaryDTO;
 import br.com.otaviomiklos.mottu.dto.tagPosition.TagPositionRequest;
 import br.com.otaviomiklos.mottu.dto.tagPosition.TagPositionResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
@@ -46,7 +46,7 @@ public class TagPositionMapper {
         
         Apriltag apriltag = apriltagOptional.get();
         
-        BikeResponse bike = null; 
+        BikeSummaryDTO bike = null; 
         if (apriltag.getBike() != null) {
             
             Bike bikeToSave = apriltag.getBike();
@@ -54,7 +54,7 @@ public class TagPositionMapper {
 
             bikeRepository.save(bikeToSave);
 
-            bike = bikeMapper.toResponse(apriltag.getBike());
+            bike = bikeMapper.toSummary(apriltag.getBike());
         }
 
         Point position = new Point(request.getPosition().getX(), request.getPosition().getY());        

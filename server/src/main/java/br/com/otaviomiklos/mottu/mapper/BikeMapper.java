@@ -7,7 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.dto.bike.BikeSummaryDTO;
+import br.com.otaviomiklos.mottu.dto.bike.BikeDetailsDTO;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Bike;
 
@@ -17,7 +18,7 @@ public class BikeMapper {
     @Autowired
     private YardMapper yardMapper;
 
-    public BikeResponse toResponse(Bike bike) {
+    public BikeDetailsDTO toResponse(Bike bike) {
         String tagCode = null;
         if (bike.getTag() != null) tagCode = bike.getTag().getCode();
 
@@ -28,7 +29,7 @@ public class BikeMapper {
             subsidiary = yard.getSubsidiary();
         }
 
-        BikeResponse response = new BikeResponse();
+        BikeDetailsDTO response = new BikeDetailsDTO();
         response.setId(bike.getId());
         response.setPlate(bike.getPlate());
         response.setChassis(bike.getChassis());
@@ -40,8 +41,18 @@ public class BikeMapper {
         return response;
     }
 
-    public List<BikeResponse> toResponse(List<Bike> bikes) {
+    public List<BikeDetailsDTO> toResponse(List<Bike> bikes) {
         return bikes.stream().map(bike -> toResponse(bike)).collect(Collectors.toList());
+    }
+
+    public BikeSummaryDTO toSummary(Bike bike) {
+        BikeSummaryDTO response = new BikeSummaryDTO();
+        response.setId(bike.getId());
+        response.setPlate(bike.getPlate());
+        response.setChassis(bike.getChassis());
+        response.setModel(bike.getModel());
+        response.setStatus(bike.getStatus());
+        return response;
     }
 
     public Bike toEntity(BikeRequest request) {

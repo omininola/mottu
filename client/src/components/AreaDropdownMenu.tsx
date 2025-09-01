@@ -14,9 +14,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const statuses = [
-  { value: "BROKEN", label: "Quebrado"},
-  { value: "READY", label: "Pronto"}
-]
+  { value: "BROKEN", label: "Quebrado" },
+  { value: "READY", label: "Pronto" },
+];
 
 export function AreaDropdownMenu() {
   const [status, setStatus] = React.useState<string | undefined>(undefined);
@@ -31,8 +31,10 @@ export function AreaDropdownMenu() {
           <DropdownMenuLabel>Status da nova área</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuRadioGroup value={status} onValueChange={setStatus}>
-            {statuses.map(status => (
-              <DropdownMenuRadioItem key={status.value} value={status.value}>{status.label}</DropdownMenuRadioItem>
+            {statuses.map((status) => (
+              <DropdownMenuRadioItem key={status.value} value={status.value}>
+                {status.label}
+              </DropdownMenuRadioItem>
             ))}
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>

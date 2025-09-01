@@ -2,13 +2,13 @@
 
 import * as React from "react";
 
-import { Bike, YardTag } from "@/lib/types";
+import { BikeSummary, YardMongo } from "@/lib/types";
 import { Stage, Layer, Circle, Line } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import Konva from "konva";
 
-const MAP_WIDTH = window.innerWidth * 3 / 4 ;
-const MAP_HEIGHT = window.innerHeight * 2 / 3;
+const MAP_WIDTH = (window.innerWidth * 3) / 4;
+const MAP_HEIGHT = (window.innerHeight * 2) / 3;
 const CENTER_X = MAP_WIDTH / 2;
 const CENTER_Y = MAP_HEIGHT / 2;
 
@@ -28,11 +28,11 @@ function toKonvaPoints(points: { x: number; y: number }[]): number[] {
 export function MapView({
   data,
   bike,
-  setBike,
+  setBikeSummary,
 }: {
-  data: YardTag | null;
-  bike: Bike | null;
-  setBike: React.Dispatch<React.SetStateAction<Bike | null>>;
+  data: YardMongo | null;
+  bike: BikeSummary | null;
+  setBikeSummary: React.Dispatch<React.SetStateAction<BikeSummary | null>>;
 }) {
   // Pan & zoom state
   const [stageScale, setStageScale] = React.useState(1);
@@ -42,24 +42,24 @@ export function MapView({
 
   const [isBikePinned, setBikePinned] = React.useState<boolean>(false);
 
-  function handleMouseOverTag(tagBike: Bike) {
+  function handleMouseOverTag(tagBike: BikeSummary) {
     if (isBikePinned) return;
-    setBike(tagBike);
+    setBikeSummary(tagBike);
   }
-  
-  function handleMouseDownTag(tagBike: Bike) {
+
+  function handleMouseDownTag(tagBike: BikeSummary) {
     if (isBikePinned && tagBike.id == bike?.id) {
       setBikePinned(false);
-      setBike(null);
+      setBikeSummary(null);
     } else {
       setBikePinned(true);
-      setBike(tagBike);
+      setBikeSummary(tagBike);
     }
   }
-  
+
   function handleMouseOutTag() {
     if (isBikePinned) return;
-    setBike(null);
+    setBikeSummary(null);
   }
 
   // Drag to pan
@@ -125,9 +125,9 @@ export function MapView({
       y={stagePos.y}
       draggable={false}
       onMouseDown={handleMouseDown}
-      onTouchStart={handleMouseDown}
+      //onTouchStart={handleMouseDown}
       onMouseMove={handleMouseMove}
-      onTouchMove={handleMouseMove}
+      //onTouchMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onTouchEnd={handleMouseUp}
       onWheel={handleWheel}

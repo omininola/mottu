@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.dto.bike.BikeDetailsDTO;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.enums.BikeModel;
 import br.com.otaviomiklos.mottu.service.BikeService;
@@ -30,57 +30,57 @@ public class BikeController {
     private BikeService service;
 
     @PostMapping
-    public ResponseEntity<BikeResponse> create(@Valid @RequestBody BikeRequest request) {
-        BikeResponse bike = service.save(request);
+    public ResponseEntity<BikeDetailsDTO> create(@Valid @RequestBody BikeRequest request) {
+        BikeDetailsDTO bike = service.save(request);
         return new ResponseEntity<>(bike, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<BikeResponse>> readll() {
-        List<BikeResponse> bikes = service.findAll();
+    public ResponseEntity<List<BikeDetailsDTO>> readll() {
+        List<BikeDetailsDTO> bikes = service.findAll();
         return new ResponseEntity<>(bikes, HttpStatus.OK);
     }
 
     @GetMapping("/plate/{plate}")
-    public ResponseEntity<BikeResponse> readByPlate(@PathVariable String plate) {
-        BikeResponse bike = service.findByPlate(plate);
+    public ResponseEntity<BikeDetailsDTO> readByPlate(@PathVariable String plate) {
+        BikeDetailsDTO bike = service.findByPlate(plate);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BikeResponse>> readByFilter(@RequestParam AreaStatus status, @RequestParam BikeModel model) {
-        List<BikeResponse> bikes = service.findByFilter(status, model);
+    public ResponseEntity<List<BikeDetailsDTO>> readByFilter(@RequestParam AreaStatus status, @RequestParam BikeModel model) {
+        List<BikeDetailsDTO> bikes = service.findByFilter(status, model);
         return new ResponseEntity<>(bikes, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BikeResponse> readById(@PathVariable Long id) {
-        BikeResponse bike = service.findById(id);
+    public ResponseEntity<BikeDetailsDTO> readById(@PathVariable Long id) {
+        BikeDetailsDTO bike = service.findById(id);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BikeResponse> update(@Valid @RequestBody BikeRequest request, @PathVariable Long id) {
-        BikeResponse bike = service.update(request, id);
+    public ResponseEntity<BikeDetailsDTO> update(@Valid @RequestBody BikeRequest request, @PathVariable Long id) {
+        BikeDetailsDTO bike = service.update(request, id);
         return new ResponseEntity<>(bike, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BikeResponse> delete(@PathVariable Long id) {
+    public ResponseEntity<BikeDetailsDTO> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     // Link tag
     @PostMapping("/{plate}/tag/{tagCode}/subsidiary/{subsidiaryId}")
-    public ResponseEntity<BikeResponse> linkBikeToTag(@PathVariable String plate, @PathVariable String tagCode, @PathVariable Long subsidiaryId) {
+    public ResponseEntity<BikeDetailsDTO> linkBikeToTag(@PathVariable String plate, @PathVariable String tagCode, @PathVariable Long subsidiaryId) {
         service.linkBikeToTag(plate, tagCode, subsidiaryId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Unlink tag
     @DeleteMapping("/{plate}/tag")
-    public ResponseEntity<BikeResponse> unlinkBikeFromTag(@PathVariable String plate) {
+    public ResponseEntity<BikeDetailsDTO> unlinkBikeFromTag(@PathVariable String plate) {
         service.unlinkBikeFromTag(plate);
         return new ResponseEntity<>(HttpStatus.OK);
     }

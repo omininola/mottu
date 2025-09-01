@@ -14,7 +14,7 @@ export type Yard = {
     boundary: Point[]
 }
 
-export type YardTag = {
+export type YardMongo = {
     yard: Yard
     tags: TagPosition[]
 }
@@ -28,7 +28,7 @@ export type Area = {
 
 export type TagPosition = {
     tag: Apriltag
-    bike: Bike
+    bike: BikeSummary
     position: Point
     areaStatus: string | null
     inRightArea: boolean
@@ -42,6 +42,14 @@ export type Bike = {
     status: string
     tagCode: string | null
     yard: Yard | null
+}
+
+export type BikeSummary = {
+    id: number
+    plate: string
+    chassis: string
+    model: string
+    status: string
 }
 
 export type Apriltag = {

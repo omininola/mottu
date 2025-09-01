@@ -36,7 +36,7 @@ export default function Tags() {
 
   useEffect(() => {
     setTagCode(undefined);
-  }, [imageSrc])
+  }, [imageSrc]);
 
   function capture() {
     if (webcamRef.current == null) return;

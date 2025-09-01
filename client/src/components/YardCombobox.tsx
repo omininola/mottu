@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Yard, YardTag } from "@/lib/types";
+import { Yard, YardMongo } from "@/lib/types";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
@@ -26,7 +26,7 @@ import { clearNotification } from "@/lib/utils";
 export function YardCombobox({
   setData,
 }: {
-  setData: React.Dispatch<React.SetStateAction<YardTag | null>>;
+  setData: React.Dispatch<React.SetStateAction<YardMongo | null>>;
 }) {
   const [open, setOpen] = React.useState(false);
   const [selectedYard, setSelectedYard] = React.useState<Yard | null>(null);
@@ -56,7 +56,7 @@ export function YardCombobox({
   }, []);
 
   React.useEffect(() => {
-    async function fetchYardTags() {
+    async function fetchYardMongos() {
       if (!selectedYard) return;
 
       console.log("[YARD] Fetching tag data");
@@ -76,12 +76,12 @@ export function YardCombobox({
     }
 
     const timer = setInterval(() => {
-      fetchYardTags();
+      fetchYardMongos();
     }, 5000);
 
     return () => {
       clearInterval(timer);
-    }
+    };
   }, [setData, selectedYard]);
 
   return (

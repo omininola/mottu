@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
-import br.com.otaviomiklos.mottu.dto.bike.BikeResponse;
+import br.com.otaviomiklos.mottu.dto.bike.BikeDetailsDTO;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
@@ -38,34 +38,34 @@ public class BikeService {
     private static final String TAG_ALREADY_LINKED_MESSAGE = "A tag já está vinculada a uma outra moto";
     private static final String ALREADY_LINKED_MESSAGE = "A moto já está vinculada a está tag";
 
-    public BikeResponse save(BikeRequest request) {
+    public BikeDetailsDTO save(BikeRequest request) {
         Bike bike = repository.save(mapper.toEntity(request));
         return mapper.toResponse(bike);
     }
 
-    public List<BikeResponse> findAll() {
+    public List<BikeDetailsDTO> findAll() {
         List<Bike> bikes = repository.findAll();
         return mapper.toResponse(bikes);
     }
 
-    public BikeResponse findByPlate(String plate) {
+    public BikeDetailsDTO findByPlate(String plate) {
         Optional<Bike> bike = repository.findByPlate(plate);
         if (bike.isEmpty()) throw new ResourceNotFoundException(PLATE_NOT_FOUND_MESSAGE);
         return mapper.toResponse(bike.get());
     }
 
-    public List<BikeResponse> findByFilter(AreaStatus status, BikeModel model) {
+    public List<BikeDetailsDTO> findByFilter(AreaStatus status, BikeModel model) {
         List<Bike> bikes = repository.findByStatusAndModel(status, model);
         return mapper.toResponse(bikes);
     }
 
-    public BikeResponse findById(Long id) {
+    public BikeDetailsDTO findById(Long id) {
         Optional<Bike> bike = repository.findById(id);
         if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         return mapper.toResponse(bike.get());
     }
 
-    public BikeResponse update(BikeRequest request, Long id) {
+    public BikeDetailsDTO update(BikeRequest request, Long id) {
         Optional<Bike> bike = repository.findById(id);
         if (bike.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
