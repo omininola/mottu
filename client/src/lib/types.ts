@@ -6,6 +6,10 @@ export type Subsidiary = {
     tags: Apriltag[]
 }
 
+export type SubsidiaryTags = {
+    yards: YardMongo[]
+}
+
 export type Yard = {
     id: number
     name: string
@@ -28,7 +32,7 @@ export type Area = {
 
 export type TagPosition = {
     tag: Apriltag
-    bike: BikeSummary
+    bike: BikeSummary | null
     position: Point
     areaStatus: string | null
     inRightArea: boolean

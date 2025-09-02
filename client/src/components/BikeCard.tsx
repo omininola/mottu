@@ -21,9 +21,12 @@ export function BikeCard({ bike }: { bike: Bike }) {
     undefined
   );
 
+  const [isTagUnlinked, setTagUnlinked] = React.useState<boolean>(false);
+
   async function unlinkBikeFromTag() {
     try {
       axios.delete(`${NEXT_PUBLIC_JAVA_URL}/bikes/${bike.plate}/tag`);
+      setTagUnlinked(true);
       setNotification("A moto foi desvinculada com sucesso!");
     } catch {
       setNotification("Não foi possível desvincular a moto da tag");
@@ -55,8 +58,8 @@ export function BikeCard({ bike }: { bike: Bike }) {
           <p>Chassi: {bike.chassis}</p>
           <p>Modelo: {bike.model}</p>
           <p>Status: {bike.status}</p>
-          {bike.tagCode ? <p>Tag: {bike.tagCode}</p> : <p>Sem dados da tag</p>}
-          {bike.yard ? (
+          {(bike.tagCode && !isTagUnlinked) ? <p>Tag: {bike.tagCode}</p> : <p>Sem dados da tag</p>}
+          {(bike.yard && !isTagUnlinked) ? (
             <p className="flex items-center gap-4">
               <MapPin className="h-4 w-4" />
               <span>{bike.yard.name} -</span>
@@ -66,7 +69,7 @@ export function BikeCard({ bike }: { bike: Bike }) {
             <p>Sem dados da localização</p>
           )}
         </CardContent>
-        {(bike.yard || bike.tagCode) && (
+        {((bike.yard || bike.tagCode) && !isTagUnlinked) && (
           <CardFooter>
             <div className="flex flex-col gap-4 w-full">
               {bike.yard && (
@@ -75,7 +78,7 @@ export function BikeCard({ bike }: { bike: Bike }) {
                 </Button>
               )}
 
-              {bike.tagCode && (
+              {(bike.tagCode) && (
                 <Button variant="outline" onClick={unlinkBikeFromTag}>
                   <Unlink className="h-4 w-4" /> Desvincular tag
                 </Button>

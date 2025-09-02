@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTags;
 import br.com.otaviomiklos.mottu.service.SubsidiaryService;
 import jakarta.validation.Valid;
 
@@ -54,6 +55,12 @@ public class SubsidiaryController {
     public ResponseEntity<SubsidiaryResponse> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("{id}/tags")
+    public ResponseEntity<SubsidiaryTags> readSubsidiaryYardTags(@PathVariable Long id) {
+        SubsidiaryTags response = service.findSubsidiaryYardTags(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

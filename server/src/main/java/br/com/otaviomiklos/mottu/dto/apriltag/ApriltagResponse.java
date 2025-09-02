@@ -11,6 +11,6 @@ public class ApriltagResponse {
 
     private Long id;
     private String code;
-    private String subsiadiary;
+    private String subsidiary;
     private String bike;
 }

@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Bike, BikeSummary, YardMongo } from "./types";
+import { Bike, BikeSummary, SubsidiaryTags } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,8 +15,20 @@ export function clearNotification<T>(
   }, 3000);
 }
 
-export function mapBike(bike: BikeSummary, data: YardMongo | null) {
-  const tagPosition = data?.tags.find((tag) => tag.bike.id === bike.id);
+// i am sorry :c
+export function mapBike(bike: BikeSummary, data: SubsidiaryTags | null) {
+  let tagCode = null;
+  const yardMongo = data?.yards.find((yard) => {
+    if (
+      yard.tags.find((tag) => {
+        if (tag.bike != null && tag.bike.id === bike.id) {
+          tagCode = tag.tag.code;
+          return tag;
+        }
+      })
+    )
+      return yard;
+  });
 
   const newBike: Bike = {
     id: bike.id,
@@ -24,8 +36,8 @@ export function mapBike(bike: BikeSummary, data: YardMongo | null) {
     chassis: bike.chassis,
     model: bike.model,
     status: bike.status,
-    tagCode: tagPosition?.tag.code || null,
-    yard: data?.yard || null,
+    tagCode: tagCode || null,
+    yard: yardMongo?.yard || null,
   };
 
   return newBike;

@@ -2,6 +2,7 @@ package br.com.otaviomiklos.mottu.mapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,18 +12,32 @@ import br.com.otaviomiklos.mottu.dto.address.AddressRequest;
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagResponse;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTags;
+import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Address;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
+import br.com.otaviomiklos.mottu.entity.Yard;
+import br.com.otaviomiklos.mottu.entity.YardMongo;
+import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
+import br.com.otaviomiklos.mottu.repository.YardMongoRepository;
 
 @Component
 public class SubsidiaryMapper {
     
     @Autowired
+    private YardMongoRepository yardMongoRepository;
+
+    @Autowired
     private ApriltagMapper apriltagMapper;
 
     @Autowired
     private YardMapper yardMapper;
+
+    @Autowired
+    private YardMongoMapper yardMongoMapper;
+
+    private final String YARD_NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
 
     public SubsidiaryResponse toResponse(Subsidiary subsidiary) {
         List<ApriltagResponse> tags = new ArrayList<>();
@@ -42,6 +57,27 @@ public class SubsidiaryMapper {
 
     public List<SubsidiaryResponse> toResponse(List<Subsidiary> subsidiaries) {
         return subsidiaries.stream().map(subsidiary -> toResponse(subsidiary)).collect(Collectors.toList());
+    }
+
+    public SubsidiaryTags toTagResponse(Subsidiary subsidiary) {
+        List<YardMongoResponse> yardsResponse = null;
+        List<Yard> yards = subsidiary.getYards();
+        if (yards.size() != 0) {
+            List<YardMongo> yardsMongo = yards.stream()
+                .map(yard -> {
+                    Optional<YardMongo> yardMongo = yardMongoRepository.findByMysqlId(yard.getId());
+                    if (yardMongo.isEmpty()) throw new ResourceNotFoundException(YARD_NOT_FOUND_MESSAGE);
+                    return yardMongo.get();
+                })
+                .collect(Collectors.toList());
+
+
+            yardsResponse = yardsMongo.stream().map(yardMongo -> yardMongoMapper.toMongoResponse(yardMongo)).collect(Collectors.toList());
+        } 
+
+        SubsidiaryTags response = new SubsidiaryTags();
+        response.setYards(yardsResponse);
+        return response;
     }
 
     public Subsidiary toEntity(SubsidiaryRequest request) {

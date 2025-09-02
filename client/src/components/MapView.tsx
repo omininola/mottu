@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { BikeSummary, YardMongo } from "@/lib/types";
+import { Apriltag, BikeSummary, SubsidiaryTags } from "@/lib/types";
 import { Stage, Layer, Circle, Line } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import Konva from "konva";
@@ -29,10 +29,14 @@ export function MapView({
   data,
   bike,
   setBikeSummary,
+  apriltag,
+  setTag,
 }: {
-  data: YardMongo | null;
+  data: SubsidiaryTags | null;
   bike: BikeSummary | null;
   setBikeSummary: React.Dispatch<React.SetStateAction<BikeSummary | null>>;
+  apriltag: Apriltag | null;
+  setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
   // Pan & zoom state
   const [stageScale, setStageScale] = React.useState(1);
@@ -42,12 +46,12 @@ export function MapView({
 
   const [isBikePinned, setBikePinned] = React.useState<boolean>(false);
 
-  function handleMouseOverTag(tagBike: BikeSummary) {
+  function handleMouseOverTagWithBike(tagBike: BikeSummary) {
     if (isBikePinned) return;
     setBikeSummary(tagBike);
   }
 
-  function handleMouseDownTag(tagBike: BikeSummary) {
+  function handleMouseDownTagWithBike(tagBike: BikeSummary) {
     if (isBikePinned && tagBike.id == bike?.id) {
       setBikePinned(false);
       setBikeSummary(null);
@@ -57,9 +61,14 @@ export function MapView({
     }
   }
 
-  function handleMouseOutTag() {
+  function handleMouseOutTagWithBike() {
     if (isBikePinned) return;
     setBikeSummary(null);
+  }
+
+  function handleMouseOverTagWithoutBike(tag: Apriltag) {
+    console.log("[MAP_VIEW] Mouse over tag");
+    setTag(tag);
   }
 
   // Drag to pan
@@ -134,47 +143,67 @@ export function MapView({
       style={{ background: "#222" }}
     >
       <Layer>
-        {data?.yard.boundary && (
-          <Line
-            points={toKonvaPoints(data.yard.boundary)}
-            closed={true}
-            stroke="#417e3e"
-            strokeWidth={4}
-            fill="#417e3e22"
-          />
-        )}
+        {data?.yards.map((yardMongo) => (
+          <>
+            <Line
+              points={toKonvaPoints(yardMongo.yard.boundary)}
+              closed={true}
+              stroke="#417e3e"
+              strokeWidth={4}
+              fill="#417e3e22"
+            />
 
-        {data?.yard.areas.map((area) => (
-          <Line
-            key={area.id}
-            points={toKonvaPoints(area.boundary)}
-            closed={true}
-            stroke="orange"
-            strokeWidth={3}
-            fill="#ffa50044"
-          />
-        ))}
-
-        {data?.tags.map((tag) => {
-          const centeredTagPosition = {
-            x: tag.position.x + CENTER_X,
-            y: tag.position.y + CENTER_Y,
-          };
-
-          return (
-            <React.Fragment key={tag.tag.id}>
-              <Circle
-                x={centeredTagPosition.x}
-                y={centeredTagPosition.y}
-                radius={5}
-                fill={bike?.id == tag.bike.id ? "limegreen" : "blue"}
-                onMouseOver={() => handleMouseOverTag(tag.bike)}
-                onMouseDown={() => handleMouseDownTag(tag.bike)}
-                onMouseOut={() => handleMouseOutTag()}
+            {yardMongo.yard.areas.map((area) => (
+              <Line
+                key={area.id}
+                points={toKonvaPoints(area.boundary)}
+                closed={true}
+                stroke="orange"
+                strokeWidth={3}
+                fill="#ffa50044"
               />
-            </React.Fragment>
-          );
-        })}
+            ))}
+
+            {yardMongo.tags.map((tag) => {
+              const centeredTagPosition = {
+                x: tag.position.x + CENTER_X,
+                y: tag.position.y + CENTER_Y,
+              };
+
+              if (tag.bike != null) {
+                return (
+                  <React.Fragment key={tag.tag.id}>
+                    <Circle
+                      x={centeredTagPosition.x}
+                      y={centeredTagPosition.y}
+                      radius={5}
+                      fill={bike?.id == tag.bike.id ? "limegreen" : "blue"}
+                      onMouseOver={() =>
+                        tag.bike && handleMouseOverTagWithBike(tag.bike)
+                      }
+                      onMouseDown={() =>
+                        tag.bike && handleMouseDownTagWithBike(tag.bike)
+                      }
+                      onMouseOut={() => handleMouseOutTagWithBike()}
+                    />
+                  </React.Fragment>
+                );
+              } else {
+                return (
+                  <React.Fragment key={tag.tag.id}>
+                    <Circle
+                      x={centeredTagPosition.x}
+                      y={centeredTagPosition.y}
+                      radius={5}
+                      fill={apriltag?.id == tag.tag.id ? "orange" : "yellow"}
+                      onMouseOver={() => handleMouseOverTagWithoutBike(tag.tag)}
+                    />
+                  </React.Fragment>
+                );
+              }
+            })}
+          </>
+        ))}
       </Layer>
     </Stage>
   );

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTags;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.mapper.SubsidiaryMapper;
@@ -56,5 +57,12 @@ public class SubsidiaryService {
         if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         
         repository.deleteById(id);
+    }
+
+    public SubsidiaryTags findSubsidiaryYardTags(Long id) {
+        Optional<Subsidiary> subsidiary = repository.findById(id);
+        if (subsidiary.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        
+        return mapper.toTagResponse(subsidiary.get());
     }
 }

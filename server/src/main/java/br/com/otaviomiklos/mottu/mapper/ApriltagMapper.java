@@ -30,7 +30,7 @@ public class ApriltagMapper {
         response.setId(apriltag.getId());
         response.setCode(apriltag.getCode());
         response.setBike(bikePlate);
-        response.setSubsiadiary(apriltag.getSubsidiary().getName());
+        response.setSubsidiary(apriltag.getSubsidiary().getName());
         return response;
     }
 
