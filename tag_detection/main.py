@@ -22,6 +22,9 @@ def gen_frames():
     cap = cv2.VideoCapture(VIDEO_CAPTURE_ID)
     java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}/", YARD_ID)
     
+    W = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    H = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
     send_interval = UPDATE_TAG_INTERVAL
     last_sent = time.time()
     
@@ -30,7 +33,7 @@ def gen_frames():
         if not ret:
             break
 
-        detections_parsed_for_java, detections = detector.detect_tags(frame)
+        detections_parsed_for_java, detections = detector.detect_tags(frame, W, H)
 
         # Only send to Java API every 10 seconds
         now = time.time()
