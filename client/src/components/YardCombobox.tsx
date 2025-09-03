@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Yard, YardMongo } from "@/lib/types";
+import { Yard } from "@/lib/types";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
@@ -24,12 +24,13 @@ import { Notification } from "./Notification";
 import { clearNotification } from "@/lib/utils";
 
 export function YardCombobox({
-  setData,
+  selectedYard,
+  setSelectedYard,
 }: {
-  setData: React.Dispatch<React.SetStateAction<YardMongo | null>>;
+  selectedYard: Yard | null;
+  setSelectedYard: React.Dispatch<React.SetStateAction<Yard | null>>;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [selectedYard, setSelectedYard] = React.useState<Yard | null>(null);
 
   const [yards, setYards] = React.useState<Yard[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -54,35 +55,6 @@ export function YardCombobox({
 
     fetchYards();
   }, []);
-
-  React.useEffect(() => {
-    async function fetchYardMongos() {
-      if (!selectedYard) return;
-
-      console.log("[YARD] Fetching tag data");
-
-      try {
-        const response = await axios.get(
-          `${NEXT_PUBLIC_JAVA_URL}/yards/${selectedYard?.id}/tags`
-        );
-        setData(response.data);
-      } catch {
-        setNotification(
-          "Não foi possível buscar as Tags do pátio: " + selectedYard?.name
-        );
-      } finally {
-        clearNotification<string | undefined>(setNotification, undefined);
-      }
-    }
-
-    const timer = setInterval(() => {
-      fetchYardMongos();
-    }, 5000);
-
-    return () => {
-      clearInterval(timer);
-    };
-  }, [setData, selectedYard]);
 
   return (
     <div className="flex items-center space-x-4 relative">

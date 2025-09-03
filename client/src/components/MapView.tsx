@@ -2,11 +2,18 @@
 
 import * as React from "react";
 
-import { Apriltag, BikeSummary, SubsidiaryTags } from "@/lib/types";
+import {
+  Apriltag,
+  BikeSummary,
+  Point,
+  SubsidiaryTags,
+  Yard,
+} from "@/lib/types";
 import { Stage, Layer, Circle, Line, RegularPolygon } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import Konva from "konva";
 import { MapColors } from "@/lib/mapColors";
+import { pointInPolygon } from "@/lib/utils";
 
 export function MapView({
   data,
@@ -14,12 +21,18 @@ export function MapView({
   setBikeSummary,
   apriltag,
   setTag,
+  selectedYard,
+  setNewAreaPoints,
+  newAreaPoints,
 }: {
   data: SubsidiaryTags | null;
   bike: BikeSummary | null;
   setBikeSummary: React.Dispatch<React.SetStateAction<BikeSummary | null>>;
   apriltag: Apriltag | null;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
+  selectedYard: Yard | null;
+  setNewAreaPoints: React.Dispatch<React.SetStateAction<Point[]>>;
+  newAreaPoints: Point[];
 }) {
   const MAP_WIDTH = window.innerWidth;
   const MAP_HEIGHT = window.innerHeight;
@@ -49,6 +62,33 @@ export function MapView({
         return MapColors.area.default;
     }
   }
+
+  // Helper to check if point is inside yard
+  const isPointInsideYard = (point: Point, yardBoundary: Point[]) => {
+    return pointInPolygon(point, yardBoundary);
+  };
+
+  // Handler: click map to add point
+  const handleMapClick = (e: KonvaEventObject<PointerEvent>) => {
+    if (!selectedYard || !selectedYard?.id) return;
+    const stage = e.target.getStage() as Konva.Stage;
+    const pointer = stage.getPointerPosition();
+    if (!pointer) return;
+
+    // Convert back from centered coords if needed (depends on your yard system)
+    const clickPoint = { x: pointer.x - CENTER_X, y: pointer.y - CENTER_Y };
+
+    // Find the selected yard
+    const yard = data?.yards.find((y) => y.yard.id === selectedYard.id);
+    if (!yard) return;
+
+    if (isPointInsideYard(clickPoint, yard.yard.boundary)) {
+      setNewAreaPoints((prev) => [...prev, clickPoint]);
+    } else {
+      // Optionally, warn the user
+      alert("Point not inside yard boundary!");
+    }
+  };
 
   // Pan & zoom state
   const [stageScale, setStageScale] = React.useState(1);
@@ -145,6 +185,7 @@ export function MapView({
       x={stagePos.x}
       y={stagePos.y}
       draggable={false}
+      onClick={handleMapClick}
       onMouseDown={handleMouseDown}
       //onTouchStart={handleMouseDown}
       onMouseMove={handleMouseMove}
@@ -178,6 +219,16 @@ export function MapView({
                 />
               );
             })}
+
+            {selectedYard && newAreaPoints.length > 0 && (
+              <Line
+                points={toKonvaPoints(newAreaPoints)}
+                closed={true}
+                stroke="#f59e42"
+                strokeWidth={2}
+                fill="#fbbf24aa"
+              />
+            )}
 
             {yardMongo.tags.map((tag) => {
               const centeredTagPosition = {

@@ -18,9 +18,13 @@ const statuses = [
   { value: "READY", label: "Pronto" },
 ];
 
-export function AreaDropdownMenu() {
-  const [status, setStatus] = React.useState<string | undefined>(undefined);
-
+export function AreaDropdownMenu({
+  status,
+  setStatus
+}: {
+  status: string
+  setStatus: React.Dispatch<React.SetStateAction<string>>
+}) {
   return (
     <div className="flex items-center gap-4">
       <DropdownMenu>

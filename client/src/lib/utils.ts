@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { Bike, BikeSummary, SubsidiaryTags } from "./types";
+import { Bike, BikeSummary, Point, SubsidiaryTags } from "./types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -41,4 +41,18 @@ export function mapBike(bike: BikeSummary, data: SubsidiaryTags | null) {
   };
 
   return newBike;
+}
+
+export function pointInPolygon(point: Point, boundary: Point[]): boolean {
+  const { x, y } = point;
+  let inside = false;
+  for (let i = 0, j = boundary.length - 1; i < boundary.length; j = i++) {
+    const xi = boundary[i].x, yi = boundary[i].y;
+    const xj = boundary[j].x, yj = boundary[j].y;
+    const intersect =
+      ((yi > y) !== (yj > y)) &&
+      (x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-10) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
 }
