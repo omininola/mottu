@@ -3,27 +3,10 @@
 import * as React from "react";
 
 import { Apriltag, BikeSummary, SubsidiaryTags } from "@/lib/types";
-import { Stage, Layer, Circle, Line } from "react-konva";
+import { Stage, Layer, Circle, Line, RegularPolygon } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import Konva from "konva";
-
-const MAP_WIDTH = (window.innerWidth * 3) / 4;
-const MAP_HEIGHT = (window.innerHeight * 2) / 3;
-const CENTER_X = MAP_WIDTH / 2;
-const CENTER_Y = MAP_HEIGHT / 2;
-
-function centerPoints(
-  points: { x: number; y: number }[]
-): { x: number; y: number }[] {
-  return points.map((pt) => ({
-    x: pt.x + CENTER_X,
-    y: pt.y + CENTER_Y,
-  }));
-}
-
-function toKonvaPoints(points: { x: number; y: number }[]): number[] {
-  return centerPoints(points).flatMap((pt) => [pt.x, pt.y]);
-}
+import { MapColors } from "@/lib/mapColors";
 
 export function MapView({
   data,
@@ -38,6 +21,35 @@ export function MapView({
   apriltag: Apriltag | null;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
+  const MAP_WIDTH = window.innerWidth;
+  const MAP_HEIGHT = window.innerHeight;
+  const CENTER_X = MAP_WIDTH / 2;
+  const CENTER_Y = MAP_HEIGHT / 2;
+
+  function centerPoints(
+    points: { x: number; y: number }[]
+  ): { x: number; y: number }[] {
+    return points.map((pt) => ({
+      x: pt.x + CENTER_X,
+      y: pt.y + CENTER_Y,
+    }));
+  }
+
+  function toKonvaPoints(points: { x: number; y: number }[]): number[] {
+    return centerPoints(points).flatMap((pt) => [pt.x, pt.y]);
+  }
+
+  function getAreaColor(status: string) {
+    switch (status) {
+      case "BROKEN":
+        return MapColors.area.broken;
+      case "READY":
+        return MapColors.area.ready;
+      default:
+        return MapColors.area.default;
+    }
+  }
+
   // Pan & zoom state
   const [stageScale, setStageScale] = React.useState(1);
   const [stagePos, setStagePos] = React.useState({ x: 0, y: 0 });
@@ -127,7 +139,7 @@ export function MapView({
     <Stage
       width={MAP_WIDTH}
       height={MAP_HEIGHT}
-      className="border-2 rounded-2xl overflow-hidden"
+      className="border-2 rounded-2xl overflow-hidden bg-slate-100"
       scaleX={stageScale}
       scaleY={stageScale}
       x={stagePos.x}
@@ -140,7 +152,6 @@ export function MapView({
       onMouseUp={handleMouseUp}
       onTouchEnd={handleMouseUp}
       onWheel={handleWheel}
-      style={{ background: "#222" }}
     >
       <Layer>
         {data?.yards.map((yardMongo) => (
@@ -148,21 +159,25 @@ export function MapView({
             <Line
               points={toKonvaPoints(yardMongo.yard.boundary)}
               closed={true}
-              stroke="#417e3e"
-              strokeWidth={4}
-              fill="#417e3e22"
+              stroke="#6ee7b7"
+              strokeWidth={2}
+              fill="#a7f3d0"
             />
 
-            {yardMongo.yard.areas.map((area) => (
-              <Line
-                key={area.id}
-                points={toKonvaPoints(area.boundary)}
-                closed={true}
-                stroke="orange"
-                strokeWidth={3}
-                fill="#ffa50044"
-              />
-            ))}
+            {yardMongo.yard.areas.map((area) => {
+              const colors = getAreaColor(area.status);
+
+              return (
+                <Line
+                  key={area.id}
+                  points={toKonvaPoints(area.boundary)}
+                  closed={true}
+                  stroke={colors.stroke}
+                  strokeWidth={3}
+                  fill={colors.fill}
+                />
+              );
+            })}
 
             {yardMongo.tags.map((tag) => {
               const centeredTagPosition = {
@@ -171,13 +186,25 @@ export function MapView({
               };
 
               if (tag.bike != null) {
+                const stroke = tag.inRightArea
+                  ? MapColors.bike.inRightArea
+                  : MapColors.bike.notInRightArea;
+
                 return (
                   <React.Fragment key={tag.tag.id}>
-                    <Circle
+                    <RegularPolygon
                       x={centeredTagPosition.x}
                       y={centeredTagPosition.y}
+                      sides={3}
                       radius={5}
-                      fill={bike?.id == tag.bike.id ? "limegreen" : "blue"}
+                      stroke={stroke}
+                      strokeWidth={1}
+                      lineJoin="round"
+                      fill={
+                        bike?.id == tag.bike.id
+                          ? MapColors.bike.selected
+                          : MapColors.bike.notSelected
+                      }
                       onMouseOver={() =>
                         tag.bike && handleMouseOverTagWithBike(tag.bike)
                       }
@@ -195,7 +222,11 @@ export function MapView({
                       x={centeredTagPosition.x}
                       y={centeredTagPosition.y}
                       radius={5}
-                      fill={apriltag?.id == tag.tag.id ? "orange" : "yellow"}
+                      fill={
+                        apriltag?.id == tag.tag.id
+                          ? MapColors.tag.selected
+                          : MapColors.tag.notSelected
+                      }
                       onMouseOver={() => handleMouseOverTagWithoutBike(tag.tag)}
                     />
                   </React.Fragment>
