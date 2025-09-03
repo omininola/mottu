@@ -55,12 +55,18 @@ public class YardService {
 
     public YardResponse update(YardRequest request, Long id) {
         Optional<Yard> yard = repository.findById(id);
-        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        Optional<YardMongo> yardMongo = mongoRepository.findByMysqlId(id);
+        if (yard.isEmpty() || yardMongo.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         Yard newYard = mapper.toEntity(request);
         newYard.setId(id);
 
+        YardMongo newMongoYard = mapper.toMongoEntity(request, id);
+        newMongoYard.setMongoId(yardMongo.get().getMongoId());
+
         Yard savedYard = repository.save(newYard);
+        mongoRepository.save(newMongoYard);
+
         return mapper.toResponse(savedYard);
     }
 
