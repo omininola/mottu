@@ -38,6 +38,7 @@ export function MapView({
   const MAP_HEIGHT = window.innerHeight;
   const CENTER_X = MAP_WIDTH / 2;
   const CENTER_Y = MAP_HEIGHT / 2;
+  const OFFSET_X = 20;
 
   function centerPoints(
     points: { x: number; y: number }[]
@@ -48,8 +49,8 @@ export function MapView({
     }));
   }
 
-  function toKonvaPoints(points: { x: number; y: number }[]): number[] {
-    return centerPoints(points).flatMap((pt) => [pt.x, pt.y]);
+  function toKonvaPoints(points: Point[], offsetX?: number): number[] {
+    return centerPoints(points).flatMap((pt) => [pt.x + (offsetX || 0), pt.y]);
   }
 
   function getAreaColor(status: string) {
@@ -75,8 +76,12 @@ export function MapView({
     const pointer = stage.getPointerPosition();
     if (!pointer) return;
 
+    // Correct for pan and zoom:
+    const mapX = (pointer.x - stagePos.x) / stageScale;
+    const mapY = (pointer.y - stagePos.y) / stageScale;
+
     // Convert back from centered coords if needed (depends on your yard system)
-    const clickPoint = { x: pointer.x - CENTER_X, y: pointer.y - CENTER_Y };
+    const clickPoint = { x: mapX - CENTER_X, y: mapY - CENTER_Y };
 
     // Find the selected yard
     const yard = data?.yards.find((y) => y.yard.id === selectedYard.id);
@@ -119,7 +124,6 @@ export function MapView({
   }
 
   function handleMouseOverTagWithoutBike(tag: Apriltag) {
-    console.log("[MAP_VIEW] Mouse over tag");
     setTag(tag);
   }
 
@@ -195,10 +199,23 @@ export function MapView({
       onWheel={handleWheel}
     >
       <Layer>
-        {data?.yards.map((yardMongo) => (
+        {data?.yards.map((yardMongo, idx) => {
+          
+          let xValues: number[] = [];
+          if (data.yards[idx - 1] != null) {
+            xValues = data.yards[idx - 1].yard.boundary.map(point => point.x);
+          }
+
+          let rightMostX = 0;
+          if (xValues.length >= 1) rightMostX = Math.max(...xValues);
+          const yard_offset_x = rightMostX + (idx * OFFSET_X);
+
+          console.log(`[MAP_VIEW] Found: yardId = ${idx} | offsetX = ${yard_offset_x}`);
+
+          return (
           <>
             <Line
-              points={toKonvaPoints(yardMongo.yard.boundary)}
+              points={toKonvaPoints(yardMongo.yard.boundary, yard_offset_x)}
               closed={true}
               stroke="#6ee7b7"
               strokeWidth={2}
@@ -211,7 +228,7 @@ export function MapView({
               return (
                 <Line
                   key={area.id}
-                  points={toKonvaPoints(area.boundary)}
+                  points={toKonvaPoints(area.boundary, yard_offset_x)}
                   closed={true}
                   stroke={colors.stroke}
                   strokeWidth={3}
@@ -232,7 +249,7 @@ export function MapView({
 
             {yardMongo.tags.map((tag) => {
               const centeredTagPosition = {
-                x: tag.position.x + CENTER_X,
+                x: tag.position.x + CENTER_X + yard_offset_x,
                 y: tag.position.y + CENTER_Y,
               };
 
@@ -285,7 +302,7 @@ export function MapView({
               }
             })}
           </>
-        ))}
+        )})}
       </Layer>
     </Stage>
   );

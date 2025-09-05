@@ -36,9 +36,7 @@ export default function Home() {
     React.useState<Subsidiary | null>(null);
   const [selectedYard, setSelectedYard] = React.useState<Yard | null>(null);
 
-  const [newAreaPoints, setNewAreaPoints] = React.useState<Point[]>([
-    { x: 0, y: 0 },
-  ]);
+  const [newAreaPoints, setNewAreaPoints] = React.useState<Point[]>([]);
   const [newAreaStatus, setNewAreaStatus] = React.useState<string>("");
 
   const [notification, setNotification] = React.useState<string | undefined>(
@@ -117,7 +115,9 @@ export default function Home() {
             setNewAreaStatus={setNewAreaStatus}
           />
 
-          {(newAreaPoints.length >= 3 && newAreaStatus != "") && <Button onClick={handleFinishArea}>Confirmar criação</Button>}
+          {newAreaPoints.length >= 3 && newAreaStatus != "" && (
+            <Button onClick={handleFinishArea}>Confirmar criação</Button>
+          )}
 
           <SubsidiaryCombobox
             selectedSubsidiary={selectedSubsidiary}
