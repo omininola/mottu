@@ -68,18 +68,22 @@ export function MapView({
     const clickPoint = { x: mapX - CENTER_X, y: mapY - CENTER_Y };
 
     let idxFound = 0;
+    let xValuesPreviousYard: number[] = [];
     const yardMongoFound = data?.yards.find((y, idx) => {
       if (y.yard.id == yard.id) {
         idxFound = idx;
+        if (data.yards[idx - 1] != null) xValuesPreviousYard = data.yards[idx - 1].yard.boundary.map(point => point.x);
         return true;
       }
       return false;
     });
     if (!yardMongoFound) return;
 
-    const xValues = yardMongoFound.yard.boundary.map(point => point.x);
-    const rightMost = Math.max(...xValues);
-    const yardOffsetX = rightMost + idxFound * OFFSET_X;
+    let yardOffsetX = 0;
+    if (xValuesPreviousYard.length != 0) {
+      const rightMostPreviusYard = Math.max(...xValuesPreviousYard);
+       yardOffsetX = rightMostPreviusYard + idxFound * OFFSET_X;
+    }
 
     if (isPointInsideYard(clickPoint, yardMongoFound.yard.boundary, yardOffsetX)) {
       setPoints((prev: Point[]) => [...prev, clickPoint]);
