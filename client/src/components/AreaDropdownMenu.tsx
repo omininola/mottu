@@ -12,24 +12,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAreaCreating } from "@/contexts/AreaCreatingContext";
 
 const statuses = [
   { value: "BROKEN", label: "Quebrado" },
   { value: "READY", label: "Pronto" },
 ];
 
-export function AreaDropdownMenu({
-  status,
-  setStatus
-}: {
-  status: string
-  setStatus: React.Dispatch<React.SetStateAction<string>>
-}) {
+export function AreaDropdownMenu() {
+  const { status, setStatus } = useAreaCreating();
+
   return (
     <div className="flex items-center gap-4">
+      <p className="text-muted-foreground text-sm">{status}</p>
+      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline">Selecionar a área</Button>
+          <Button variant="secondary">Selecionar a área</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Status da nova área</DropdownMenuLabel>
@@ -43,8 +42,6 @@ export function AreaDropdownMenu({
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      <p className="text-muted-foreground text-sm">{status}</p>
     </div>
   );
 }

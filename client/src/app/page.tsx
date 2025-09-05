@@ -3,14 +3,7 @@
 import * as React from "react";
 
 import { SearchBike } from "@/components/SearchBike";
-import {
-  Apriltag,
-  BikeSummary,
-  Point,
-  Subsidiary,
-  SubsidiaryTags,
-  Yard,
-} from "@/lib/types";
+import { Apriltag, BikeSummary, Subsidiary, SubsidiaryTags } from "@/lib/types";
 
 import dynamic from "next/dynamic";
 import { BikeCard } from "@/components/BikeCard";
@@ -22,6 +15,8 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Notification } from "@/components/Notification";
 import { NewAreaCreation } from "@/components/NewAreaCreation";
 import { Button } from "@/components/ui/button";
+import { useAreaCreating } from "@/contexts/AreaCreatingContext";
+import { useSelectedYard } from "@/contexts/SelectedYardContext";
 const MapView = dynamic(
   () => import("@/components/MapView").then((mod) => mod.MapView),
   { ssr: false }
@@ -34,10 +29,9 @@ export default function Home() {
 
   const [selectedSubsidiary, setSelectedSubsidiary] =
     React.useState<Subsidiary | null>(null);
-  const [selectedYard, setSelectedYard] = React.useState<Yard | null>(null);
+  const { yard, setYard } = useSelectedYard();
 
-  const [newAreaPoints, setNewAreaPoints] = React.useState<Point[]>([]);
-  const [newAreaStatus, setNewAreaStatus] = React.useState<string>("");
+  const { status, setStatus, points, setPoints } = useAreaCreating();
 
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
@@ -74,31 +68,27 @@ export default function Home() {
     };
   }, [setData, selectedSubsidiary]);
 
-  // Handler: finish area creation
   const handleFinishArea = async () => {
-    if (!selectedYard?.id || newAreaPoints?.length < 3) {
-      alert("Area must have at least 3 points!");
+    if (!yard?.id || points?.length < 3) {
+      console.log(
+        "[MAIN] (handleFinishedArea) -> New Area must have 3 or more points"
+      );
       return;
     }
 
-    // Prepare payload
-    const payload = {
-      status: newAreaStatus,
-      boundary: newAreaPoints,
-      yardId: selectedYard.id,
+    const newArea = {
+      status,
+      boundary: points,
+      yardId: yard.id,
     };
 
-    // POST to Java API
     try {
-      await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, payload);
-      // Reset state
-      setSelectedYard(null);
-      setNewAreaPoints([]);
-      setNewAreaStatus("READY");
-      alert("Area saved!");
-      // Optionally, refetch data
+      await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, newArea);
+      setYard(null);
+      setStatus("");
+      setPoints([]);
     } catch {
-      alert("Error saving area!");
+      console.log("[MAIN] Error posting new area");
     }
   };
 
@@ -108,21 +98,20 @@ export default function Home() {
 
       <div className="col-span-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <NewAreaCreation
-            selectedYard={selectedYard}
-            setSelectedYard={setSelectedYard}
-            newAreaStatus={newAreaStatus}
-            setNewAreaStatus={setNewAreaStatus}
-          />
-
-          {newAreaPoints.length >= 3 && newAreaStatus != "" && (
-            <Button onClick={handleFinishArea}>Confirmar criação</Button>
-          )}
-
           <SubsidiaryCombobox
             selectedSubsidiary={selectedSubsidiary}
             setSelectedSubsidiary={setSelectedSubsidiary}
           />
+
+          {selectedSubsidiary && (
+            <div className="flex flex-row-reverse gap-4">
+              <NewAreaCreation />
+
+              {points.length >= 3 && status != "" && (
+                <Button variant="default" onClick={handleFinishArea}>Confirmar criação</Button>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="border-2 rounded-2xl w-full p-4">
@@ -132,9 +121,6 @@ export default function Home() {
             setTag={setTag}
             apriltag={tag}
             bike={bike}
-            selectedYard={selectedYard}
-            setNewAreaPoints={setNewAreaPoints}
-            newAreaPoints={newAreaPoints}
           />
         </div>
       </div>

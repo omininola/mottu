@@ -10,27 +10,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AreaDropdownMenu } from "./AreaDropdownMenu";
-import { Yard } from "@/lib/types";
 import React from "react";
 import { YardCombobox } from "./YardCombobox";
+import { useSelectedYard } from "@/contexts/SelectedYardContext";
+import { AreaPointControl } from "./AreaPointControl";
 
-export function NewAreaCreation({
-  selectedYard,
-  setSelectedYard,
-  newAreaStatus,
-  setNewAreaStatus,
-}: {
-  selectedYard: Yard | null;
-  setSelectedYard: React.Dispatch<React.SetStateAction<Yard | null>>;
-  newAreaStatus: string;
-  setNewAreaStatus: React.Dispatch<React.SetStateAction<string>>;
-}) {
+export function NewAreaCreation() {
+  const { yard, setYard } = useSelectedYard();
+
   return (
     <div className="flex items-center gap-4">
+      {yard && (
+        <>
+          <AreaPointControl />
+          <AreaDropdownMenu />
+        </>
+      )}
+
+
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline">
-            {selectedYard ? "Criando" : "Criar"} uma nova área
+          <Button variant="default">
+            {yard ? "Mudar o pátio de criação" : "Criar uma nova área"}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -42,14 +43,13 @@ export function NewAreaCreation({
             </DialogDescription>
           </DialogHeader>
 
-          <YardCombobox
-            selectedYard={selectedYard}
-            setSelectedYard={setSelectedYard}
-          />
+          <div className="my-4">
+            <YardCombobox />
+          </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => setSelectedYard(null)}>
+              <Button variant="outline" onClick={() => setYard(null)}>
                 Cancelar
               </Button>
             </DialogClose>
@@ -59,10 +59,6 @@ export function NewAreaCreation({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {selectedYard && (
-        <AreaDropdownMenu status={newAreaStatus} setStatus={setNewAreaStatus} />
-      )}
     </div>
   );
 }

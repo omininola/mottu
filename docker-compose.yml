@@ -49,6 +49,8 @@ services:
 
   client:
     container_name: client
+    profiles:
+      - full
     build:
       context: ./client
       args:
