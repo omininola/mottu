@@ -43,12 +43,12 @@ export function mapBike(bike: BikeSummary, data: SubsidiaryTags | null) {
   return newBike;
 }
 
-export function pointInPolygon(point: Point, boundary: Point[]): boolean {
+export function pointInPolygon(point: Point, boundary: Point[], offset: number): boolean {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = boundary.length - 1; i < boundary.length; j = i++) {
-    const xi = boundary[i].x, yi = boundary[i].y;
-    const xj = boundary[j].x, yj = boundary[j].y;
+    const xi = boundary[i].x + offset, yi = boundary[i].y;
+    const xj = boundary[j].x + offset, yj = boundary[j].y;
     const intersect =
       ((yi > y) !== (yj > y)) &&
       (x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-10) + xi);

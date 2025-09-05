@@ -14,24 +14,31 @@ import React from "react";
 import { YardCombobox } from "./YardCombobox";
 import { useSelectedYard } from "@/contexts/SelectedYardContext";
 import { AreaPointControl } from "./AreaPointControl";
+import { useAreaCreating } from "@/contexts/AreaCreatingContext";
 
 export function NewAreaCreation() {
   const { yard, setYard } = useSelectedYard();
+  const { setStatus, setPoints } = useAreaCreating();
+
+  React.useEffect(() => {
+    setStatus("");
+    setPoints([]);
+  }, [yard, setPoints, setStatus]) 
+
+  function handleCancel() {
+    setYard(null);
+    setStatus("");
+    setPoints([]);
+  }
 
   return (
     <div className="flex items-center gap-4">
-      {yard && (
-        <>
-          <AreaPointControl />
-          <AreaDropdownMenu />
-        </>
-      )}
-
+      {yard && <AreaPointControl />}
 
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="default">
-            {yard ? "Mudar o pátio de criação" : "Criar uma nova área"}
+            {yard ? "Mudar pátio ou status" : "Criar uma nova área"}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
@@ -43,18 +50,19 @@ export function NewAreaCreation() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="my-4">
+          <div className="flex flex-col my-4 gap-4">
             <YardCombobox />
+            <AreaDropdownMenu />
           </div>
 
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" onClick={() => setYard(null)}>
+              <Button variant="outline" onClick={handleCancel}>
                 Cancelar
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="secondary">Selecionar pátio</Button>
+              <Button variant="default">Confirmar</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

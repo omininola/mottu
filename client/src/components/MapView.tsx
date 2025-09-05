@@ -52,8 +52,8 @@ export function MapView({
     return centerPoints(points).flatMap((pt) => [pt.x + (offsetX || 0), pt.y]);
   }
 
-  const isPointInsideYard = (point: Point, yardBoundary: Point[]) => {
-    return pointInPolygon(point, yardBoundary);
+  const isPointInsideYard = (point: Point, yardBoundary: Point[], yardOffset: number) => {
+    return pointInPolygon(point, yardBoundary, yardOffset);
   };
 
   const handleMapClick = (e: KonvaEventObject<PointerEvent>) => {
@@ -67,10 +67,21 @@ export function MapView({
 
     const clickPoint = { x: mapX - CENTER_X, y: mapY - CENTER_Y };
 
-    const yardMongoFound = data?.yards.find((y) => y.yard.id === yard.id);
+    let idxFound = 0;
+    const yardMongoFound = data?.yards.find((y, idx) => {
+      if (y.yard.id == yard.id) {
+        idxFound = idx;
+        return true;
+      }
+      return false;
+    });
     if (!yardMongoFound) return;
 
-    if (isPointInsideYard(clickPoint, yardMongoFound.yard.boundary)) {
+    const xValues = yardMongoFound.yard.boundary.map(point => point.x);
+    const rightMost = Math.max(...xValues);
+    const yardOffsetX = rightMost + idxFound * OFFSET_X;
+
+    if (isPointInsideYard(clickPoint, yardMongoFound.yard.boundary, yardOffsetX)) {
       setPoints((prev: Point[]) => [...prev, clickPoint]);
     } else {
       setNotification("O ponto deve ser colocado dentro da área do pátio!");
@@ -164,21 +175,22 @@ export function MapView({
               xValues = data.yards[idx - 1].yard.boundary.map((point) => point.x);
             }
 
-            let rightMostX = 0;
-            if (xValues.length >= 1) rightMostX = Math.max(...xValues);
-            const yard_offset_x = rightMostX + idx * OFFSET_X;
+            let rightMost = 0;
+            if (xValues.length >= 1) rightMost = Math.max(...xValues);
+            const yardOffsetX = rightMost + idx * OFFSET_X;
 
             return (
               <>
                 <YardDraw
-                  points={toKonvaPoints(yardMongo.yard.boundary, yard_offset_x)}
+                  points={toKonvaPoints(yardMongo.yard.boundary, yardOffsetX)}
+                  yardName={yardMongo.yard.name}
                 />
 
                 {yardMongo.yard.areas.map((area) => (
                   <AreaDraw
                     key={area.id}
                     status={area.status}
-                    points={toKonvaPoints(area.boundary, yard_offset_x)}
+                    points={toKonvaPoints(area.boundary)}
                   />
                 ))}
 
@@ -205,7 +217,7 @@ export function MapView({
 
                 {yardMongo.tags.map((tag) => {
                   const centerTagPos = {
-                    x: tag.position.x + CENTER_X + yard_offset_x,
+                    x: tag.position.x + CENTER_X + yardOffsetX,
                     y: tag.position.y + CENTER_Y,
                   };
 

@@ -24,11 +24,9 @@ export function AreaDropdownMenu() {
 
   return (
     <div className="flex items-center gap-4">
-      <p className="text-muted-foreground text-sm">{status}</p>
-      
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="secondary">Selecionar a área</Button>
+          <Button variant="outline">Selecionar a área</Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Status da nova área</DropdownMenuLabel>
@@ -42,6 +40,8 @@ export function AreaDropdownMenu() {
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <p className="text-muted-foreground text-sm">{status}</p>
     </div>
   );
 }
