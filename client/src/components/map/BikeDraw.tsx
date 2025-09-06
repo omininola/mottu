@@ -8,15 +8,19 @@ export function BikeDraw({
   pos,
   isSelected,
   inRightArea,
-  bike,
+  bikeSummary,
   setBikeSummary,
+  bikeObj,
 }: {
   pos: Point;
   isSelected: boolean;
   inRightArea: boolean;
-  bike: BikeSummary | null;
+  bikeSummary: BikeSummary | null;
   setBikeSummary: React.Dispatch<React.SetStateAction<BikeSummary | null>>;
+  bikeObj: BikeSummary;
 }) {
+  const [isPinned, setPinned] = React.useState<boolean>(false);
+
   const stroke = inRightArea
     ? MapColors.bike.inRightArea
     : MapColors.bike.notInRightArea;
@@ -26,20 +30,22 @@ export function BikeDraw({
     : MapColors.bike.notSelected;
 
   function handleMouseOver(tagBike: BikeSummary) {
-    if (bike) return;
+    if (isPinned) return;
     setBikeSummary(tagBike);
   }
 
   function handleMouseDown(tagBike: BikeSummary) {
-    if (bike && tagBike.id == bike.id) {
+    if (isPinned && tagBike.id == bikeSummary?.id) {
+      setPinned(false);
       setBikeSummary(null);
     } else {
+      setPinned(true);
       setBikeSummary(tagBike);
     }
   }
 
   function handleMouseOut() {
-    if (bike) return;
+    if (isPinned) return;
     setBikeSummary(null);
   }
 
@@ -53,8 +59,8 @@ export function BikeDraw({
       strokeWidth={1}
       lineJoin="round"
       fill={fill}
-      onMouseOver={() => bike && handleMouseOver(bike)}
-      onMouseDown={() => bike && handleMouseDown(bike)}
+      onMouseOver={() => handleMouseOver(bikeObj)}
+      onMouseDown={() => handleMouseDown(bikeObj)}
       onMouseOut={() => handleMouseOut()}
     />
   );

@@ -54,7 +54,7 @@ export function SearchBike() {
     <>
       {notification && <Notification title="Ops!" message={notification} />}
 
-      <form className="flex gap-4" onSubmit={(e) => e.preventDefault()}>
+      <form className="flex gap-4" action="#">
         <Label htmlFor="plate">Placa</Label>
         <Input
           type="text"

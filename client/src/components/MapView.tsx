@@ -232,8 +232,9 @@ export function MapView({
                         pos={{ x: centerTagPos.x, y: centerTagPos.y }}
                         isSelected={bike?.id == tag.bike.id}
                         inRightArea={tag.inRightArea}
-                        bike={bike}
+                        bikeSummary={bike}
                         setBikeSummary={setBikeSummary}
+                        bikeObj={tag.bike}
                       />
                     );
                   } else {

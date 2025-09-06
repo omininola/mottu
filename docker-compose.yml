@@ -34,7 +34,7 @@ services:
       - server
     restart: always
     environment:
-      VIDEO_CAPTURE_ID: 2
+      VIDEO_CAPTURE_ID: 0
       JAVA_HOST: server
       JAVA_PORT: 8080
       YARD_ID: 1

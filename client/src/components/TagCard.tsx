@@ -17,12 +17,15 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import axios from "axios";
 import { clearNotification } from "@/lib/utils";
 import { Notification } from "./Notification";
+import { Link } from "lucide-react";
 
 export function TagCard({
   tag,
+  setTag,
   selectedSubsidiary,
 }: {
   tag: Apriltag;
+  setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>
   selectedSubsidiary: Subsidiary | null;
 }) {
   const [notification, setNotification] = React.useState<string | undefined>(
@@ -40,6 +43,7 @@ export function TagCard({
       await axios.post(
         `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tag.code}/subsidiary/${selectedSubsidiary?.id}`
       );
+      setTag(null);
       setNotification("Tag foi vinculada com sucesso!");
     } catch (err: unknown) {
       if (
@@ -66,27 +70,30 @@ export function TagCard({
             <p>Filial: {tag.subsidiary}</p>
             <p>A tag não está vinculada a nenhuma moto</p>
           </CardDescription>
-          <CardFooter className="flex flex-col gap-4 w-full p-0">
-            <div className="flex items-center gap-4 w-full">
-              <Label htmlFor="plate">Placa</Label>
-              <Input
-                className="w-full"
-                type="text"
-                placeholder="123-ABC"
-                id="plate"
-                value={plate}
-                onChange={(e) => setPlate(e.target.value)}
-              />
-            </div>
+          <CardFooter className="flex flex-col gap-4 w-full my-4 p-0">
+            <form action="#" className="flex flex-col gap-4 w-full">
+              <div className="flex items-center gap-4">
+                <Label htmlFor="plate">Placa</Label>
+                <Input
+                  className="w-full"
+                  type="text"
+                  placeholder="123-ABC"
+                  id="plate"
+                  value={plate}
+                  onChange={(e) => setPlate(e.target.value)}
+                />
+              </div>
 
-            <Button
-              className="w-full"
-              onClick={linkTagToBike}
-              variant="secondary"
-              disabled={plate == "" || loading || selectedSubsidiary == null}
-            >
-              Vincular tag
-            </Button>
+              <Button
+                type="submit"
+                className="w-full"
+                onClick={linkTagToBike}
+                variant="secondary"
+                disabled={plate == "" || loading || selectedSubsidiary == null}
+              >
+                <Link className="h-4 w-4" /> Vincular tag
+              </Button>
+            </form>
           </CardFooter>
         </CardHeader>
       </Card>

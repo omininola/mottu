@@ -17,6 +17,7 @@ import { NewAreaCreation } from "@/components/NewAreaCreation";
 import { Button } from "@/components/ui/button";
 import { useAreaCreating } from "@/contexts/AreaCreatingContext";
 import { useSelectedYard } from "@/contexts/SelectedYardContext";
+import { Check } from "lucide-react";
 const MapView = dynamic(
   () => import("@/components/MapView").then((mod) => mod.MapView),
   { ssr: false }
@@ -33,9 +34,7 @@ export default function Home() {
 
   const { status, setStatus, points, setPoints } = useAreaCreating();
 
-  const [notification, setNotification] = React.useState<string | undefined>(
-    undefined
-  );
+  const [notification, setNotification] = React.useState<string>("");
 
   React.useEffect(() => {
     async function fetchYardsTags() {
@@ -54,7 +53,7 @@ export default function Home() {
             selectedSubsidiary.name
         );
       } finally {
-        clearNotification<string | undefined>(setNotification, undefined);
+        clearNotification<string>(setNotification, "");
       }
     }
 
@@ -70,9 +69,8 @@ export default function Home() {
 
   const handleFinishArea = async () => {
     if (!yard?.id || points?.length < 3) {
-      console.log(
-        "[MAIN] (handleFinishedArea) -> New Area must have 3 or more points"
-      );
+      setNotification("A área deve ter 3 ou mais pontos para ser criada");
+      clearNotification<string>(setNotification, "");
       return;
     }
 
@@ -94,7 +92,7 @@ export default function Home() {
 
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
-      {notification && <Notification title="Tags" message={notification} />}
+      {notification != "" && <Notification title="Tags" message={notification} />}
 
       <div className="col-span-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
@@ -108,7 +106,7 @@ export default function Home() {
               <NewAreaCreation />
 
               {points.length >= 3 && status != "" && (
-                <Button variant="default" onClick={handleFinishArea}>Confirmar criação</Button>
+                <Button variant="default" onClick={handleFinishArea}><Check className="h-4 w-4"/> Confirmar criação</Button>
               )}
             </div>
           )}
@@ -129,7 +127,7 @@ export default function Home() {
         <SearchBike />
         {bike && <BikeCard bike={mapBike(bike, data)} />}
         {tag && !tag.bike && (
-          <TagCard tag={tag} selectedSubsidiary={selectedSubsidiary} />
+          <TagCard tag={tag} selectedSubsidiary={selectedSubsidiary} setTag={setTag} />
         )}
       </div>
     </div>

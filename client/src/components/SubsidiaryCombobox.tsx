@@ -64,7 +64,7 @@ export function SubsidiaryCombobox({
     <div className="flex items-center space-x-4 relative">
       {notification && <Notification title="Ops!" message={notification} />}
 
-      <p className="text-muted-foreground text-sm">Filial</p>
+      <p className="text-md text-base">Filial</p>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button

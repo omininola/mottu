@@ -15,10 +15,11 @@ import { YardCombobox } from "./YardCombobox";
 import { useSelectedYard } from "@/contexts/SelectedYardContext";
 import { AreaPointControl } from "./AreaPointControl";
 import { useAreaCreating } from "@/contexts/AreaCreatingContext";
+import { Check, PlusSquare, SquarePen } from "lucide-react";
 
 export function NewAreaCreation() {
   const { yard, setYard } = useSelectedYard();
-  const { setStatus, setPoints } = useAreaCreating();
+  const { status, setStatus, setPoints } = useAreaCreating();
 
   React.useEffect(() => {
     setStatus("");
@@ -33,13 +34,15 @@ export function NewAreaCreation() {
 
   return (
     <div className="flex items-center gap-4">
-      {yard && <AreaPointControl />}
+      {(yard && status) && <AreaPointControl />}
 
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="default">
-            {yard ? "Mudar pátio ou status" : "Criar uma nova área"}
-          </Button>
+          {yard ? (
+            <Button variant="default"><SquarePen className="h-4 w-4"/> Mudar status ou pátio</Button>
+          ) : (
+            <Button variant="default"><PlusSquare className="h-4 w-4" /> Criar nova área</Button>
+          )}          
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -62,7 +65,7 @@ export function NewAreaCreation() {
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="default">Confirmar</Button>
+              <Button variant="default"><Check className="h-4 w-4"/> Confirmar</Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

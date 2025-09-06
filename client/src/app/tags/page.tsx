@@ -16,6 +16,7 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Subsidiary } from "@/lib/types";
 import { clearNotification } from "@/lib/utils";
 import axios from "axios";
+import { Camera, ScanQrCode } from "lucide-react";
 import Image from "next/image";
 import React, { PropsWithChildren, useEffect } from "react";
 import Webcam from "react-webcam";
@@ -97,7 +98,11 @@ export default function Tags() {
       <div className="flex items-center justify-center gap-4">
         <CardCapture
           title="Identificação de Tags"
-          footerText="Tirar foto"
+          footerNode={
+            <>
+              <Camera className="h-4 w-4" /> Tirar foto
+            </>
+          }
           footerAction={capture}
         >
           <Webcam
@@ -113,7 +118,11 @@ export default function Tags() {
         {imageSrc && (
           <CardCapture
             title="Foto tirada"
-            footerText="Resgatar o código da Tag"
+            footerNode={
+              <>
+                <ScanQrCode className="h-4 w-4" /> Resgatar o código da Tag
+              </>
+            }
             footerAction={detect}
             loading={loading}
           >
@@ -151,13 +160,13 @@ export default function Tags() {
 
 function CardCapture({
   title,
-  footerText,
+  footerNode,
   footerAction,
   children,
   loading,
 }: {
   title: string;
-  footerText: string;
+  footerNode: React.ReactNode;
   footerAction: () => void;
   loading?: boolean;
 } & PropsWithChildren) {
@@ -169,7 +178,7 @@ function CardCapture({
       <CardContent>{children}</CardContent>
       <CardFooter>
         <Button variant="secondary" onClick={footerAction} disabled={loading}>
-          {footerText}
+          {footerNode}
         </Button>
       </CardFooter>
     </Card>

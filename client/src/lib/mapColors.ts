@@ -22,6 +22,7 @@ export const MapColors = {
   },
 
   tag: {
+    stroke: "white",
     selected: "orange",
     notSelected: "yellow",
   },

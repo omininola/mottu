@@ -23,8 +23,10 @@ export function TagDraw({
     <Circle
       x={pos.x}
       y={pos.y}
-      radius={5}
+      radius={3}
       fill={fill}
+      stroke={MapColors.tag.stroke}
+      strokeWidth={1}
       onMouseOver={() => handleMouseOver(tag)}
     />
   );
