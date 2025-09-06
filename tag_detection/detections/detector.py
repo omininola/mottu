@@ -12,7 +12,7 @@ class TagDetector:
             decode_sharpening=0.25,
         )
 
-    def detect_tags(self, frame, W, H):
+    def detect_tags(self, frame, W, H, transform):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         detections = self.detector.detect(gray)
 
@@ -37,7 +37,11 @@ class TagDetector:
             tag_id = d.tag_id
             tag_code = f"{tag_family}_{tag_id}"
 
-            x, y = self.image_to_yard(int(pos[0]), int(pos[1]), W, H)
+            x = int(pos[0])
+            y = int(pos[1])
+
+            if transform:
+                x, y = self.image_to_yard(x, y, W, H)
 
             enriched.append({
                 "tagCode": tag_code,

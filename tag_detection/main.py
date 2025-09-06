@@ -33,7 +33,7 @@ def gen_frames():
         if not ret:
             break
 
-        detections_parsed_for_java, detections = detector.detect_tags(frame, W, H)
+        detections_parsed_for_java, detections = detector.detect_tags(frame, W, H, True)
 
         # Only send to Java API every 10 seconds
         now = time.time()
@@ -67,7 +67,7 @@ def detect():
     nparr = np.frombuffer(image_bytes, np.uint8)
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    detections, _ = detector.detect_tags(image)
+    detections, _ = detector.detect_tags(image, 1, 1, False)
 
     if detections:
         return Response(detections[0]['tagCode'], status=200)

@@ -34,7 +34,7 @@ services:
       - server
     restart: always
     environment:
-      VIDEO_CAPTURE_ID: 0
+      VIDEO_CAPTURE_ID: 9
       JAVA_HOST: server
       JAVA_PORT: 8080
       YARD_ID: 1
@@ -45,12 +45,12 @@ services:
     networks:
       - back-tier
     devices:
-      - /dev/video0:/dev/video0
+      - /dev/video9:/dev/video9
 
   client:
     container_name: client
     profiles:
-      - full
+      - client
     build:
       context: ./client
       args:
