@@ -24,6 +24,8 @@ const MapView = dynamic(
 );
 
 export default function Home() {
+  const UPDATE_DATA_TIME = 2 * 1000; // 2 seconds
+
   const [tag, setTag] = React.useState<Apriltag | null>(null);
   const [bike, setBike] = React.useState<BikeSummary | null>(null);
   const [data, setData] = React.useState<SubsidiaryTags | null>(null);
@@ -60,12 +62,12 @@ export default function Home() {
     fetchYardsTags();
     const timer = setInterval(() => {
       fetchYardsTags();
-    }, 5000);
+    }, UPDATE_DATA_TIME);
 
     return () => {
       clearInterval(timer);
     };
-  }, [setData, selectedSubsidiary]);
+  }, [setData, selectedSubsidiary, UPDATE_DATA_TIME]);
 
   const handleFinishArea = async () => {
     if (!yard?.id || points?.length < 3) {
