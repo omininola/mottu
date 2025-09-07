@@ -1,3 +1,5 @@
+name: mottu
+
 services:
   server:
     container_name: server
@@ -8,7 +10,7 @@ services:
         condition: service_healthy
       db_mysql:
         condition: service_healthy
-    restart: always
+    restart: on-failure:5
     environment:
       MYSQL_HOST: db_mysql
       MYSQL_PORT: 3306
@@ -23,8 +25,8 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - front-tier
-      - back-tier
+      - frontend
+      - backend
 
   tag_detection:
     container_name: tag_detection
@@ -32,9 +34,9 @@ services:
       context: ./tag_detection
     depends_on:
       - server
-    restart: always
+    restart: on-failure:5
     environment:
-      VIDEO_CAPTURE_ID: 9
+      VIDEO_CAPTURE_ID: 0
       JAVA_HOST: server
       JAVA_PORT: 8080
       YARD_ID: 1
@@ -43,9 +45,9 @@ services:
     ports:
       - "5000:5000"
     networks:
-      - back-tier
+      - backend
     devices:
-      - /dev/video9:/dev/video9
+      - /dev/video0:/dev/video0
 
   client:
     container_name: client
@@ -57,16 +59,16 @@ services:
         NEXT_PUBLIC_JAVA_URL: http://localhost:8080
     depends_on:
       - server
-    restart: always
+    restart: on-failure
     ports:
       - "3000:3000"
     networks:
-      - front-tier
+      - frontend
 
   db_mongo:
     container_name: db_mongo
     image: mongo
-    restart: always
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: mottu
       MONGO_INITDB_ROOT_PASSWORD: mottu
@@ -81,12 +83,12 @@ services:
     volumes:
       - db_mongo:/data/db
     networks:
-      - back-tier
+      - backend
 
   db_mysql:
     container_name: db_mysql
     image: mysql:8.0
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: mottu
       MYSQL_DATABASE: mottu
@@ -103,12 +105,12 @@ services:
     volumes:
       - db_mysql:/var/lib/mysql
     networks:
-      - back-tier
+      - backend
 
 volumes:
   db_mysql:
   db_mongo:
 
 networks:
-  front-tier:
-  back-tier:
+  frontend:
+  backend:
