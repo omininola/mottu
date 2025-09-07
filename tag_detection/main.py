@@ -33,12 +33,12 @@ def gen_frames():
         if not ret:
             break
 
-        detections_parsed_for_java, detections = detector.detect_tags(frame, W, H, True)
+        enriched, detections = detector.detect_tags(frame, W, H, True)
 
         # Only send to Java API every 10 seconds
         now = time.time()
-        if detections_parsed_for_java and (now - last_sent) > send_interval:
-            payload = {"tags": detections_parsed_for_java}
+        if (now - last_sent) > send_interval:
+            payload = { "tags": enriched }
             response = java_client.send_detections(payload)
             last_sent = now  # reset timer
 
