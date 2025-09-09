@@ -47,12 +47,10 @@ services:
     networks:
       - backend
     devices:
-      - /dev/video0:/dev/video0
+      - /dev:/dev
 
   client:
     container_name: client
-    profiles:
-      - client
     build:
       context: ./client
       args:
