@@ -14,5 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SubsidiaryTags {
     
+    SubsidiarySummary subsidiary;
     List<YardMongoResponse> yards;
 }

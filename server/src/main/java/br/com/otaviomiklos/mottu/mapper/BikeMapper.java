@@ -8,9 +8,12 @@ import org.springframework.stereotype.Component;
 
 import br.com.otaviomiklos.mottu.dto.bike.BikeRequest;
 import br.com.otaviomiklos.mottu.dto.bike.BikeSummaryDTO;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiarySummary;
 import br.com.otaviomiklos.mottu.dto.bike.BikeDetailsDTO;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Bike;
+import br.com.otaviomiklos.mottu.entity.Subsidiary;
+import br.com.otaviomiklos.mottu.entity.Yard;
 
 @Component
 public class BikeMapper {
@@ -22,11 +25,18 @@ public class BikeMapper {
         String tagCode = null;
         if (bike.getTag() != null) tagCode = bike.getTag().getCode();
 
-        YardResponse yard = null;
-        String subsidiary = null;
+        YardResponse yardResponse = null;
+        SubsidiarySummary subsidiaryResponse = null;
         if (bike.getYard() != null) {
-            yard = yardMapper.toResponse(bike.getYard());
-            subsidiary = yard.getSubsidiary();
+            Yard yard = bike.getYard();
+            Subsidiary subsidiary = bike.getYard().getSubsidiary();
+            
+            subsidiaryResponse = new SubsidiarySummary();
+            subsidiaryResponse.setId(subsidiary.getId());
+            subsidiaryResponse.setName(subsidiary.getName());
+            subsidiaryResponse.setAddress(subsidiary.getAddress().toString());
+
+            yardResponse = yardMapper.toResponse(yard);
         }
 
         BikeDetailsDTO response = new BikeDetailsDTO();
@@ -36,8 +46,8 @@ public class BikeMapper {
         response.setModel(bike.getModel());
         response.setStatus(bike.getStatus());
         response.setTagCode(tagCode);
-        response.setYard(yard);
-        response.setSubsidiary(subsidiary);
+        response.setYard(yardResponse);
+        response.setSubsidiary(subsidiaryResponse);
         return response;
     }
 

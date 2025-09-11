@@ -12,6 +12,7 @@ import br.com.otaviomiklos.mottu.dto.address.AddressRequest;
 import br.com.otaviomiklos.mottu.dto.apriltag.ApriltagResponse;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryRequest;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryResponse;
+import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiarySummary;
 import br.com.otaviomiklos.mottu.dto.subsidiary.SubsidiaryTags;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
@@ -59,6 +60,14 @@ public class SubsidiaryMapper {
         return subsidiaries.stream().map(subsidiary -> toResponse(subsidiary)).collect(Collectors.toList());
     }
 
+    public SubsidiarySummary toSummary(Subsidiary subsidiary) {
+        SubsidiarySummary summary = new SubsidiarySummary();
+        summary.setId(subsidiary.getId());
+        summary.setName(subsidiary.getName());
+        summary.setAddress(subsidiary.getAddress().toString());
+        return summary;
+    }
+
     public SubsidiaryTags toTagResponse(Subsidiary subsidiary) {
         List<YardMongoResponse> yardsResponse = null;
         List<Yard> yards = subsidiary.getYards();
@@ -76,6 +85,7 @@ public class SubsidiaryMapper {
         } 
 
         SubsidiaryTags response = new SubsidiaryTags();
+        response.setSubsidiary(toSummary(subsidiary));
         response.setYards(yardsResponse);
         return response;
     }

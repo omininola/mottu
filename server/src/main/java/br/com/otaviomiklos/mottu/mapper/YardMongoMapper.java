@@ -9,6 +9,7 @@ import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.entity.Yard;
 import br.com.otaviomiklos.mottu.entity.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
+import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
 import br.com.otaviomiklos.mottu.repository.YardRepository;
 
 @Component
@@ -16,6 +17,9 @@ public class YardMongoMapper {
 
     @Autowired
     private YardRepository repository;
+
+    @Autowired
+    private SubsidiaryRepository subsidiaryRepository;
 
     @Autowired
     private YardMapper yardMapper;
