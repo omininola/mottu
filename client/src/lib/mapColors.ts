@@ -1,4 +1,10 @@
 export const MapColors = {
+  yard: {
+    fill: "#cbd5e1",
+    stroke: "#94a3b8",
+    text: "#94a3b8",
+  },
+  
   area: {
     broken: {
       fill: "#fda4af",
@@ -9,8 +15,8 @@ export const MapColors = {
       stroke: "#93c5fd",
     },
     default: {
-      fill: "gray",
-      stroke: "gray",
+      fill: "#cbd5e1",
+      stroke: "#94a3b8"
     },
   },
 

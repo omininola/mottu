@@ -1,12 +1,19 @@
 export type Subsidiary = {
-    id: string
+    id: number
     name: string
     address: string
     yards: Yard[]
     tags: Apriltag[]
 }
 
+export type SubsidiarySummary = {
+    id: number
+    name: string
+    address: string
+}
+
 export type SubsidiaryTags = {
+    subsidiary: SubsidiarySummary
     yards: YardMongo[]
 }
 
@@ -46,6 +53,7 @@ export type Bike = {
     status: string
     tagCode: string | null
     yard: Yard | null
+    subsidiary: SubsidiarySummary | null
 }
 
 export type BikeSummary = {

@@ -173,7 +173,7 @@ export function MapView({
         onWheel={handleWheel}
       >
         <Layer>
-          {data?.yards.map((yardMongo, idx) => {
+          {(data?.yards && data?.yards.length > 0) && data?.yards.map((yardMongo, idx) => {
             let xValues: number[] = [];
             if (data.yards[idx - 1] != null) {
               xValues = data.yards[idx - 1].yard.boundary.map((point) => point.x);
@@ -186,13 +186,14 @@ export function MapView({
             return (
               <>
                 <YardDraw
+                  key={"yard" + yardMongo.yard.id}
                   points={toKonvaPoints(yardMongo.yard.boundary, yardOffsetX)}
                   yardName={yardMongo.yard.name}
                 />
 
                 {yardMongo.yard.areas.map((area) => (
                   <AreaDraw
-                    key={area.id}
+                    key={"area" + area.id}
                     status={area.status}
                     points={toKonvaPoints(area.boundary)}
                   />
@@ -228,7 +229,7 @@ export function MapView({
                   if (tag.bike != null) {
                     return (
                       <BikeDraw
-                        key={tag.bike.id}
+                        key={"bike" + tag.bike.id}
                         pos={{ x: centerTagPos.x, y: centerTagPos.y }}
                         isSelected={bike?.id == tag.bike.id}
                         inRightArea={tag.inRightArea}
@@ -240,7 +241,7 @@ export function MapView({
                   } else {
                     return (
                       <TagDraw
-                        key={tag.tag.id}
+                        key={"tag" + tag.tag.id}
                         pos={{ x: centerTagPos.x, y: centerTagPos.y }}
                         isSelected={apriltag?.id == tag.tag.id}
                         tag={tag.tag}

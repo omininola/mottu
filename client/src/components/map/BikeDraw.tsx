@@ -21,13 +21,13 @@ export function BikeDraw({
 }) {
   const [isPinned, setPinned] = React.useState<boolean>(false);
 
-  const stroke = inRightArea
-    ? MapColors.bike.inRightArea
-    : MapColors.bike.notInRightArea;
-
-  const fill = isSelected
+  const stroke = isSelected
     ? MapColors.bike.selected
     : MapColors.bike.notSelected;
+
+  const fill = inRightArea
+    ? MapColors.bike.inRightArea
+    : MapColors.bike.notInRightArea;
 
   function handleMouseOver(tagBike: BikeSummary) {
     if (isPinned) return;

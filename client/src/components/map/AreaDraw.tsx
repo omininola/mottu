@@ -26,7 +26,7 @@ export function AreaDraw({
       points={points}
       closed={true}
       stroke={colors.stroke}
-      strokeWidth={3}
+      strokeWidth={1}
       fill={colors.fill}
       lineJoin="round"
       lineCap="round"

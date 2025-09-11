@@ -16,7 +16,7 @@ export function clearNotification<T>(
 }
 
 // i am sorry :c
-export function mapBike(bike: BikeSummary, data: SubsidiaryTags | null) {
+export function mapBike(bike: BikeSummary, data: SubsidiaryTags) {
   let tagCode = null;
   const yardMongo = data?.yards.find((yard) => {
     if (
@@ -38,6 +38,7 @@ export function mapBike(bike: BikeSummary, data: SubsidiaryTags | null) {
     status: bike.status,
     tagCode: tagCode || null,
     yard: yardMongo?.yard || null,
+    subsidiary: data.subsidiary
   };
 
   return newBike;

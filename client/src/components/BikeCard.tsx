@@ -15,8 +15,11 @@ import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { clearNotification } from "@/lib/utils";
 import { Notification } from "./Notification";
+import { useSubsidiary } from "@/contexts/SubsidiaryContext";
 
 export function BikeCard({ bike }: { bike: Bike }) {
+  const { subsidiary, setSubsidiary } = useSubsidiary();
+
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
   );
@@ -36,10 +39,23 @@ export function BikeCard({ bike }: { bike: Bike }) {
   }
 
   // TODO: Locate bike on map
-  // 1. Check if bike.yard is the same on current map
-  // 2. Check bike position and move camera there
   async function locateBikeOnMap() {
-    console.log(bike.yard);
+    
+    // 1. Check if bike.yard.subsidiary is the same on current map
+    if (bike.subsidiary?.id != subsidiary?.id) {
+      try {
+        const response = await axios.get(`${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${bike.subsidiary?.id}`);
+        setSubsidiary(response.data);
+      } catch (err: unknown) {
+        if (axios.isAxiosError(err) && err.status == 404) {
+          console.log(err.response?.data);
+        }
+      }
+    }
+    
+    // 2. Check bike position and move camera there
+    
+
   }
 
   return (
@@ -59,11 +75,10 @@ export function BikeCard({ bike }: { bike: Bike }) {
           <p>Modelo: {bike.model}</p>
           <p>Status: {bike.status}</p>
           {(bike.tagCode && !isTagUnlinked) ? <p>Tag: {bike.tagCode}</p> : <p>Sem dados da tag</p>}
-          {(bike.yard && !isTagUnlinked) ? (
+          {(bike.yard && bike.subsidiary && !isTagUnlinked) ? (
             <p className="flex items-center gap-4">
               <MapPin className="h-4 w-4" />
-              <span>{bike.yard.name} -</span>
-              <span>{bike.yard.subsidiary}</span>
+              <span>{bike.yard.name} - {bike.subsidiary.name}</span>
             </p>
           ) : (
             <p>Sem dados da localização</p>
