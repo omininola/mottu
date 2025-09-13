@@ -18,17 +18,20 @@ export function clearNotification<T>(
 // i am sorry :c
 export function mapBike(bike: BikeSummary, data: SubsidiaryTags) {
   let tagCode = null;
-  const yardMongo = data?.yards.find((yard) => {
-    if (
-      yard.tags.find((tag) => {
-        if (tag.bike != null && tag.bike.id === bike.id) {
-          tagCode = tag.tag.code;
-          return tag;
-        }
-      })
-    )
-      return yard;
-  });
+  let yardMongo = null;
+  if (data.yards != null){
+    yardMongo = data?.yards.find((yard) => {
+      if (
+        yard.tags.find((tag) => {
+          if (tag.bike != null && tag.bike.id === bike.id) {
+            tagCode = tag.tag.code;
+            return tag;
+          }
+        })
+      )
+        return yard;
+    });
+  }
 
   const newBike: Bike = {
     id: bike.id,

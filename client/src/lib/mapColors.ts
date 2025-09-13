@@ -11,8 +11,8 @@ export const MapColors = {
       stroke: "#fb7185",
     },
     ready: {
-      fill: "#60a5fa",
-      stroke: "#93c5fd",
+      fill: "#93c5fd",
+      stroke: "#60a5fa",
     },
     default: {
       fill: "#cbd5e1",
@@ -22,15 +22,15 @@ export const MapColors = {
 
   bike: {
     searched: "#4f46e5",
-    selected: "#22c55e",
-    notSelected: "#ea580c",
-    inRightArea: "#e2e8f0",
-    notInRightArea: "#f9a8d4",
+    selected: "#16a34a",
+    notSelected: "#64748b",
+    inRightArea: "#fff",
+    notInRightArea: "#ec4899",
   },
 
   tag: {
-    stroke: "white",
-    selected: "orange",
-    notSelected: "yellow",
+    stroke: "#fff",
+    selected: "#f97316",
+    notSelected: "#64748b",
   },
 };

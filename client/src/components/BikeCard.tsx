@@ -41,7 +41,7 @@ export function BikeCard({ bike }: { bike: Bike }) {
   }
 
   async function locateBikeOnMap() {
-    const TARGET_SCALE = 8;
+    const TARGET_SCALE = 16;
 
     if (bike.subsidiary?.id != snapSubsidiary.subsidiary?.id) {
       try {

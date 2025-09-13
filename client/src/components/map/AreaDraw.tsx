@@ -27,7 +27,10 @@ export function AreaDraw({
       closed={true}
       stroke={colors.stroke}
       strokeWidth={1}
+      dash={[1]}
       fill={colors.fill}
+      opacity={0.6}
+      listening={false}
       lineJoin="round"
       lineCap="round"
     />

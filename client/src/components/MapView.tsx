@@ -122,7 +122,8 @@ export function MapView({
   // Wheel to zoom
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
-    const scaleBy = 1.05;
+    const scaleBy = 1.10;
+    const maxZoomOut = 1;
     const stage = e.target.getStage() as Konva.Stage;
     const oldScale = snapStage.scale;
     const pointer = stage.getStage().getPointerPosition();
@@ -130,7 +131,12 @@ export function MapView({
 
     // Calculate new scale
     const newScale = e.evt.deltaY > 0 ? oldScale / scaleBy : oldScale * scaleBy;
+    if (newScale < maxZoomOut) {
+      stageStore.scale = maxZoomOut;
+      return;
+    }
     stageStore.scale = newScale;
+    
 
     // Keep the pointer position stable during zoom
     const mousePointTo = {
@@ -239,7 +245,6 @@ export function MapView({
                         })}
                       </>
                     )}
-
                   {yardMongo.tags.map((tag) => {
                     const centerTagPos = {
                       x: tag.position.x + CENTER_X + yardOffsetX,

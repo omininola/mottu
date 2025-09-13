@@ -25,12 +25,14 @@ export function YardDraw({
         fontSize={20}
         fontFamily="Arial"
         fill={MapColors.yard.text}
+        listening={false}
       />
       <Line
         points={points}
         closed={true}
         stroke={MapColors.yard.stroke}
         strokeWidth={2}
+        listening={false}
         fill={MapColors.yard.fill}
       />
     </>
