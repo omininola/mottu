@@ -40,11 +40,9 @@ export function BikeCard({ bike }: { bike: Bike }) {
     }
   }
 
-  // FIX: This code has to be runned 3 times before working
-  // 1 time for changing the subsidiary
-  // 2 times for changing the map position
-  // 3 times for updating zoom
   async function locateBikeOnMap() {
+    const TARGET_SCALE = 8;
+
     if (bike.subsidiary?.id != snapSubsidiary.subsidiary?.id) {
       try {
         const response = await axios.get(
@@ -54,8 +52,10 @@ export function BikeCard({ bike }: { bike: Bike }) {
           `${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${bike.subsidiary?.id}/tags`
         );
 
-        subsidiaryStore.subsidiary = response.data;
-        subsidiaryStore.subsidiaryTags = responseTags.data;
+        Object.assign(subsidiaryStore, {
+          subsidiary: response.data,
+          subsidiaryTags: responseTags.data,
+        });
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.status == 404) {
           console.log(err.response?.data);
@@ -64,7 +64,7 @@ export function BikeCard({ bike }: { bike: Bike }) {
     }
 
     const yardId = bike.yard?.id;
-    const yard = snapSubsidiary.subsidiaryTags?.yards.find(
+    const yard = subsidiaryStore.subsidiaryTags?.yards.find(
       (yardMongo) => yardMongo.yard.id == yardId
     );
     const tag = yard?.tags.find((tag) => tag.tag.code == bike.tagCode);
@@ -75,18 +75,14 @@ export function BikeCard({ bike }: { bike: Bike }) {
 
     // IDK why this math works, but it works :D
     const actualPos = {
-      x: konvaPos[0] * -1 * snapStage.scale + konvaPos[0],
-      y: konvaPos[1] * -1 * snapStage.scale + konvaPos[1],
+      x: konvaPos[0] * -1 * TARGET_SCALE + konvaPos[0],
+      y: konvaPos[1] * -1 * TARGET_SCALE + konvaPos[1],
     };
 
-    stageStore.pos = actualPos;
-    stageStore.scale = 8;
-
-    console.log("[DEBUG] BikeCard | snapStage.scale: ", snapStage.scale);
-    console.log("[DEBUG] BikeCard | snapStage.pos: ", snapStage.pos);
-    console.log("[DEBUG] BikeCard | konvaPos: ", konvaPos);
-    console.log("[DEBUG] BikeCard | actualPos: ", actualPos);
-
+    Object.assign(stageStore, {
+      pos: actualPos,
+      scale: TARGET_SCALE,
+    });
   }
 
   return (
