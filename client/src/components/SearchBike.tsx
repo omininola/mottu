@@ -12,6 +12,7 @@ import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Bike } from "@/lib/types";
 import { clearNotification } from "@/lib/utils";
+import { bikeSearchedStore } from "@/lib/valtio";
 
 export function SearchBike() {
   const [searchText, setSearchText] = React.useState<string>("");
@@ -23,9 +24,6 @@ export function SearchBike() {
     undefined
   );
 
-  // TODO: Highlight bike on map if it is searched
-  // 1. Check if bike searched is in the current yard map
-  // 2. Highlight it
   async function searchBike() {
     setLoading(true);
 
@@ -35,6 +33,7 @@ export function SearchBike() {
       const response = await axios.get(
         `${NEXT_PUBLIC_JAVA_URL}/bikes/plate/${plate}`
       );
+      bikeSearchedStore.bikeId = response.data.id;
       setBikeSearched(response.data);
     } catch (err: unknown) {
       if (

@@ -22,13 +22,14 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
 import { Notification } from "./Notification";
 import { clearNotification } from "@/lib/utils";
-import { useSelectedYard } from "@/contexts/SelectedYardContext";
+import { useSnapshot } from "valtio";
+import { areaCreationStore } from "@/lib/valtio";
 
 export function YardCombobox() {
-  const { yard, setYard } = useSelectedYard();
-  
+  const snapAreaCreation = useSnapshot(areaCreationStore);
+
   const [open, setOpen] = React.useState(false);
-  
+
   const [yards, setYards] = React.useState<Yard[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [notification, setNotification] = React.useState<string | undefined>(
@@ -65,9 +66,9 @@ export function YardCombobox() {
             disabled={loading}
             className="justify-start"
           >
-            {yard ? (
+            {snapAreaCreation.yard ? (
               <>
-                <MapPin className="h-4 w-4" /> {yard.name}
+                <MapPin className="h-4 w-4" /> {snapAreaCreation.yard.name}
               </>
             ) : (
               <>
@@ -87,11 +88,10 @@ export function YardCombobox() {
                     key={yard.id}
                     value={yard.name.toString()}
                     onSelect={(value) => {
-                      setYard(
+                      areaCreationStore.yard =
                         yards.find(
-                          (priority) => priority.name.toString() === value
-                        ) || null
-                      );
+                          (priority) => priority.name.toString() == value
+                        ) || undefined;
                       setOpen(false);
                     }}
                   >

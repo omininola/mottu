@@ -22,16 +22,12 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { MapPin } from "lucide-react";
 import { Notification } from "./Notification";
 import { clearNotification } from "@/lib/utils";
+import { useSnapshot } from "valtio";
+import { subsidiaryStore } from "@/lib/valtio";
 
-export function SubsidiaryCombobox({
-  selectedSubsidiary,
-  setSelectedSubsidiary,
-}: {
-  selectedSubsidiary: Subsidiary | null;
-  setSelectedSubsidiary: React.Dispatch<
-    React.SetStateAction<Subsidiary | null>
-  >;
-}) {
+export function SubsidiaryCombobox() {
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
+
   const [open, setOpen] = React.useState(false);
 
   const [subsidiaries, setSubsidiaries] = React.useState<Subsidiary[]>([]);
@@ -72,9 +68,9 @@ export function SubsidiaryCombobox({
             disabled={loading}
             className="justify-start"
           >
-            {selectedSubsidiary ? (
+            {snapSubsidiary.subsidiary ? (
               <>
-                <MapPin className="h-4 w-4" /> {selectedSubsidiary.name}
+                <MapPin className="h-4 w-4" /> {snapSubsidiary.subsidiary.name}
               </>
             ) : (
               <>
@@ -94,11 +90,7 @@ export function SubsidiaryCombobox({
                     key={subsidiary.id}
                     value={subsidiary.name.toString()}
                     onSelect={(value) => {
-                      setSelectedSubsidiary(
-                        subsidiaries.find(
-                          (priority) => priority.name.toString() === value
-                        ) || null
-                      );
+                      subsidiaryStore.subsidiary = subsidiaries.find(priority => priority.name.toString() === value || undefined);
                       setOpen(false);
                     }}
                   >

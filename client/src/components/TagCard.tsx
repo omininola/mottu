@@ -18,16 +18,18 @@ import axios from "axios";
 import { clearNotification } from "@/lib/utils";
 import { Notification } from "./Notification";
 import { Link } from "lucide-react";
+import { useSnapshot } from "valtio";
+import { subsidiaryStore } from "@/lib/valtio";
 
 export function TagCard({
   tag,
   setTag,
-  selectedSubsidiary,
 }: {
   tag: Apriltag;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>
-  selectedSubsidiary: Subsidiary | null;
 }) {
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
+
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
   );
@@ -36,12 +38,12 @@ export function TagCard({
   const [plate, setPlate] = React.useState<string>("");
 
   async function linkTagToBike() {
-    if (!selectedSubsidiary) return;
+    if (!snapSubsidiary.subsidiary) return;
 
     setLoading(true);
     try {
       await axios.post(
-        `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tag.code}/subsidiary/${selectedSubsidiary?.id}`
+        `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tag.code}/subsidiary/${snapSubsidiary.subsidiary?.id}`
       );
       setTag(null);
       setNotification("Tag foi vinculada com sucesso!");
@@ -89,7 +91,7 @@ export function TagCard({
                 className="w-full"
                 onClick={linkTagToBike}
                 variant="secondary"
-                disabled={plate == "" || loading || selectedSubsidiary == null}
+                disabled={plate == "" || loading || snapSubsidiary.subsidiary == null}
               >
                 <Link className="h-4 w-4" /> Vincular tag
               </Button>

@@ -1,16 +1,14 @@
-import { useAreaCreating } from "@/contexts/AreaCreatingContext";
 import { Button } from "./ui/button";
 import { Eraser, Undo } from "lucide-react";
+import { areaCreationStore } from "@/lib/valtio";
 
-export function AreaPointControl() {
-  const { setPoints } = useAreaCreating();
-  
+export function AreaPointControl() {  
   function rollbackLastPoint() {
-    setPoints(prev => prev.slice(0, -1));
+    areaCreationStore.points = areaCreationStore.points.slice(0, -1);
   }
 
   function clearPoints() {
-    setPoints([]);
+    areaCreationStore.points = [];
   }
 
   return (

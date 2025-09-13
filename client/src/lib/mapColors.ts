@@ -21,6 +21,7 @@ export const MapColors = {
   },
 
   bike: {
+    searched: "#4f46e5",
     selected: "#22c55e",
     notSelected: "#ea580c",
     inRightArea: "#e2e8f0",

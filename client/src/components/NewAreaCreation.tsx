@@ -12,33 +12,27 @@ import {
 import { AreaDropdownMenu } from "./AreaDropdownMenu";
 import React from "react";
 import { YardCombobox } from "./YardCombobox";
-import { useSelectedYard } from "@/contexts/SelectedYardContext";
 import { AreaPointControl } from "./AreaPointControl";
-import { useAreaCreating } from "@/contexts/AreaCreatingContext";
 import { Check, PlusSquare, SquarePen } from "lucide-react";
+import { useSnapshot } from "valtio";
+import { areaCreationStore } from "@/lib/valtio";
 
 export function NewAreaCreation() {
-  const { yard, setYard } = useSelectedYard();
-  const { status, setStatus, setPoints } = useAreaCreating();
-
-  React.useEffect(() => {
-    setStatus("");
-    setPoints([]);
-  }, [yard, setPoints, setStatus]) 
+  const snapAreaCreation = useSnapshot(areaCreationStore); 
 
   function handleCancel() {
-    setYard(null);
-    setStatus("");
-    setPoints([]);
+    areaCreationStore.points = [];
+    areaCreationStore.status = "READY";
+    areaCreationStore.yard = undefined;
   }
 
   return (
     <div className="flex items-center gap-4">
-      {(yard && status) && <AreaPointControl />}
+      {(snapAreaCreation.yard && snapAreaCreation.status) && <AreaPointControl />}
 
       <Dialog>
         <DialogTrigger asChild>
-          {yard ? (
+          {snapAreaCreation.yard ? (
             <Button variant="default"><SquarePen className="h-4 w-4"/> Mudar status ou pátio</Button>
           ) : (
             <Button variant="default"><PlusSquare className="h-4 w-4" /> Criar nova área</Button>

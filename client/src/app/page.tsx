@@ -15,10 +15,9 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Notification } from "@/components/Notification";
 import { NewAreaCreation } from "@/components/NewAreaCreation";
 import { Button } from "@/components/ui/button";
-import { useAreaCreating } from "@/contexts/AreaCreatingContext";
-import { useSelectedYard } from "@/contexts/SelectedYardContext";
 import { Check } from "lucide-react";
-import { useSubsidiary } from "@/contexts/SubsidiaryContext";
+import { useSnapshot } from "valtio";
+import { areaCreationStore, subsidiaryStore } from "@/lib/valtio";
 const MapView = dynamic(
   () => import("@/components/MapView").then((mod) => mod.MapView),
   { ssr: false }
@@ -27,32 +26,29 @@ const MapView = dynamic(
 export default function Home() {
   const UPDATE_DATA_TIME = 2 * 1000; // 2 seconds
 
+  const snapAreaCreation = useSnapshot(areaCreationStore);
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
+
   const [tag, setTag] = React.useState<Apriltag | null>(null);
   const [bike, setBike] = React.useState<BikeSummary | null>(null);
-  const [data, setData] = React.useState<SubsidiaryTags | null>(null);
-
-  const { subsidiary, setSubsidiary } = useSubsidiary();
-  const { yard, setYard } = useSelectedYard();
-
-  const { status, setStatus, points, setPoints } = useAreaCreating();
 
   const [notification, setNotification] = React.useState<string>("");
 
   React.useEffect(() => {
     async function fetchYardsTags() {
-      if (!subsidiary) return;
+      if (!snapSubsidiary.subsidiary) return;
 
       console.log("[SUBSIDIARY] Fetching tag data");
 
       try {
         const response = await axios.get(
-          `${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${subsidiary.id}/tags`
+          `${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${snapSubsidiary.subsidiary.id}/tags`
         );
-        setData(response.data);
+        subsidiaryStore.subsidiaryTags = response.data;
       } catch {
         setNotification(
           "Não foi possível buscar as Tags dos pátio da filial: " +
-            subsidiary.name
+            snapSubsidiary.subsidiary.name
         );
       } finally {
         clearNotification<string>(setNotification, "");
@@ -67,26 +63,26 @@ export default function Home() {
     return () => {
       clearInterval(timer);
     };
-  }, [setData, subsidiary, UPDATE_DATA_TIME]);
+  }, [snapSubsidiary, UPDATE_DATA_TIME]);
 
   const handleFinishArea = async () => {
-    if (!yard?.id || points?.length < 3) {
+    if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
       setNotification("A área deve ter 3 ou mais pontos para ser criada");
       clearNotification<string>(setNotification, "");
       return;
     }
 
     const newArea = {
-      status,
-      boundary: points,
-      yardId: yard.id,
+      status: snapAreaCreation.status,
+      boundary: snapAreaCreation.points,
+      yardId: snapAreaCreation.yard.id,
     };
 
     try {
       await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, newArea);
-      setYard(null);
-      setStatus("");
-      setPoints([]);
+      areaCreationStore.points = [];
+      areaCreationStore.status = "READY";
+      areaCreationStore.yard = undefined;
     } catch {
       console.log("[MAIN] Error posting new area");
     }
@@ -94,29 +90,30 @@ export default function Home() {
 
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
-      {notification != "" && <Notification title="Tags" message={notification} />}
+      {notification != "" && (
+        <Notification title="Tags" message={notification} />
+      )}
 
       <div className="col-span-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <SubsidiaryCombobox
-            selectedSubsidiary={subsidiary}
-            setSelectedSubsidiary={setSubsidiary}
-          />
+          <SubsidiaryCombobox />
 
-          {subsidiary && (
+          {snapSubsidiary.subsidiary && (
             <div className="flex flex-row-reverse gap-4">
               <NewAreaCreation />
 
-              {points.length >= 3 && status != "" && (
-                <Button variant="default" onClick={handleFinishArea}><Check className="h-4 w-4"/> Confirmar criação</Button>
-              )}
+              {snapAreaCreation.points.length >= 3 &&
+                snapAreaCreation.status.length > 0 && (
+                  <Button variant="default" onClick={handleFinishArea}>
+                    <Check className="h-4 w-4" /> Confirmar criação
+                  </Button>
+                )}
             </div>
           )}
         </div>
 
         <div className="border-2 rounded-2xl w-full p-4">
           <MapView
-            data={data}
             setBikeSummary={setBike}
             setTag={setTag}
             apriltag={tag}
@@ -127,10 +124,8 @@ export default function Home() {
 
       <div className="col-span-1 flex flex-col gap-4">
         <SearchBike />
-        {(bike && data) && <BikeCard bike={mapBike(bike, data)} />}
-        {tag && !tag.bike && (
-          <TagCard tag={tag} selectedSubsidiary={subsidiary} setTag={setTag} />
-        )}
+        {bike && snapSubsidiary.subsidiaryTags && <BikeCard bike={mapBike(bike, snapSubsidiary.subsidiaryTags as SubsidiaryTags)} />}
+        {tag && !tag.bike && <TagCard tag={tag} setTag={setTag} />}
       </div>
     </div>
   );

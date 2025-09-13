@@ -38,22 +38,53 @@ export function mapBike(bike: BikeSummary, data: SubsidiaryTags) {
     status: bike.status,
     tagCode: tagCode || null,
     yard: yardMongo?.yard || null,
-    subsidiary: data.subsidiary
+    subsidiary: data.subsidiary,
   };
 
   return newBike;
 }
 
-export function pointInPolygon(point: Point, boundary: Point[], offset: number): boolean {
+export function pointInPolygon(
+  point: Point,
+  boundary: Point[],
+  offset: number
+): boolean {
   const { x, y } = point;
   let inside = false;
   for (let i = 0, j = boundary.length - 1; i < boundary.length; j = i++) {
-    const xi = boundary[i].x + offset, yi = boundary[i].y;
-    const xj = boundary[j].x + offset, yj = boundary[j].y;
+    const xi = boundary[i].x + offset,
+      yi = boundary[i].y;
+    const xj = boundary[j].x + offset,
+      yj = boundary[j].y;
     const intersect =
-      ((yi > y) !== (yj > y)) &&
-      (x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-10) + xi);
+      yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi + 1e-10) + xi;
     if (intersect) inside = !inside;
   }
   return inside;
 }
+
+function centerPoints(points: Point[], center: Point): Point[] {
+  return points.map((pt) => ({
+    x: pt.x + center.x,
+    y: pt.y + center.y,
+  }));
+}
+
+export function toKonvaPoints(
+  points: Point[],
+  center: Point,
+  offsetX?: number
+): number[] {
+  return centerPoints(points, center).flatMap((pt) => [
+    pt.x + (offsetX || 0),
+    pt.y,
+  ]);
+}
+
+export const isPointInsideYard = (
+  point: Point,
+  yardBoundary: Point[],
+  yardOffset: number
+) => {
+  return pointInPolygon(point, yardBoundary, yardOffset);
+};

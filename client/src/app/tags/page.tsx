@@ -13,25 +13,26 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
-import { Subsidiary } from "@/lib/types";
 import { clearNotification } from "@/lib/utils";
+import { subsidiaryStore } from "@/lib/valtio";
 import axios from "axios";
 import { Camera, ScanQrCode } from "lucide-react";
 import Image from "next/image";
 import React, { PropsWithChildren, useEffect } from "react";
 import Webcam from "react-webcam";
+import { useSnapshot } from "valtio";
 
 export default function Tags() {
   const webcamRef = React.useRef<Webcam | null>(null);
   const [imageSrc, setImageSrc] = React.useState<string | undefined>(undefined);
+
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
   );
 
-  const [selectedSubsidiary, setSelectedSubsidiary] =
-    React.useState<Subsidiary | null>(null);
   const [tagCode, setTagCode] = React.useState<string | undefined>(undefined);
   const [plate, setPlate] = React.useState<string | undefined>(undefined);
 
@@ -74,7 +75,7 @@ export default function Tags() {
     setLoading(true);
     try {
       await axios.post(
-        `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tagCode}/subsidiary/${selectedSubsidiary?.id}`
+        `${NEXT_PUBLIC_JAVA_URL}/bikes/${plate}/tag/${tagCode}/subsidiary/${snapSubsidiary.subsidiary?.id}`
       );
       setNotification("Tag foi vinculada com sucesso!");
     } catch (err: unknown) {
@@ -141,14 +142,11 @@ export default function Tags() {
             onChange={(e) => setPlate(e.target.value)}
           />
 
-          <SubsidiaryCombobox
-            selectedSubsidiary={selectedSubsidiary}
-            setSelectedSubsidiary={setSelectedSubsidiary}
-          />
+          <SubsidiaryCombobox />
 
           <Button
             onClick={linkTagToBike}
-            disabled={loading || !selectedSubsidiary || plate == ""}
+            disabled={loading || !snapSubsidiary.subsidiary || plate == ""}
           >
             Vincular {tagCode} com a moto
           </Button>

@@ -12,7 +12,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAreaCreating } from "@/contexts/AreaCreatingContext";
+import { useSnapshot } from "valtio";
+import { areaCreationStore } from "@/lib/valtio";
 
 const statuses = [
   { value: "BROKEN", label: "Quebrado" },
@@ -20,7 +21,7 @@ const statuses = [
 ];
 
 export function AreaDropdownMenu() {
-  const { status, setStatus } = useAreaCreating();
+  const snapAreaCreation = useSnapshot(areaCreationStore);
 
   return (
     <div className="flex items-center gap-4">
@@ -31,7 +32,7 @@ export function AreaDropdownMenu() {
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Status da nova área</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuRadioGroup value={status} onValueChange={setStatus}>
+          <DropdownMenuRadioGroup value={snapAreaCreation.status} onValueChange={(value) => areaCreationStore.status = value}>
             {statuses.map((status) => (
               <DropdownMenuRadioItem key={status.value} value={status.value}>
                 {status.label}

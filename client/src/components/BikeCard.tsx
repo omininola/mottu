@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Bike } from "@/lib/types";
+import { Bike, Point } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -13,12 +13,14 @@ import { Binoculars, Locate, MapPin, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
-import { clearNotification } from "@/lib/utils";
+import { clearNotification, toKonvaPoints } from "@/lib/utils";
 import { Notification } from "./Notification";
-import { useSubsidiary } from "@/contexts/SubsidiaryContext";
+import { useSnapshot } from "valtio";
+import { stageStore, subsidiaryStore } from "@/lib/valtio";
 
 export function BikeCard({ bike }: { bike: Bike }) {
-  const { subsidiary, setSubsidiary } = useSubsidiary();
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
+  const snapStage = useSnapshot(stageStore);
 
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
@@ -38,23 +40,52 @@ export function BikeCard({ bike }: { bike: Bike }) {
     }
   }
 
-  // TODO: Locate bike on map
+  // FIX: This code has to be runned 3 times before working
+  // 1 time for changing the subsidiary
+  // 2 times for changing the map position
+  // 3 times for updating zoom
   async function locateBikeOnMap() {
-    
-    // 1. Check if bike.yard.subsidiary is the same on current map
-    if (bike.subsidiary?.id != subsidiary?.id) {
+    if (bike.subsidiary?.id != snapSubsidiary.subsidiary?.id) {
       try {
-        const response = await axios.get(`${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${bike.subsidiary?.id}`);
-        setSubsidiary(response.data);
+        const response = await axios.get(
+          `${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${bike.subsidiary?.id}`
+        );
+        const responseTags = await axios.get(
+          `${NEXT_PUBLIC_JAVA_URL}/subsidiaries/${bike.subsidiary?.id}/tags`
+        );
+
+        subsidiaryStore.subsidiary = response.data;
+        subsidiaryStore.subsidiaryTags = responseTags.data;
       } catch (err: unknown) {
         if (axios.isAxiosError(err) && err.status == 404) {
           console.log(err.response?.data);
         }
       }
     }
-    
-    // 2. Check bike position and move camera there
-    
+
+    const yardId = bike.yard?.id;
+    const yard = snapSubsidiary.subsidiaryTags?.yards.find(
+      (yardMongo) => yardMongo.yard.id == yardId
+    );
+    const tag = yard?.tags.find((tag) => tag.tag.code == bike.tagCode);
+    const konvaPos = toKonvaPoints(
+      [tag?.position] as Point[],
+      snapStage.center
+    );
+
+    // IDK why this math works, but it works :D
+    const actualPos = {
+      x: konvaPos[0] * -1 * snapStage.scale + konvaPos[0],
+      y: konvaPos[1] * -1 * snapStage.scale + konvaPos[1],
+    };
+
+    stageStore.pos = actualPos;
+    stageStore.scale = 8;
+
+    console.log("[DEBUG] BikeCard | snapStage.scale: ", snapStage.scale);
+    console.log("[DEBUG] BikeCard | snapStage.pos: ", snapStage.pos);
+    console.log("[DEBUG] BikeCard | konvaPos: ", konvaPos);
+    console.log("[DEBUG] BikeCard | actualPos: ", actualPos);
 
   }
 
@@ -74,17 +105,23 @@ export function BikeCard({ bike }: { bike: Bike }) {
           <p>Chassi: {bike.chassis}</p>
           <p>Modelo: {bike.model}</p>
           <p>Status: {bike.status}</p>
-          {(bike.tagCode && !isTagUnlinked) ? <p>Tag: {bike.tagCode}</p> : <p>Sem dados da tag</p>}
-          {(bike.yard && bike.subsidiary && !isTagUnlinked) ? (
+          {bike.tagCode && !isTagUnlinked ? (
+            <p>Tag: {bike.tagCode}</p>
+          ) : (
+            <p>Sem dados da tag</p>
+          )}
+          {bike.yard && bike.subsidiary && !isTagUnlinked ? (
             <p className="flex items-center gap-4">
               <MapPin className="h-4 w-4" />
-              <span>{bike.yard.name} - {bike.subsidiary.name}</span>
+              <span>
+                {bike.yard.name} - {bike.subsidiary.name}
+              </span>
             </p>
           ) : (
             <p>Sem dados da localização</p>
           )}
         </CardContent>
-        {((bike.yard || bike.tagCode) && !isTagUnlinked) && (
+        {(bike.yard || bike.tagCode) && !isTagUnlinked && (
           <CardFooter>
             <div className="flex flex-col gap-4 w-full">
               {bike.yard && (
@@ -93,7 +130,7 @@ export function BikeCard({ bike }: { bike: Bike }) {
                 </Button>
               )}
 
-              {(bike.tagCode) && (
+              {bike.tagCode && (
                 <Button variant="outline" onClick={unlinkBikeFromTag}>
                   <Unlink className="h-4 w-4" /> Desvincular tag
                 </Button>
