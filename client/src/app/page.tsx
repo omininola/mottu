@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
 import { useSnapshot } from "valtio";
 import { areaCreationStore, subsidiaryStore } from "@/lib/valtio";
+import { ResetMapButton } from "@/components/ResetMapButton";
 const MapView = dynamic(
   () => import("@/components/MapView").then((mod) => mod.MapView),
   { ssr: false }
@@ -96,7 +97,10 @@ export default function Home() {
 
       <div className="col-span-3 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <SubsidiaryCombobox />
+          <div className="flex gap-4">
+            <SubsidiaryCombobox />
+            <ResetMapButton />
+          </div>
 
           {snapSubsidiary.subsidiary && (
             <div className="flex flex-row-reverse gap-4">
