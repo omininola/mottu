@@ -121,16 +121,16 @@ export function BikeCard({
           </CardAction>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <BikeInfoField icon={<LandPlot className="h-4 w-4" />} text="Status">
+          <CardInfoField icon={<LandPlot className="h-4 w-4" />} text="Status">
             {bike.status}
-          </BikeInfoField>
-          <BikeInfoField icon={<Blocks className="h-4 w-4" />} text="Modelo">
+          </CardInfoField>
+          <CardInfoField icon={<Blocks className="h-4 w-4" />} text="Modelo">
             {bike.model}
-          </BikeInfoField>
-          <BikeInfoField icon={<Tag className="h-4 w-4" />} text="Tag">
+          </CardInfoField>
+          <CardInfoField icon={<Tag className="h-4 w-4" />} text="Tag">
             {bike.tagCode?.toUpperCase() || "Não vinculada"}
-          </BikeInfoField>
-          <BikeInfoField
+          </CardInfoField>
+          <CardInfoField
             icon={<MapPin className="h-4 w-4" />}
             text="Localização"
           >
@@ -138,7 +138,7 @@ export function BikeCard({
               .toUpperCase()
               .concat(" | ", bike.subsidiary?.name.toUpperCase() || "") ||
               "Sem informação"}
-          </BikeInfoField>
+          </CardInfoField>
         </CardContent>
         {(bike.yard || bike.tagCode) && !isTagUnlinked && (
           <CardFooter>
@@ -175,7 +175,7 @@ export function BikeCardEmpty() {
   );
 }
 
-function BikeInfoField({
+export function CardInfoField({
   icon,
   text,
   children,
@@ -187,7 +187,7 @@ function BikeInfoField({
     <Label>
       {icon}
       {text}
-      <Badge variant="outline">{children}</Badge>
+      <Badge variant="default">{children}</Badge>
     </Label>
   );
 }

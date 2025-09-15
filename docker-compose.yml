@@ -36,7 +36,7 @@ services:
       - server
     restart: on-failure:5
     environment:
-      VIDEO_CAPTURE_ID: 0
+      VIDEO_CAPTURE_ID: 2
       JAVA_HOST: server
       JAVA_PORT: 8080
       YARD_ID: 1

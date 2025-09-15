@@ -5,7 +5,7 @@ import * as React from "react";
 import { Apriltag, Subsidiary } from "@/lib/types";
 import {
   Card,
-  CardDescription,
+  CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -17,16 +17,17 @@ import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import axios from "axios";
 import { clearNotification } from "@/lib/utils";
 import { Notification } from "./Notification";
-import { Link } from "lucide-react";
+import { Link, MapPin, Tag } from "lucide-react";
 import { useSnapshot } from "valtio";
 import { subsidiaryStore } from "@/lib/valtio";
+import { CardInfoField } from "./BikeCard";
 
 export function TagCard({
   tag,
   setTag,
 }: {
   tag: Apriltag;
-  setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>
+  setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
   const snapSubsidiary = useSnapshot(subsidiaryStore);
 
@@ -67,37 +68,44 @@ export function TagCard({
 
       <Card>
         <CardHeader>
-          <CardTitle>Tag: {tag.code}</CardTitle>
-          <CardDescription>
-            <p>Filial: {tag.subsidiary}</p>
-            <p>A tag não está vinculada a nenhuma moto</p>
-          </CardDescription>
-          <CardFooter className="flex flex-col gap-4 w-full my-4 p-0">
-            <form action="#" className="flex flex-col gap-4 w-full">
-              <div className="flex items-center gap-4">
-                <Label htmlFor="plate">Placa</Label>
-                <Input
-                  className="w-full"
-                  type="text"
-                  placeholder="123-ABC"
-                  id="plate"
-                  value={plate}
-                  onChange={(e) => setPlate(e.target.value)}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full"
-                onClick={linkTagToBike}
-                variant="secondary"
-                disabled={plate == "" || loading || snapSubsidiary.subsidiary == null}
-              >
-                <Link className="h-4 w-4" /> Vincular tag
-              </Button>
-            </form>
-          </CardFooter>
+          <CardTitle className="flex items-center border-l-4 rounded-xs border-foreground pl-2">
+            <Tag className="mr-2" />
+            <span>{tag.code.toUpperCase()}</span>
+          </CardTitle>
         </CardHeader>
+        <CardContent>
+          <CardInfoField icon={<MapPin className="h-4 w-4" />} text="Filial">
+            {tag.subsidiary}
+          </CardInfoField>
+          <p>Essa tag não está vinculada a nenhuma moto!</p>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-4 my-4">
+          <form action="#" className="flex flex-col gap-4 w-full">
+            <div className="flex items-center gap-4">
+              <Label htmlFor="plate">Placa</Label>
+              <Input
+                className="w-full"
+                type="text"
+                placeholder="123-ABC"
+                id="plate"
+                value={plate}
+                onChange={(e) => setPlate(e.target.value)}
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full"
+              onClick={linkTagToBike}
+              variant="secondary"
+              disabled={
+                plate == "" || loading || snapSubsidiary.subsidiary == null
+              }
+            >
+              <Link className="h-4 w-4" /> Vincular tag
+            </Button>
+          </form>
+        </CardFooter>
       </Card>
     </>
   );
