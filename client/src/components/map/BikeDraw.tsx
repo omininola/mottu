@@ -103,19 +103,3 @@ export function BikeDraw({
     />
   );
 }
-
-/**      
-  <RegularPolygon
-    x={pos.x}
-    y={pos.y}
-    sides={3}
-    radius={5}
-    stroke={stroke}
-    strokeWidth={1}
-    lineJoin="round"
-    fill={fill}
-    onMouseOver={() => handleMouseOver(bikeObj)}
-    onMouseDown={() => handleMouseDown(bikeObj)}
-    onMouseOut={() => handleMouseOut()}
-  />
- */

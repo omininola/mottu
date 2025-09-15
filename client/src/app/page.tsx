@@ -124,7 +124,15 @@ export default function Home() {
 
       <div className="col-span-1 flex flex-col gap-4">
         <SearchBike />
-        {bike && snapSubsidiary.subsidiaryTags && <BikeCard bike={mapBike(bike, snapSubsidiary.subsidiaryTags as SubsidiaryTags)} />}
+        {bike && snapSubsidiary.subsidiaryTags && (
+          <BikeCard
+            setBike={() => setBike(null)}
+            bike={mapBike(
+              bike,
+              snapSubsidiary.subsidiaryTags as SubsidiaryTags
+            )}
+          />
+        )}
         {tag && !tag.bike && <TagCard tag={tag} setTag={setTag} />}
       </div>
     </div>

@@ -3,13 +3,14 @@ import * as React from "react";
 import { Bike, Point } from "@/lib/types";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Binoculars, Locate, MapPin, Unlink } from "lucide-react";
+import { Binoculars, Locate, MapPin, Trash, Unlink } from "lucide-react";
 import { Button } from "./ui/button";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
@@ -18,7 +19,13 @@ import { Notification } from "./Notification";
 import { useSnapshot } from "valtio";
 import { stageStore, subsidiaryStore } from "@/lib/valtio";
 
-export function BikeCard({ bike }: { bike: Bike }) {
+export function BikeCard({
+  bike,
+  setBike,
+}: {
+  bike: Bike;
+  setBike: () => void;
+}) {
   const snapSubsidiary = useSnapshot(subsidiaryStore);
   const snapStage = useSnapshot(stageStore);
 
@@ -96,6 +103,9 @@ export function BikeCard({ bike }: { bike: Bike }) {
             <Binoculars className="mr-2" /> {bike.plate}
           </CardTitle>
           <CardDescription>Informações da moto pesquisada</CardDescription>
+          <CardAction>
+            <Button variant="destructive" onClick={setBike}><Trash className="h-4 w-4" /></Button>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <p>Chassi: {bike.chassis}</p>

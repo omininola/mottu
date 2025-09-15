@@ -16,13 +16,9 @@ import { bikeSearchedStore } from "@/lib/valtio";
 
 export function SearchBike() {
   const [searchText, setSearchText] = React.useState<string>("");
-  const [bikeSearched, setBikeSearched] = React.useState<Bike | undefined>(
-    undefined
-  );
+  const [bikeSearched, setBikeSearched] = React.useState<Bike | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [notification, setNotification] = React.useState<string | undefined>(
-    undefined
-  );
+  const [notification, setNotification] = React.useState<string>("");
 
   async function searchBike() {
     setLoading(true);
@@ -44,7 +40,7 @@ export function SearchBike() {
         setNotification(err.response.data.message);
       } else setNotification("Não foi possível se comunicar com o servidor");
     } finally {
-      clearNotification<string | undefined>(setNotification, undefined);
+      clearNotification<string>(setNotification, "");
       setLoading(false);
     }
   }
@@ -75,7 +71,17 @@ export function SearchBike() {
       </form>
 
       <div className="w-full">
-        {bikeSearched ? <BikeCard bike={bikeSearched} /> : <BikeCardEmpty />}
+        {bikeSearched ? (
+          <BikeCard
+            setBike={() => {
+              setBikeSearched(null);
+              bikeSearchedStore.bikeId = undefined;
+            }}
+            bike={bikeSearched}
+          />
+        ) : (
+          <BikeCardEmpty />
+        )}
       </div>
     </>
   );
