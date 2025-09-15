@@ -14,10 +14,8 @@ import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Notification } from "@/components/Notification";
 import { NewAreaCreation } from "@/components/NewAreaCreation";
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
 import { useSnapshot } from "valtio";
-import { areaCreationStore, subsidiaryStore } from "@/lib/valtio";
+import { subsidiaryStore } from "@/lib/valtio";
 import { ResetMapButton } from "@/components/ResetMapButton";
 const MapView = dynamic(
   () => import("@/components/MapView").then((mod) => mod.MapView),
@@ -27,7 +25,6 @@ const MapView = dynamic(
 export default function Home() {
   const UPDATE_DATA_TIME = 2 * 1000; // 2 seconds
 
-  const snapAreaCreation = useSnapshot(areaCreationStore);
   const snapSubsidiary = useSnapshot(subsidiaryStore);
 
   const [tag, setTag] = React.useState<Apriltag | null>(null);
@@ -66,57 +63,21 @@ export default function Home() {
     };
   }, [snapSubsidiary, UPDATE_DATA_TIME]);
 
-  const handleFinishArea = async () => {
-    if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
-      setNotification("A área deve ter 3 ou mais pontos para ser criada");
-      clearNotification<string>(setNotification, "");
-      return;
-    }
-
-    const newArea = {
-      status: snapAreaCreation.status,
-      boundary: snapAreaCreation.points,
-      yardId: snapAreaCreation.yard.id,
-    };
-
-    try {
-      await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, newArea);
-      areaCreationStore.points = [];
-      areaCreationStore.status = "READY";
-      areaCreationStore.yard = undefined;
-    } catch {
-      console.log("[MAIN] Error posting new area");
-    }
-  };
-
   return (
-    <div className="grid grid-cols-4 gap-4 p-4">
-      {notification != "" && (
-        <Notification title="Tags" message={notification} />
-      )}
+    <div className="flex flex-col lg:grid grid-cols-7 gap-4 p-4">
+      {notification && <Notification title="Tags" message={notification} />}
 
-      <div className="col-span-3 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
+      <div className="col-span-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <div className="flex gap-4">
             <SubsidiaryCombobox />
             <ResetMapButton />
           </div>
 
-          {snapSubsidiary.subsidiary && (
-            <div className="flex flex-row-reverse gap-4">
-              <NewAreaCreation />
-
-              {snapAreaCreation.points.length >= 3 &&
-                snapAreaCreation.status.length > 0 && (
-                  <Button variant="default" onClick={handleFinishArea}>
-                    <Check className="h-4 w-4" /> Confirmar criação
-                  </Button>
-                )}
-            </div>
-          )}
+          <NewAreaCreation />
         </div>
 
-        <div className="border-2 rounded-2xl w-full p-4">
+        <div className="border-1 rounded-xl w-full p-2 shadow">
           <MapView
             setBikeSummary={setBike}
             setTag={setTag}
@@ -126,7 +87,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="col-span-1 flex flex-col gap-4">
+      <div className="col-span-2 flex flex-col gap-4">
         <SearchBike />
         {bike && snapSubsidiary.subsidiaryTags && (
           <BikeCard

@@ -49,24 +49,27 @@ export function SearchBike() {
     <>
       {notification && <Notification title="Ops!" message={notification} />}
 
-      <form className="flex gap-4" action="#">
-        <Label htmlFor="plate">Placa</Label>
-        <Input
-          type="text"
-          name="plate"
-          id="plate"
-          placeholder="123-ABC"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+      <form className="flex flex-row lg:flex-col gap-4" action="#">
+        <div className="flex gap-4 w-full">
+          <Label htmlFor="plate">Placa</Label>
+          <Input
+            type="text"
+            name="plate"
+            id="plate"
+            placeholder="123-ABC"
+            className="w-full"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+        </div>
 
         <Button type="submit" disabled={loading} onClick={searchBike}>
           {loading ? (
-            <LoaderIcon className="mr-1 h-4 w-4 animate-spin" />
+            <LoaderIcon className="h-4 w-4 animate-spin" />
           ) : (
-            <Search className="mr-1 h-4 w-4" />
-          )}{" "}
-          Pesquisar
+            <Search className="h-4 w-4" />
+          )}
+          <span>Pesquisar</span>
         </Button>
       </form>
 

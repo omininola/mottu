@@ -15,10 +15,17 @@ import { YardCombobox } from "./YardCombobox";
 import { AreaPointControl } from "./AreaPointControl";
 import { Check, PlusSquare, SquarePen } from "lucide-react";
 import { useSnapshot } from "valtio";
-import { areaCreationStore } from "@/lib/valtio";
+import { areaCreationStore, subsidiaryStore } from "@/lib/valtio";
+import { clearNotification } from "@/lib/utils";
+import axios from "axios";
+import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
+import { Notification } from "./Notification";
 
 export function NewAreaCreation() {
-  const snapAreaCreation = useSnapshot(areaCreationStore); 
+  const snapSubsidiary = useSnapshot(subsidiaryStore);
+  const snapAreaCreation = useSnapshot(areaCreationStore);
+
+  const [notification, setNotification] = React.useState<string>("");
 
   function handleCancel() {
     areaCreationStore.points = [];
@@ -26,17 +33,51 @@ export function NewAreaCreation() {
     areaCreationStore.yard = undefined;
   }
 
+  const handleFinishArea = async () => {
+    if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
+      setNotification("A área deve ter 3 ou mais pontos para ser criada");
+      clearNotification<string>(setNotification, "");
+      return;
+    }
+
+    const newArea = {
+      status: snapAreaCreation.status,
+      boundary: snapAreaCreation.points,
+      yardId: snapAreaCreation.yard.id,
+    };
+
+    try {
+      await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, newArea);
+      areaCreationStore.points = [];
+      areaCreationStore.status = "READY";
+      areaCreationStore.yard = undefined;
+    } catch {
+      console.log("[MAIN] Error posting new area");
+    }
+  };
+
   return (
-    <div className="flex items-center gap-4">
-      {(snapAreaCreation.yard && snapAreaCreation.status) && <AreaPointControl />}
+    <div className="flex flex-wrap items-center gap-4">
+      {notification != "" && (
+        <Notification title="Area" message={notification} />
+      )}
 
       <Dialog>
         <DialogTrigger asChild>
-          {snapAreaCreation.yard ? (
-            <Button variant="default"><SquarePen className="h-4 w-4"/> Mudar status ou pátio</Button>
-          ) : (
-            <Button variant="default"><PlusSquare className="h-4 w-4" /> Criar nova área</Button>
-          )}          
+          <Button
+            disabled={snapSubsidiary.subsidiary == null}
+            variant="secondary"
+          >
+            {snapAreaCreation.yard ? (
+              <>
+                <SquarePen className="h-4 w-4" /> Mudar informações
+              </>
+            ) : (
+              <>
+                <PlusSquare className="h-4 w-4" /> Criar nova área
+              </>
+            )}
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -59,11 +100,23 @@ export function NewAreaCreation() {
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="default"><Check className="h-4 w-4"/> Confirmar</Button>
+              <Button variant="default">
+                <Check className="h-4 w-4" />
+                Confirmar
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AreaPointControl disabled={snapAreaCreation.points.length == 0} />
+      <Button
+        disabled={snapAreaCreation.points.length < 3}
+        variant="default"
+        onClick={handleFinishArea}
+      >
+        <Check className="h-4 w-4" /> Confirmar
+      </Button>
     </div>
   );
 }

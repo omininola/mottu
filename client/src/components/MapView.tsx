@@ -30,12 +30,12 @@ export function MapView({
   apriltag: Apriltag | null;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
-  const MAP_WIDTH = (window.innerWidth * 3) / 4;
-  const MAP_HEIGHT = (window.innerHeight * 3) / 4;
+  const MAP_WIDTH = window.innerWidth;
+  const MAP_HEIGHT = window.innerHeight / 2;
   const CENTER_X = MAP_WIDTH / 2;
   const CENTER_Y = MAP_HEIGHT / 2;
   const OFFSET_X = 20;
-  
+
   stageStore.center = { x: CENTER_X, y: CENTER_Y };
   const snapSubsidiary = useSnapshot(subsidiaryStore);
   const snapAreaCreation = useSnapshot(areaCreationStore);
@@ -122,7 +122,7 @@ export function MapView({
   // Wheel to zoom
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
-    const scaleBy = 1.10;
+    const scaleBy = 1.1;
     const maxZoomOut = 1;
     const stage = e.target.getStage() as Konva.Stage;
     const oldScale = snapStage.scale;
@@ -136,7 +136,6 @@ export function MapView({
       return;
     }
     stageStore.scale = newScale;
-    
 
     // Keep the pointer position stable during zoom
     const mousePointTo = {
@@ -153,14 +152,14 @@ export function MapView({
 
   return (
     <>
-      {notification != "" && (
+      {notification && (
         <Notification title="Nova área" message={notification} />
       )}
 
       <Stage
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
-        className="border-2 rounded-2xl overflow-hidden bg-slate-100"
+        className="border-2 rounded-lg overflow-hidden bg-slate-100"
         scaleX={snapStage.scale}
         scaleY={snapStage.scale}
         x={snapStage.pos.x}
@@ -238,7 +237,9 @@ export function MapView({
                               key={point.x + point.y}
                               x={pointKonva[0]}
                               y={pointKonva[1]}
-                              radius={2}
+                              radius={0.8}
+                              strokeWidth={0.4}
+                              stroke="#fff"
                               fill={isFirstOrLast ? "red" : "yellow"}
                             />
                           );

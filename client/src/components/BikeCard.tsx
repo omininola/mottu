@@ -10,7 +10,16 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Binoculars, Locate, MapPin, Trash, Unlink } from "lucide-react";
+import {
+  Bike as BikeIcon,
+  Blocks,
+  LandPlot,
+  Locate,
+  MapPin,
+  Tag,
+  Trash,
+  Unlink,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
@@ -18,6 +27,8 @@ import { clearNotification, toKonvaPoints } from "@/lib/utils";
 import { Notification } from "./Notification";
 import { useSnapshot } from "valtio";
 import { stageStore, subsidiaryStore } from "@/lib/valtio";
+import { Badge } from "./ui/badge";
+import { Label } from "./ui/label";
 
 export function BikeCard({
   bike,
@@ -98,34 +109,36 @@ export function BikeCard({
         <Notification title="Vinculo de tags" message={notification} />
       )}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Binoculars className="mr-2" /> {bike.plate}
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle className="flex items-center border-l-4 rounded-xs border-foreground pl-2">
+            <BikeIcon className="mr-2" />
+            <span>{bike.plate}</span>
           </CardTitle>
-          <CardDescription>Informações da moto pesquisada</CardDescription>
           <CardAction>
-            <Button variant="destructive" onClick={setBike}><Trash className="h-4 w-4" /></Button>
+            <Button variant="ghost" onClick={setBike}>
+              <Trash className="h-4 w-4" />
+            </Button>
           </CardAction>
         </CardHeader>
-        <CardContent>
-          <p>Chassi: {bike.chassis}</p>
-          <p>Modelo: {bike.model}</p>
-          <p>Status: {bike.status}</p>
-          {bike.tagCode && !isTagUnlinked ? (
-            <p>Tag: {bike.tagCode}</p>
-          ) : (
-            <p>Sem dados da tag</p>
-          )}
-          {bike.yard && bike.subsidiary && !isTagUnlinked ? (
-            <p className="flex items-center gap-4">
-              <MapPin className="h-4 w-4" />
-              <span>
-                {bike.yard.name} - {bike.subsidiary.name}
-              </span>
-            </p>
-          ) : (
-            <p>Sem dados da localização</p>
-          )}
+        <CardContent className="flex flex-col gap-2">
+          <BikeInfoField icon={<LandPlot className="h-4 w-4" />} text="Status">
+            {bike.status}
+          </BikeInfoField>
+          <BikeInfoField icon={<Blocks className="h-4 w-4" />} text="Modelo">
+            {bike.model}
+          </BikeInfoField>
+          <BikeInfoField icon={<Tag className="h-4 w-4" />} text="Tag">
+            {bike.tagCode?.toUpperCase() || "Não vinculada"}
+          </BikeInfoField>
+          <BikeInfoField
+            icon={<MapPin className="h-4 w-4" />}
+            text="Localização"
+          >
+            {bike.yard?.name
+              .toUpperCase()
+              .concat(" | ", bike.subsidiary?.name.toUpperCase() || "") ||
+              "Sem informação"}
+          </BikeInfoField>
         </CardContent>
         {(bike.yard || bike.tagCode) && !isTagUnlinked && (
           <CardFooter>
@@ -159,5 +172,22 @@ export function BikeCardEmpty() {
         </CardDescription>
       </CardHeader>
     </Card>
+  );
+}
+
+function BikeInfoField({
+  icon,
+  text,
+  children,
+}: {
+  icon: React.ReactNode;
+  text: string;
+} & React.PropsWithChildren) {
+  return (
+    <Label>
+      {icon}
+      {text}
+      <Badge variant="outline">{children}</Badge>
+    </Label>
   );
 }
