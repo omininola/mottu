@@ -42,7 +42,7 @@ export function AreaDropdownMenu() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <p className="text-muted-foreground text-sm">{status}</p>
+      <p className="text-muted-foreground text-sm">{snapAreaCreation.status}</p>
     </div>
   );
 }
