@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AreaDropdownMenu } from "./AreaDropdownMenu";
-import React from "react";
+import * as React from "react";
 import { YardCombobox } from "./YardCombobox";
 import { AreaPointControl } from "./AreaPointControl";
 import { Check, PlusSquare, SquarePen } from "lucide-react";
@@ -33,7 +33,7 @@ export function NewAreaCreation() {
     areaCreationStore.yard = undefined;
   }
 
-  const handleFinishArea = async () => {
+  async function handleFinishArea() {
     if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
       setNotification("A área deve ter 3 ou mais pontos para ser criada");
       clearNotification<string>(setNotification, "");

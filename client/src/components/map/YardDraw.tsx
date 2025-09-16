@@ -1,4 +1,4 @@
-import { MapColors } from "@/lib/mapColors";
+import { MAP_COLORS } from "@/lib/map";
 import { Line, Text } from "react-konva";
 
 export function YardDraw({
@@ -24,16 +24,16 @@ export function YardDraw({
         text={yardName}
         fontSize={20}
         fontFamily="Arial"
-        fill={MapColors.yard.text}
+        fill={MAP_COLORS.yard.text}
         listening={false}
       />
       <Line
         points={points}
         closed={true}
-        stroke={MapColors.yard.stroke}
+        stroke={MAP_COLORS.yard.stroke}
         strokeWidth={2}
         listening={false}
-        fill={MapColors.yard.fill}
+        fill={MAP_COLORS.yard.fill}
       />
     </>
   );

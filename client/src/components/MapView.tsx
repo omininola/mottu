@@ -30,7 +30,8 @@ export function MapView({
   apriltag: Apriltag | null;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
-  const MAP_WIDTH = window.innerWidth;
+  const LG_BREAKPOINT = 1024; // Tailwind lg breakpoint
+  const MAP_WIDTH = window.innerWidth <= LG_BREAKPOINT ? window.innerWidth : (window.innerWidth * 5) / 7;
   const MAP_HEIGHT = window.innerHeight / 2;
   const CENTER_X = MAP_WIDTH / 2;
   const CENTER_Y = MAP_HEIGHT / 2;
@@ -53,33 +54,35 @@ export function MapView({
 
     const clickPoint = { x: mapX - CENTER_X, y: mapY - CENTER_Y };
 
-    let idxFound = 0;
-    let xValuesPreviousYard: number[] = [];
-    const yardMongoFound = snapSubsidiary.subsidiaryTags?.yards.find(
-      (y, idx) => {
-        if (y.yard.id == snapAreaCreation.yard?.id) {
-          idxFound = idx;
-          if (snapSubsidiary.subsidiaryTags?.yards[idx - 1] != null)
-            xValuesPreviousYard = snapSubsidiary.subsidiaryTags.yards[
-              idx - 1
-            ].yard.boundary.map((point) => point.x);
-          return true;
-        }
-        return false;
-      }
-    );
-    if (!yardMongoFound) return;
+    const idxFound = snapSubsidiary.subsidiaryTags?.yards.findIndex(
+      (yardMongo) => yardMongo.yard.id == snapAreaCreation.yard?.id
+    ) || 0;
 
     let yardOffsetX = 0;
-    if (xValuesPreviousYard.length != 0) {
-      const rightMostPreviusYard = Math.max(...xValuesPreviousYard);
-      yardOffsetX = rightMostPreviusYard + idxFound * OFFSET_X;
+
+    if (idxFound > 0) {
+      const initialValue = 0;
+      const stopSign = idxFound;
+
+      const totalOffsetX = snapSubsidiary.subsidiaryTags?.yards.reduce(
+        (acc, curr, idx) => {
+          if (idx >= stopSign) return acc;
+  
+          const xValues = curr.yard.boundary.flatMap((yard) => yard.x);
+          const rightMostValue = Math.max(...xValues);
+  
+          return acc + rightMostValue;
+        },
+        initialValue
+      );
+
+      yardOffsetX = (totalOffsetX || 0) + idxFound * OFFSET_X;
     }
 
     if (
       isPointInsideYard(
         clickPoint,
-        yardMongoFound.yard.boundary as Point[],
+        snapSubsidiary.subsidiaryTags?.yards[idxFound].yard.boundary as Point[],
         yardOffsetX
       )
     ) {
@@ -92,41 +95,41 @@ export function MapView({
 
   const snapStage = useSnapshot(stageStore);
 
+  const stage = React.useRef<Konva.Stage>(null);
   const isDragging = React.useRef(false);
-  const lastPointerPos = React.useRef<{ x: number; y: number } | null>(null);
+  const lastPointerPos = React.useRef<Point | null>(null);
 
   // Drag to pan
-  const handleMouseDown = (e: KonvaEventObject<PointerEvent>) => {
+  function handleMouseDown() {
     isDragging.current = true;
-    const stage = e.target.getStage() as Konva.Stage;
-    lastPointerPos.current = stage.getStage().getPointerPosition();
-  };
+    if (stage.current) {
+      lastPointerPos.current = stage.current?.getPointerPosition();
+    }
+  }
 
-  const handleMouseMove = (e: KonvaEventObject<PointerEvent>) => {
+  function handleMouseMove() {
     if (!isDragging.current) return;
-    const stage = e.target.getStage() as Konva.Stage;
-    const pointer = stage.getPointerPosition();
+    const pointer = stage.current?.getPointerPosition();
     if (pointer && lastPointerPos.current) {
       const dx = pointer.x - lastPointerPos.current.x;
       const dy = pointer.y - lastPointerPos.current.y;
       stageStore.pos = { x: snapStage.pos.x + dx, y: snapStage.pos.y + dy };
       lastPointerPos.current = pointer;
     }
-  };
+  }
 
-  const handleMouseUp = () => {
+  function handleMouseUp() {
     isDragging.current = false;
     lastPointerPos.current = null;
-  };
+  }
 
   // Wheel to zoom
-  const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
-    e.evt.preventDefault();
+  function handleWheel(e: KonvaEventObject<WheelEvent>) {
     const scaleBy = 1.1;
     const maxZoomOut = 1;
-    const stage = e.target.getStage() as Konva.Stage;
     const oldScale = snapStage.scale;
-    const pointer = stage.getStage().getPointerPosition();
+
+    const pointer = stage.current?.getPointerPosition();
     if (!pointer) return;
 
     // Calculate new scale
@@ -148,7 +151,7 @@ export function MapView({
     };
 
     stageStore.pos = newPos;
-  };
+  }
 
   return (
     <>
@@ -157,6 +160,7 @@ export function MapView({
       )}
 
       <Stage
+        ref={stage}
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
         className="border-2 rounded-lg overflow-hidden bg-slate-100"
@@ -167,9 +171,9 @@ export function MapView({
         draggable={false}
         onClick={handleMapClick}
         onMouseDown={handleMouseDown}
-        //onTouchStart={handleMouseDown}
+        onTouchStart={handleMouseDown}
         onMouseMove={handleMouseMove}
-        //onTouchMove={handleMouseMove}
+        onTouchMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onTouchEnd={handleMouseUp}
         onWheel={handleWheel}
@@ -178,16 +182,21 @@ export function MapView({
           {snapSubsidiary.subsidiaryTags?.yards &&
             snapSubsidiary.subsidiaryTags?.yards.length > 0 &&
             snapSubsidiary.subsidiaryTags?.yards.map((yardMongo, idx) => {
-              let xValues: number[] = [];
-              if (snapSubsidiary.subsidiaryTags?.yards[idx - 1] != null) {
-                xValues = snapSubsidiary.subsidiaryTags.yards[
-                  idx - 1
-                ].yard.boundary.map((point) => point.x);
-              }
+              const initialValue = 0;
+              const stopSign = idx;
+              const totalOffsetX = snapSubsidiary.subsidiaryTags?.yards.reduce(
+                (acc, curr, idx) => {
+                  if (idx >= stopSign) return acc;
 
-              let rightMost = 0;
-              if (xValues.length >= 1) rightMost = Math.max(...xValues);
-              const yardOffsetX = rightMost + idx * OFFSET_X;
+                  const xValues = curr.yard.boundary.flatMap((yard) => yard.x);
+                  const rightMostValue = Math.max(...xValues);
+
+                  return acc + rightMostValue;
+                },
+                initialValue
+              );
+
+              const yardOffsetX = (totalOffsetX || 0) + idx * OFFSET_X;
 
               return (
                 <>
@@ -234,7 +243,7 @@ export function MapView({
 
                           return (
                             <Circle
-                              key={point.x + point.y}
+                              key={idx}
                               x={pointKonva[0]}
                               y={pointKonva[1]}
                               radius={0.8}

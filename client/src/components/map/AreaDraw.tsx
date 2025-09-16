@@ -1,4 +1,4 @@
-import { MapColors } from "@/lib/mapColors";
+import { MAP_COLORS } from "@/lib/map";
 import { Line } from "react-konva";
 
 export function AreaDraw({
@@ -11,11 +11,11 @@ export function AreaDraw({
   function getAreaColor(status: string) {
     switch (status) {
       case "BROKEN":
-        return MapColors.area.broken;
+        return MAP_COLORS.area.broken;
       case "READY":
-        return MapColors.area.ready;
+        return MAP_COLORS.area.ready;
       default:
-        return MapColors.area.default;
+        return MAP_COLORS.area.default;
     }
   }
 

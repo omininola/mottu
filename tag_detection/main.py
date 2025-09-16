@@ -16,11 +16,13 @@ JAVA_PORT = os.getenv("JAVA_PORT", "8080")
 YARD_ID = int(os.getenv("YARD_ID", "1"))
 UPDATE_TAG_INTERVAL = int(os.getenv("UPDATE_TAG_INTERVAL", "10"))
 
-detector = TagDetector()
+java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}/", YARD_ID)
+yard_information = java_client.get_yard_information()
+
+detector = TagDetector(yard_information)
 
 def gen_frames():
     cap = cv2.VideoCapture(VIDEO_CAPTURE_ID)
-    java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}/", YARD_ID)
     
     W = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     H = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

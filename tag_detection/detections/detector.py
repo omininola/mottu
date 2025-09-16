@@ -2,7 +2,7 @@ import cv2
 import pupil_apriltags as apriltag
 
 class TagDetector:
-    def __init__(self):
+    def __init__(self, yard_information):
         self.detector = apriltag.Detector(
             families="tag16h5",
             nthreads=4,
@@ -11,12 +11,13 @@ class TagDetector:
             refine_edges=1,
             decode_sharpening=0.25,
         )
+        self.yard_information = yard_information
 
     def detect_tags(self, frame, W, H, transform):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         detections = self.detector.detect(gray)
 
-        MIN_MARGIN = 30  # minimum confidence
+        MIN_MARGIN = 25 # minimum confidence
 
         # After detection and filtering
         filtered = []
@@ -51,8 +52,9 @@ class TagDetector:
         return enriched, filtered
 
     def image_to_yard(self, u, v, W, H):
-        X0, Y0 = 0, 0
-        X1, Y1 = 256, 144
+        X0, Y0 = 0, 0        
+        X1 = 256 
+        Y1 = 144
 
         x = X0 + (u / W) * (X1 - X0)
         y = Y0 + (v / H) * (Y1 - Y0)

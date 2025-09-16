@@ -75,3 +75,9 @@ export type Point = {
     x: number
     y: number
 }
+
+export type Camera = {
+    uriAccess: string
+    transformPoints: Point[]
+    yardPoints: Point[]
+}

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { MapColors } from "@/lib/mapColors";
+import { MAP_COLORS } from "@/lib/map";
 import { BikeSummary, Point } from "@/lib/types";
 import { Path } from "react-konva";
 import { useSnapshot } from "valtio";
@@ -29,18 +29,18 @@ export function BikeDraw({
 
   let stroke = undefined;
   if (isSearched) {
-    stroke = MapColors.bike.searched;
+    stroke = MAP_COLORS.bike.searched;
   } else {
     if (isSelected) {
-      stroke = MapColors.bike.selected;
+      stroke = MAP_COLORS.bike.selected;
     } else {
-      stroke = MapColors.bike.notSelected;
+      stroke = MAP_COLORS.bike.notSelected;
     }
   }
 
   const fill = inRightArea
-    ? MapColors.bike.inRightArea
-    : MapColors.bike.notInRightArea;
+    ? MAP_COLORS.bike.inRightArea
+    : MAP_COLORS.bike.notInRightArea;
 
   function handleMouseOver(tagBike: BikeSummary) {
     if (isPinned || isSearched) return;

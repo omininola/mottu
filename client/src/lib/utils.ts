@@ -19,7 +19,7 @@ export function clearNotification<T>(
 export function mapBike(bike: BikeSummary, data: SubsidiaryTags) {
   let tagCode = null;
   let yardMongo = null;
-  if (data.yards != null){
+  if (data.yards != null) {
     yardMongo = data?.yards.find((yard) => {
       if (
         yard.tags.find((tag) => {

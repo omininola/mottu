@@ -1,8 +1,14 @@
-export const MapColors = {
+export const METERS_PER_PIXEL = 0.1; // 1px = 1m
+
+export const MAP_COLORS = {
   yard: {
     fill: "#cbd5e1",
     stroke: "#94a3b8",
     text: "#94a3b8",
+    creation: {
+      snapping: "#16a34a",
+      notSnapping: "#f97316",
+    }
   },
   
   area: {

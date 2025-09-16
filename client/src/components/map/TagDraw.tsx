@@ -1,4 +1,4 @@
-import { MapColors } from "@/lib/mapColors";
+import { MAP_COLORS } from "@/lib/map";
 import { Apriltag, Point } from "@/lib/types";
 import Konva from "konva";
 import React from "react";
@@ -15,7 +15,7 @@ export function TagDraw({
   tag: Apriltag;
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
-  const fill = isSelected ? MapColors.tag.selected : MapColors.tag.notSelected;
+  const fill = isSelected ? MAP_COLORS.tag.selected : MAP_COLORS.tag.notSelected;
 
   function handleMouseOver(tag: Apriltag) {
     setTag(tag);
@@ -51,7 +51,7 @@ export function TagDraw({
       offset={offset}
       data={tagPath}
       fill={fill}
-      stroke={MapColors.tag.stroke}
+      stroke={MAP_COLORS.tag.stroke}
       strokeWidth={0.5}
       scale={{ x: scale, y: scale }}
       onMouseOver={() => handleMouseOver(tag)}
