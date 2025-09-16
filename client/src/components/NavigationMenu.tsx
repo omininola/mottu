@@ -36,6 +36,9 @@ export default function Navigation() {
               <NavigationMenuLink asChild>
                 <Link href="/new/yard">Novo Pátio</Link>
               </NavigationMenuLink>
+              <NavigationMenuLink asChild>
+                <Link href="/new/camera">Nova Câmera</Link>
+              </NavigationMenuLink>
             </div>
           </NavigationMenuContent>
         </NavigationMenuItem>

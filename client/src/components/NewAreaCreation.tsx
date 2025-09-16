@@ -25,9 +25,11 @@ export function NewAreaCreation() {
   const snapSubsidiary = useSnapshot(subsidiaryStore);
   const snapAreaCreation = useSnapshot(areaCreationStore);
 
+  const [isCreating, setCreating] = React.useState<boolean>(false);
   const [notification, setNotification] = React.useState<string>("");
 
   function handleCancel() {
+    setCreating(false);
     areaCreationStore.points = [];
     areaCreationStore.status = "READY";
     areaCreationStore.yard = undefined;
@@ -35,6 +37,7 @@ export function NewAreaCreation() {
 
   async function handleFinishArea() {
     if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
+      setCreating(false);
       setNotification("A área deve ter 3 ou mais pontos para ser criada");
       clearNotification<string>(setNotification, "");
       return;
@@ -68,7 +71,7 @@ export function NewAreaCreation() {
             disabled={snapSubsidiary.subsidiary == null}
             variant="secondary"
           >
-            {snapAreaCreation.yard ? (
+            {isCreating ? (
               <>
                 <SquarePen className="h-4 w-4" /> Mudar informações
               </>
@@ -100,7 +103,7 @@ export function NewAreaCreation() {
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="default">
+              <Button variant="default" onClick={() => setCreating(true)}>
                 <Check className="h-4 w-4" />
                 Confirmar
               </Button>
@@ -109,7 +112,7 @@ export function NewAreaCreation() {
         </DialogContent>
       </Dialog>
 
-      <AreaPointControl disabled={snapAreaCreation.points.length == 0} />
+      <AreaPointControl disabled={!isCreating || snapAreaCreation.points.length == 0} />
       <Button
         disabled={snapAreaCreation.points.length < 3}
         variant="default"
