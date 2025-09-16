@@ -12,15 +12,15 @@ import br.com.otaviomiklos.mottu.dto.bike.BikeSummaryDTO;
 import br.com.otaviomiklos.mottu.dto.tagPosition.TagPositionRequest;
 import br.com.otaviomiklos.mottu.dto.tagPosition.TagPositionResponse;
 import br.com.otaviomiklos.mottu.entity.Apriltag;
-import br.com.otaviomiklos.mottu.entity.Area;
-import br.com.otaviomiklos.mottu.entity.AreaMongo;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.entity.Point;
-import br.com.otaviomiklos.mottu.entity.Yard;
+import br.com.otaviomiklos.mottu.entity.area.Area;
+import br.com.otaviomiklos.mottu.entity.area.AreaMongo;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import br.com.otaviomiklos.mottu.repository.ApriltagRepository;
-import br.com.otaviomiklos.mottu.repository.AreaMongoRepository;
 import br.com.otaviomiklos.mottu.repository.BikeRepository;
+import br.com.otaviomiklos.mottu.repository.area.AreaMongoRepository;
 
 @Component
 public class TagPositionMapper {

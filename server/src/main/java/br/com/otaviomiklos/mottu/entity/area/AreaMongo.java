@@ -1,9 +1,10 @@
-package br.com.otaviomiklos.mottu.entity;
+package br.com.otaviomiklos.mottu.entity.area;
 
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import br.com.otaviomiklos.mottu.entity.Point;
 import br.com.otaviomiklos.mottu.enums.AreaStatus;
 import jakarta.persistence.Id;
 import lombok.Getter;

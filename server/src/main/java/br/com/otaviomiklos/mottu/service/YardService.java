@@ -10,13 +10,13 @@ import br.com.otaviomiklos.mottu.dto.yard.YardMongoRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
-import br.com.otaviomiklos.mottu.entity.Yard;
-import br.com.otaviomiklos.mottu.entity.YardMongo;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
+import br.com.otaviomiklos.mottu.entity.yard.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.mapper.YardMapper;
 import br.com.otaviomiklos.mottu.mapper.YardMongoMapper;
-import br.com.otaviomiklos.mottu.repository.YardRepository;
-import br.com.otaviomiklos.mottu.repository.YardMongoRepository;
+import br.com.otaviomiklos.mottu.repository.yard.YardMongoRepository;
+import br.com.otaviomiklos.mottu.repository.yard.YardRepository;
 
 @Service
 public class YardService {

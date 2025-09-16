@@ -18,10 +18,10 @@ import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Address;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
-import br.com.otaviomiklos.mottu.entity.Yard;
-import br.com.otaviomiklos.mottu.entity.YardMongo;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
+import br.com.otaviomiklos.mottu.entity.yard.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
-import br.com.otaviomiklos.mottu.repository.YardMongoRepository;
+import br.com.otaviomiklos.mottu.repository.yard.YardMongoRepository;
 
 @Component
 public class SubsidiaryMapper {

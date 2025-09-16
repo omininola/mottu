@@ -2,6 +2,7 @@ package br.com.otaviomiklos.mottu.entity;
 
 import java.util.List;
 
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

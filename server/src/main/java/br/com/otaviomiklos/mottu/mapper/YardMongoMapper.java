@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
-import br.com.otaviomiklos.mottu.entity.Yard;
-import br.com.otaviomiklos.mottu.entity.YardMongo;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
+import br.com.otaviomiklos.mottu.entity.yard.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
-import br.com.otaviomiklos.mottu.repository.YardRepository;
+import br.com.otaviomiklos.mottu.repository.yard.YardRepository;
 
 @Component
 public class YardMongoMapper {

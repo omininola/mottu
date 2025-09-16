@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 
 import br.com.otaviomiklos.mottu.dto.area.AreaRequest;
 import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
-import br.com.otaviomiklos.mottu.entity.Area;
+import br.com.otaviomiklos.mottu.entity.area.Area;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.mapper.AreaMapper;
-import br.com.otaviomiklos.mottu.repository.AreaMongoRepository;
-import br.com.otaviomiklos.mottu.repository.AreaRepository;
+import br.com.otaviomiklos.mottu.repository.area.AreaMongoRepository;
+import br.com.otaviomiklos.mottu.repository.area.AreaRepository;
 
 @Service
 public class AreaService {

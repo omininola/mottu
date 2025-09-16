@@ -9,17 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
+import br.com.otaviomiklos.mottu.dto.camera.CameraResponse;
 import br.com.otaviomiklos.mottu.dto.point.PointRequest;
 import br.com.otaviomiklos.mottu.dto.point.PointResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Point;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
-import br.com.otaviomiklos.mottu.entity.Yard;
-import br.com.otaviomiklos.mottu.entity.YardMongo;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
+import br.com.otaviomiklos.mottu.entity.yard.YardMongo;
 import br.com.otaviomiklos.mottu.exception.ResourceNotFoundException;
 import br.com.otaviomiklos.mottu.repository.SubsidiaryRepository;
-import br.com.otaviomiklos.mottu.repository.YardMongoRepository;
+import br.com.otaviomiklos.mottu.repository.yard.YardMongoRepository;
 
 @Component
 public class YardMapper {
@@ -34,6 +35,9 @@ public class YardMapper {
     private AreaMapper areaMapper;
 
     @Autowired
+    private CameraMapper cameraMapper;
+
+    @Autowired
     private PointMapper pointMapper;
 
     private static final String NOT_FOUND_MESSAGE = "Não foi possível encontrar um pátio com esse ID";
@@ -42,6 +46,9 @@ public class YardMapper {
     public YardResponse toResponse(Yard yard) {
         List<AreaResponse> areas = new ArrayList<>();
         if (yard.getAreas() != null) areas = areaMapper.toResponse(yard.getAreas());
+
+        List<CameraResponse> cameras = new ArrayList<>();
+        if (yard.getCameras() != null) cameras = cameraMapper.toResponse(yard.getCameras());
 
         Optional<YardMongo> yardMongo = mongoRepository.findByMysqlId(yard.getId());
         if (yardMongo.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
@@ -53,6 +60,7 @@ public class YardMapper {
         response.setId(yard.getId());
         response.setName(yard.getName());
         response.setSubsidiary(yard.getSubsidiary().getName());
+        response.setCameras(cameras);
         response.setBoundary(boundary);
         response.setAreas(areas);
         return response;

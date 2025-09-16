@@ -13,7 +13,7 @@ import br.com.otaviomiklos.mottu.dto.bike.BikeDetailsDTO;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Bike;
 import br.com.otaviomiklos.mottu.entity.Subsidiary;
-import br.com.otaviomiklos.mottu.entity.Yard;
+import br.com.otaviomiklos.mottu.entity.yard.Yard;
 
 @Component
 public class BikeMapper {

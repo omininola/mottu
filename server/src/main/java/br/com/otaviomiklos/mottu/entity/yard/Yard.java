@@ -1,7 +1,11 @@
-package br.com.otaviomiklos.mottu.entity;
+package br.com.otaviomiklos.mottu.entity.yard;
 
 import java.util.List;
 
+import br.com.otaviomiklos.mottu.entity.Bike;
+import br.com.otaviomiklos.mottu.entity.Subsidiary;
+import br.com.otaviomiklos.mottu.entity.area.Area;
+import br.com.otaviomiklos.mottu.entity.camera.Camera;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,6 +40,9 @@ public class Yard {
 
     @OneToMany(mappedBy = "yard")
     private List<Area> areas;
+
+    @OneToMany(mappedBy = "yard")
+    private List<Camera> cameras;
 
     @OneToMany(mappedBy = "yard")
     private List<Bike> bikes;
