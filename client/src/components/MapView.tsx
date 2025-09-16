@@ -31,7 +31,10 @@ export function MapView({
   setTag: React.Dispatch<React.SetStateAction<Apriltag | null>>;
 }) {
   const LG_BREAKPOINT = 1024; // Tailwind lg breakpoint
-  const MAP_WIDTH = window.innerWidth <= LG_BREAKPOINT ? window.innerWidth : (window.innerWidth * 5) / 7;
+  const MAP_WIDTH =
+    window.innerWidth <= LG_BREAKPOINT
+      ? window.innerWidth
+      : (window.innerWidth * 5) / 7;
   const MAP_HEIGHT = window.innerHeight / 2;
   const CENTER_X = MAP_WIDTH / 2;
   const CENTER_Y = MAP_HEIGHT / 2;
@@ -54,9 +57,10 @@ export function MapView({
 
     const clickPoint = { x: mapX - CENTER_X, y: mapY - CENTER_Y };
 
-    const idxFound = snapSubsidiary.subsidiaryTags?.yards.findIndex(
-      (yardMongo) => yardMongo.yard.id == snapAreaCreation.yard?.id
-    ) || 0;
+    const idxFound =
+      snapSubsidiary.subsidiaryTags?.yards.findIndex(
+        (yardMongo) => yardMongo.yard.id == snapAreaCreation.yard?.id
+      ) || 0;
 
     let yardOffsetX = 0;
 
@@ -67,10 +71,10 @@ export function MapView({
       const totalOffsetX = snapSubsidiary.subsidiaryTags?.yards.reduce(
         (acc, curr, idx) => {
           if (idx >= stopSign) return acc;
-  
+
           const xValues = curr.yard.boundary.flatMap((yard) => yard.x);
           const rightMostValue = Math.max(...xValues);
-  
+
           return acc + rightMostValue;
         },
         initialValue
