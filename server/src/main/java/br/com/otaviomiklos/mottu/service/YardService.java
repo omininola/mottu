@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.otaviomiklos.mottu.dto.yard.YardCameraResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
@@ -94,5 +95,12 @@ public class YardService {
         Optional<YardMongo> yard = mongoRepository.findByMysqlId(mysqlId);
         if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
         return mongoMapper.toMongoResponse(yard.get());
+    }
+
+    // Camera Related
+    public YardCameraResponse readCameras(Long id) {
+        Optional<Yard> yard = repository.findById(id);
+        if (yard.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        return mapper.toCameraResponse(yard.get());
     }
 }

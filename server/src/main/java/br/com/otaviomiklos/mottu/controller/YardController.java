@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardCameraResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardMongoResponse;
 import br.com.otaviomiklos.mottu.service.YardService;
@@ -68,6 +69,13 @@ public class YardController {
     @GetMapping("/{id}/tags")
     public ResponseEntity<YardMongoResponse> readTags(@PathVariable Long id) {
         YardMongoResponse response = service.readAllFromYard(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // Camera Related
+    @GetMapping("/{id}/cameras")
+    public ResponseEntity<YardCameraResponse> readCameras(@PathVariable Long id) {
+        YardCameraResponse response = service.readCameras(id);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

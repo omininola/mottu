@@ -12,6 +12,7 @@ import br.com.otaviomiklos.mottu.dto.area.AreaResponse;
 import br.com.otaviomiklos.mottu.dto.camera.CameraResponse;
 import br.com.otaviomiklos.mottu.dto.point.PointRequest;
 import br.com.otaviomiklos.mottu.dto.point.PointResponse;
+import br.com.otaviomiklos.mottu.dto.yard.YardCameraResponse;
 import br.com.otaviomiklos.mottu.dto.yard.YardRequest;
 import br.com.otaviomiklos.mottu.dto.yard.YardResponse;
 import br.com.otaviomiklos.mottu.entity.Point;
@@ -47,9 +48,6 @@ public class YardMapper {
         List<AreaResponse> areas = new ArrayList<>();
         if (yard.getAreas() != null) areas = areaMapper.toResponse(yard.getAreas());
 
-        List<CameraResponse> cameras = new ArrayList<>();
-        if (yard.getCameras() != null) cameras = cameraMapper.toResponse(yard.getCameras());
-
         Optional<YardMongo> yardMongo = mongoRepository.findByMysqlId(yard.getId());
         if (yardMongo.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
@@ -60,7 +58,6 @@ public class YardMapper {
         response.setId(yard.getId());
         response.setName(yard.getName());
         response.setSubsidiary(yard.getSubsidiary().getName());
-        response.setCameras(cameras);
         response.setBoundary(boundary);
         response.setAreas(areas);
         return response;
@@ -78,6 +75,23 @@ public class YardMapper {
         yard.setName(request.getName());
         yard.setSubsidiary(subsidiary.get());
         return yard;
+    }
+
+    public YardCameraResponse toCameraResponse(Yard yard) {
+        List<CameraResponse> cameras = new ArrayList<>();
+        if (yard.getCameras() != null) cameras = cameraMapper.toResponse(yard.getCameras());
+
+        Optional<YardMongo> yardMongo = mongoRepository.findByMysqlId(yard.getId());
+        if (yardMongo.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+
+        List<PointResponse> boundary = null;
+        if (yardMongo.get().getBoundary() != null) boundary = pointMapper.toResponse(yardMongo.get().getBoundary());
+
+        YardCameraResponse response = new YardCameraResponse();
+        response.setId(yard.getId());
+        response.setCameras(cameras);
+        response.setBoundary(boundary);
+        return response;
     }
 
     public YardMongo toMongoEntity(YardRequest request, Long mysqlId) {
