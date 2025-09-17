@@ -12,7 +12,6 @@ import {
 import { AreaDropdownMenu } from "./AreaDropdownMenu";
 import * as React from "react";
 import { YardCombobox } from "./YardCombobox";
-import { AreaPointControl } from "./AreaPointControl";
 import { Check, PlusSquare, SquarePen } from "lucide-react";
 import { useSnapshot } from "valtio";
 import { areaCreationStore, subsidiaryStore } from "@/lib/valtio";
@@ -20,24 +19,23 @@ import { clearNotification } from "@/lib/utils";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { Notification } from "./Notification";
+import { PointControl } from "./PointControl";
 
 export function NewAreaCreation() {
   const snapSubsidiary = useSnapshot(subsidiaryStore);
   const snapAreaCreation = useSnapshot(areaCreationStore);
 
-  const [isCreating, setCreating] = React.useState<boolean>(false);
   const [notification, setNotification] = React.useState<string>("");
 
   function handleCancel() {
-    setCreating(false);
+    areaCreationStore.isCreating = false;
     areaCreationStore.points = [];
     areaCreationStore.status = "READY";
-    areaCreationStore.yard = undefined;
   }
 
   async function handleFinishArea() {
     if (!snapAreaCreation.yard?.id || snapAreaCreation.points?.length < 3) {
-      setCreating(false);
+      areaCreationStore.isCreating = false;
       setNotification("A área deve ter 3 ou mais pontos para ser criada");
       clearNotification<string>(setNotification, "");
       return;
@@ -51,13 +49,13 @@ export function NewAreaCreation() {
 
     try {
       await axios.post(`${NEXT_PUBLIC_JAVA_URL}/areas`, newArea);
+      areaCreationStore.isCreating = false;
       areaCreationStore.points = [];
       areaCreationStore.status = "READY";
-      areaCreationStore.yard = undefined;
     } catch {
       console.log("[MAIN] Error posting new area");
     }
-  };
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-4">
@@ -71,7 +69,7 @@ export function NewAreaCreation() {
             disabled={snapSubsidiary.subsidiary == null}
             variant="secondary"
           >
-            {isCreating ? (
+            {snapAreaCreation.isCreating ? (
               <>
                 <SquarePen className="h-4 w-4" /> Mudar informações
               </>
@@ -103,7 +101,10 @@ export function NewAreaCreation() {
               </Button>
             </DialogClose>
             <DialogClose asChild>
-              <Button variant="default" onClick={() => setCreating(true)}>
+              <Button
+                variant="default"
+                onClick={() => (areaCreationStore.isCreating = true)}
+              >
                 <Check className="h-4 w-4" />
                 Confirmar
               </Button>
@@ -112,7 +113,15 @@ export function NewAreaCreation() {
         </DialogContent>
       </Dialog>
 
-      <AreaPointControl disabled={!isCreating || snapAreaCreation.points.length == 0} />
+      <PointControl
+        reset={() => (areaCreationStore.points = [])}
+        rollback={() =>
+          (areaCreationStore.points = areaCreationStore.points.slice(0, -1))
+        }
+        disabled={
+          !snapAreaCreation.isCreating || snapAreaCreation.points.length == 0
+        }
+      />
       <Button
         disabled={snapAreaCreation.points.length < 3}
         variant="default"

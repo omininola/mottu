@@ -7,13 +7,17 @@ import * as React from "react";
 
 import { Circle, Layer, Line, Stage } from "react-konva";
 import Webcam from "react-webcam";
-import { Button } from "./ui/button";
+import { PointVisualization } from "./PointVisualization";
 
-export function CameraTransformationMap() {
+export function CameraTransformationMap({
+  points,
+  setPoints,
+}: {
+  points: Point[];
+  setPoints: React.Dispatch<React.SetStateAction<Point[]>>;
+}) {
   const webcamRef = React.useRef(null);
   const stageRef = React.useRef<Konva.Stage>(null);
-
-  const [points, setPoints] = React.useState<Point[]>([]);
 
   function addPoint() {
     console.log("[DEBUG] CameraTransformationMap | points", points);
@@ -27,15 +31,8 @@ export function CameraTransformationMap() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Button onClick={() => setPoints([])}>Limpar pontos</Button>
-        <Button onClick={() => setPoints((last) => last.slice(0, -1))}>
-          Voltar ponto
-        </Button>
-      </div>
-
-      <div className="rounded-xl w-full shadow relative">
+    <div className="grid grid-cols-2 gap-4 rounded-xl w-full shadow relative">
+      <div className="col-span-1">
         <Webcam
           audio={false}
           ref={webcamRef}
@@ -86,6 +83,14 @@ export function CameraTransformationMap() {
             )}
           </Layer>
         </Stage>
+      </div>
+
+      <div className="col-span-1">
+        <PointVisualization
+          points={points}
+          setPoints={setPoints}
+          transformCamera
+        />
       </div>
     </div>
   );

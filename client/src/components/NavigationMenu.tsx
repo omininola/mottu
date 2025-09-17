@@ -3,45 +3,45 @@ import * as React from "react";
 import Link from "next/link";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "./ui/navigation-menu";
+
+const links = [
+  {
+    href: "/",
+    text: "Mapa 2D",
+  },
+  {
+    href: "/tags",
+    text: "Reconhecer Tags",
+  },
+  {
+    href: "/new/subsidiary",
+    text: "Nova Filial",
+  },
+  {
+    href: "/new/yard",
+    text: "Novo Pátio",
+  },
+  {
+    href: "/new/camera",
+    text: "Nova Câmera",
+  },
+];
 
 export default function Navigation() {
   return (
     <NavigationMenu className="p-4" viewport={false}>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href="/">Mapa 2D</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild>
-            <Link href="/tags">Reconhecer Tags</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Criar</NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <div className="w-28">
-              <NavigationMenuLink asChild>
-                <Link href="/new/subsidiary">Nova Filial</Link>
-              </NavigationMenuLink>
-              <NavigationMenuLink asChild>
-                <Link href="/new/yard">Novo Pátio</Link>
-              </NavigationMenuLink>
-              <NavigationMenuLink asChild>
-                <Link href="/new/camera">Nova Câmera</Link>
-              </NavigationMenuLink>
-            </div>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
+        {links.map((link) => (
+          <NavigationMenuItem key={link.href}>
+            <NavigationMenuLink asChild>
+              <Link href={link.href}>{link.text}</Link>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        ))}
       </NavigationMenuList>
     </NavigationMenu>
   );

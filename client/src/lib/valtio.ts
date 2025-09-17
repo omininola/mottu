@@ -5,10 +5,12 @@ export const areaCreationStore = proxy<{
   points: Point[];
   status: string;
   yard: Yard | undefined;
+  isCreating: boolean;
 }>({
   points: [],
   status: "READY",
   yard: undefined,
+  isCreating: false,
 });
 
 export const subsidiaryStore = proxy<{

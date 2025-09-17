@@ -47,7 +47,7 @@ export function MapView({
   const [notification, setNotification] = React.useState<string>("");
 
   const handleMapClick = (e: KonvaEventObject<PointerEvent>) => {
-    if (!snapAreaCreation.yard || !snapAreaCreation.yard?.id) return;
+    if (!snapAreaCreation.isCreating) return;
     const stage = e.target.getStage() as Konva.Stage;
     const pointer = stage.getPointerPosition();
     if (!pointer) return;

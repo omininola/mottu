@@ -7,7 +7,7 @@ import Konva from "konva";
 import { Stage, Layer, Line, Circle, Text } from "react-konva";
 import { Button } from "./ui/button";
 import { YardDraw } from "./map/YardDraw";
-import { Eraser, SquarePlus, Undo } from "lucide-react";
+import { SquarePlus } from "lucide-react";
 import { MAP_COLORS, METERS_PER_PIXEL } from "@/lib/map";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -18,6 +18,8 @@ import { clearNotification } from "@/lib/utils";
 import { useSnapshot } from "valtio";
 import { subsidiaryStore } from "@/lib/valtio";
 import { Notification } from "./Notification";
+import { PointVisualization } from "./PointVisualization";
+import { PointControl } from "./PointControl";
 
 export function YardCreationMap() {
   const MAP_WIDTH = window.innerWidth;
@@ -61,6 +63,15 @@ export function YardCreationMap() {
       });
     }
   }
+
+  React.useEffect(() => {
+    const lastPoint = points[points.length - 1];
+    if (!lastPoint) setRuler(null);
+    setRuler((ruler) => {
+      if (!ruler?.x2 || !ruler.y2) return null;
+      return { x2: ruler.x2, y2: ruler.y2, x1: lastPoint.x, y1: lastPoint.y };
+    });
+  }, [points]);
 
   function addPoint() {
     const stage = stageRef.current;
@@ -151,25 +162,14 @@ export function YardCreationMap() {
 
         <div className="flex items-center gap-4">
           <Label htmlFor="yardName">Pátio</Label>
-          <Input id="yardName" onChange={(e) => setYardName(e.target.value)} value={yardName} />
+          <Input
+            id="yardName"
+            onChange={(e) => setYardName(e.target.value)}
+            value={yardName}
+          />
         </div>
 
-        <Button
-          variant="outline"
-          disabled={points.length < 1}
-          onClick={handleResetPoints}
-        >
-          <Eraser className="h-4 w-4" />
-          Limpar pontos
-        </Button>
-        <Button
-          variant="outline"
-          disabled={points.length < 1}
-          onClick={handleDeleteLastPoint}
-        >
-          <Undo className="h-4 w-4" />
-          Voltar ultimo ponto
-        </Button>
+        <PointControl reset={handleResetPoints} rollback={handleDeleteLastPoint} disabled={points.length < 1} />
 
         <Button
           disabled={yardName == "" || points.length < 3}
@@ -179,66 +179,82 @@ export function YardCreationMap() {
           Criar pátio
         </Button>
       </div>
-      <div className="border-1 rounded-xl w-full p-2 shadow">
-        <Stage
-          ref={stageRef}
-          width={MAP_WIDTH}
-          height={MAP_HEIGHT}
-          className="border-2 rounded-lg overflow-hidden bg-slate-100"
-          onClick={addPoint}
-          onMouseMove={handleMouseMove}
-        >
-          <Layer>
-            {points.length > 1 && (
-              <YardDraw
-                points={points.flatMap((p) => [p.x, p.y])}
-                yardName={yardName}
-              />
-            )}
 
-            {points.map((point, idx) => {
-              const isFirstOrLast = idx == 0 || idx == points.length - 1;
+      <div className="grid grid-cols-4 gap-4">
+        <div className="col-span-3 border-1 rounded-xl w-full p-2 shadow">
+          <Stage
+            ref={stageRef}
+            width={MAP_WIDTH}
+            height={MAP_HEIGHT}
+            className="border-2 rounded-lg overflow-hidden bg-slate-100"
+            onClick={addPoint}
+            onMouseMove={handleMouseMove}
+          >
+            <Layer>
+              {points.length > 1 && (
+                <YardDraw
+                  points={points.flatMap((p) => [p.x, p.y])}
+                  yardName={yardName}
+                />
+              )}
 
-              return (
-                <Circle
-                  key={idx}
-                  x={point.x}
-                  y={point.y}
-                  radius={5}
-                  strokeWidth={0.4}
-                  stroke="#fff"
-                  fill={isFirstOrLast ? "red" : "yellow"}
-                />
-              );
-            })}
+              {points.map((point, idx) => {
+                const isFirstOrLast = idx == 0 || idx == points.length - 1;
 
-            {ruler && (
-              <>
-                <Line
-                  points={[ruler.x1, ruler.y1, ruler.x2, ruler.y2]}
-                  stroke={
-                    rulerSnaping
-                      ? MAP_COLORS.yard.creation.snapping
-                      : MAP_COLORS.yard.creation.notSnapping
-                  }
-                  strokeWidth={2}
-                  dash={[10, 5]}
-                />
-                <Text
-                  x={(ruler.x1 + ruler.x2) / 2 + 10}
-                  y={(ruler.y1 + ruler.y2) / 2 + 10}
-                  text={getRulerDistance()}
-                  fontSize={16}
-                  fill={
-                    rulerSnaping
-                      ? MAP_COLORS.yard.creation.snapping
-                      : MAP_COLORS.yard.creation.notSnapping
-                  }
-                />
-              </>
-            )}
-          </Layer>
-        </Stage>
+                return (
+                  <>
+                    <Circle
+                      key={"circle" + idx}
+                      x={point.x}
+                      y={point.y}
+                      radius={5}
+                      strokeWidth={0.4}
+                      stroke="#fff"
+                      fill={isFirstOrLast ? "red" : "blue"}
+                    />
+                    <Text
+                      key={"text" + idx}
+                      x={point.x - 4}
+                      y={point.y - 25}
+                      text={(idx + 1).toString()}
+                      fontSize={16}
+                    />
+                  </>
+                );
+              })}
+
+              {ruler && (
+                <>
+                  <Line
+                    points={[ruler.x1, ruler.y1, ruler.x2, ruler.y2]}
+                    stroke={
+                      rulerSnaping
+                        ? MAP_COLORS.yard.creation.snapping
+                        : MAP_COLORS.yard.creation.notSnapping
+                    }
+                    strokeWidth={2}
+                    dash={[10, 5]}
+                  />
+                  <Text
+                    x={(ruler.x1 + ruler.x2) / 2 + 10}
+                    y={(ruler.y1 + ruler.y2) / 2 + 10}
+                    text={getRulerDistance()}
+                    fontSize={16}
+                    fill={
+                      rulerSnaping
+                        ? MAP_COLORS.yard.creation.snapping
+                        : MAP_COLORS.yard.creation.notSnapping
+                    }
+                  />
+                </>
+              )}
+            </Layer>
+          </Stage>
+        </div>
+
+        <div className="col-span-1">
+          <PointVisualization points={points} setPoints={setPoints} />
+        </div>
       </div>
     </div>
   );
