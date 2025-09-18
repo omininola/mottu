@@ -12,22 +12,23 @@ import { PointVisualization } from "./PointVisualization";
 export function CameraTransformationMap({
   points,
   setPoints,
+  setYardPoints
 }: {
   points: Point[];
   setPoints: React.Dispatch<React.SetStateAction<Point[]>>;
+  setYardPoints: React.Dispatch<React.SetStateAction<Point[]>>;
 }) {
   const webcamRef = React.useRef(null);
   const stageRef = React.useRef<Konva.Stage>(null);
 
   function addPoint() {
-    console.log("[DEBUG] CameraTransformationMap | points", points);
-
     const stage = stageRef.current;
     const mouse = stage?.getPointerPosition();
 
     if (!mouse) return;
 
     setPoints([...points, { x: mouse.x, y: mouse.y }]);
+    setYardPoints(points => [...points, { x: 0, y: 0 }]);
   }
 
   return (
@@ -89,6 +90,7 @@ export function CameraTransformationMap({
         <PointVisualization
           points={points}
           setPoints={setPoints}
+          setYardPoints={setYardPoints}
           transformCamera
         />
       </div>

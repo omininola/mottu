@@ -27,10 +27,12 @@ import { Label } from "./ui/label";
 export function PointVisualization({
   points,
   setPoints,
+  setYardPoints,
   transformCamera,
 }: {
   points: Point[];
   setPoints: React.Dispatch<React.SetStateAction<Point[]>>;
+  setYardPoints?: React.Dispatch<React.SetStateAction<Point[]>>;
   transformCamera?: true;
 }) {
   function handlePointChange(
@@ -73,9 +75,9 @@ export function PointVisualization({
                 onChange={(e) => handlePointChange(e, idx, "y")}
               />
             </TableCell>
-            {transformCamera && (
+            {(transformCamera && setYardPoints) && (
               <TableCell>
-                <YardPointDropdown />
+                <YardPointDropdown setYardPoints={setYardPoints} arrayPos={idx} />
               </TableCell>
             )}
           </TableRow>
@@ -85,7 +87,13 @@ export function PointVisualization({
   );
 }
 
-function YardPointDropdown() {
+function YardPointDropdown({
+  setYardPoints,
+  arrayPos
+}: {
+  setYardPoints: React.Dispatch<React.SetStateAction<Point[]>>
+  arrayPos: number
+}) {
   const snapAreaCreation = useSnapshot(areaCreationStore);
 
   const [yardPoint, setYardPoint] = React.useState<Point | undefined>(
@@ -111,6 +119,9 @@ function YardPointDropdown() {
                 y: parsed[1],
               };
               setYardPoint(newPoint);
+              setYardPoints(points => points.map((point, idx) =>
+                idx == arrayPos ? newPoint : point
+              ))
             }}
           >
             {snapAreaCreation.yard?.boundary.map((point, idx) => (
