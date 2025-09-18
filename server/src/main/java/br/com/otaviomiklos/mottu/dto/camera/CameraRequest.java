@@ -21,9 +21,11 @@ public class CameraRequest {
     public String uriAccess;
 
     @Valid
+    @NotNull(message = "A lista de pontos de transformação é obrigatória")
     public List<PointRequest> transformPoints;
 
     @Valid
+    @NotNull(message = "A lista de pontos do pátio é obrigatória")
     public List<PointRequest> yardPoints;
 
     @NotNull(message = "O Id do pátio é obrigatório")

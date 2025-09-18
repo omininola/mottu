@@ -19,6 +19,7 @@ public class AreaRequest {
     private AreaStatus status;
 
     @Valid
+    @NotNull(message = "A lista de pontos da limitação de área é obrigatória")
     private List<PointRequest> boundary;
 
     @NotNull(message = "O Id do pátio é obrigatório")
