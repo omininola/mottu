@@ -21,4 +21,5 @@ public class CameraMongo {
     private String mongoId;
     private Long mysqlId; 
     private List<Point> transformPoints;
+    private List<Point> yardPoints;
 }

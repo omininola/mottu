@@ -21,10 +21,9 @@ import br.com.otaviomiklos.mottu.repository.yard.YardRepository;
 @Component
 public class CameraMapper {
 
-    
     @Autowired
     private CameraMongoRepository mongoRepository;
-    
+
     @Autowired
     private YardRepository yardRepository;
 
@@ -36,15 +35,22 @@ public class CameraMapper {
 
     public CameraResponse toResponse(Camera camera) {
         Optional<CameraMongo> cameraMongo = mongoRepository.findByMysqlId(camera.getId());
-        if (cameraMongo.isEmpty()) throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
+        if (cameraMongo.isEmpty())
+            throw new ResourceNotFoundException(NOT_FOUND_MESSAGE);
 
         List<PointResponse> transformPoints = null;
-        if (cameraMongo.get().getTransformPoints() != null) transformPoints = pointMapper.toResponse(cameraMongo.get().getTransformPoints());
+        if (cameraMongo.get().getTransformPoints() != null)
+            transformPoints = pointMapper.toResponse(cameraMongo.get().getTransformPoints());
+
+        List<PointResponse> yardPoints = null;
+        if (cameraMongo.get().getYardPoints() != null)
+            yardPoints = pointMapper.toResponse(cameraMongo.get().getYardPoints());
 
         CameraResponse response = new CameraResponse();
         response.setId(camera.getId());
         response.setUrlAccess(camera.getUriAccess());
         response.setTransformPoints(transformPoints);
+        response.setYardPoints(yardPoints);
         return response;
     }
 
@@ -54,7 +60,8 @@ public class CameraMapper {
 
     public Camera toEntity(CameraRequest request) {
         Optional<Yard> yard = yardRepository.findById(request.getYardId());
-        if (yard.isEmpty()) throw new ResourceNotFoundException(YARD_NOT_FOUND_MESSAGE);
+        if (yard.isEmpty())
+            throw new ResourceNotFoundException(YARD_NOT_FOUND_MESSAGE);
 
         Camera camera = new Camera();
         camera.setUriAccess(request.uriAccess);
@@ -64,11 +71,17 @@ public class CameraMapper {
 
     public CameraMongo toMongoEntity(CameraRequest request, Long mysqlId) {
         List<Point> transformPoints = null;
-        if (request.getTransformPoints() != null) transformPoints = pointMapper.toEntity(request.getTransformPoints());
+        if (request.getTransformPoints() != null)
+            transformPoints = pointMapper.toEntity(request.getTransformPoints());
+
+        List<Point> yardPoints = null;
+        if (request.getYardPoints() != null)
+            yardPoints = pointMapper.toEntity(request.getYardPoints());
 
         CameraMongo camera = new CameraMongo();
         camera.setMysqlId(mysqlId);
         camera.setTransformPoints(transformPoints);
+        camera.setYardPoints(yardPoints);
         return camera;
     }
 

@@ -23,6 +23,9 @@ public class CameraRequest {
     @Valid
     public List<PointRequest> transformPoints;
 
+    @Valid
+    public List<PointRequest> yardPoints;
+
     @NotNull(message = "O Id do pátio é obrigatório")
     private Long yardId;
 }

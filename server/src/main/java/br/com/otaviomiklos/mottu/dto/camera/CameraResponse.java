@@ -17,4 +17,5 @@ public class CameraResponse {
     private Long id;
     private String urlAccess;
     private List<PointResponse> transformPoints;
+    private List<PointResponse> yardPoints;
 }
