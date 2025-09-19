@@ -5,9 +5,8 @@ import { Point } from "@/lib/types";
 import Konva from "konva";
 import * as React from "react";
 
-import { Circle, Layer, Line, Stage } from "react-konva";
+import { Circle, Layer, Line, Stage, Text } from "react-konva";
 import Webcam from "react-webcam";
-import { PointVisualization } from "./PointVisualization";
 
 export function CameraTransformationMap({
   points,
@@ -32,68 +31,62 @@ export function CameraTransformationMap({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 rounded-xl w-full shadow relative">
-      <div className="col-span-1">
-        <Webcam
-          audio={false}
-          ref={webcamRef}
-          screenshotFormat="image/png"
-          width={640}
-          height={480}
-          className="rounded-lg"
-          videoConstraints={{ facingMode: "environment" }}
-        />
+    <div className="rounded-xl shadow relative">
+      <Webcam
+        audio={false}
+        ref={webcamRef}
+        screenshotFormat="image/png"
+        width={640}
+        height={480}
+        className="rounded-lg"
+        videoConstraints={{ facingMode: "environment" }}
+      />
 
-        <Stage
-          ref={stageRef}
-          className="absolute w-full h-full top-0 border-2 rounded-lg overflow-hidden opacity-60"
-          width={640}
-          height={480}
-          onClick={addPoint}
-        >
-          <Layer>
-            {points.map((point, idx) => {
-              const isFirstOrLast = idx == 0 || idx == points.length - 1;
+      <Stage
+        ref={stageRef}
+        className="absolute w-full h-full top-0 border-2 rounded-lg overflow-hidden bg-transparent"
+        width={640}
+        height={480}
+        onClick={addPoint}
+      >
+        <Layer>
+          {points.length >= 2 && (
+            <Line
+              points={points.flatMap((p) => [p.x, p.y])}
+              closed={true}
+              stroke={MAP_COLORS.camera.stroke}
+              strokeWidth={4}
+              fill={MAP_COLORS.camera.fill}
+              opacity={0.6}
+              listening={false}
+              lineJoin="round"
+              lineCap="round"
+            />
+          )}
 
-              return (
+          {points.map((point, idx) => {
+            const isFirstOrLast = idx == 0 || idx == points.length - 1;
+
+            return (
+              <>
                 <Circle
                   key={idx}
                   x={point.x}
                   y={point.y}
-                  radius={5}
-                  strokeWidth={0.4}
-                  stroke="#fff"
-                  fill={isFirstOrLast ? "red" : "yellow"}
+                  radius={6}
+                  fill={isFirstOrLast ? "red" : "blue"}
                 />
-              );
-            })}
-
-            {points.length >= 2 && (
-              <Line
-                points={points.flatMap((p) => [p.x, p.y])}
-                closed={true}
-                stroke={MAP_COLORS.yard.creation.snapping}
-                strokeWidth={1}
-                dash={[1]}
-                fill={MAP_COLORS.yard.creation.notSnapping}
-                opacity={0.6}
-                listening={false}
-                lineJoin="round"
-                lineCap="round"
-              />
-            )}
-          </Layer>
-        </Stage>
-      </div>
-
-      <div className="col-span-1">
-        <PointVisualization
-          points={points}
-          setPoints={setPoints}
-          setYardPoints={setYardPoints}
-          transformCamera
-        />
-      </div>
+                <Text
+                  x={point.x - 6}
+                  y={point.y - 30}
+                  fontSize={16}
+                  text={(idx + 1).toString()}
+                />
+              </>
+            );
+          })}
+        </Layer>
+      </Stage>
     </div>
   );
 }

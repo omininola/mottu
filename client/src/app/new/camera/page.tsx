@@ -17,6 +17,7 @@ import { useSnapshot } from "valtio";
 import { areaCreationStore } from "@/lib/valtio";
 import { clearNotification } from "@/lib/utils";
 import { Notification } from "@/components/Notification";
+import { PointVisualization } from "@/components/PointVisualization";
 
 const CameraYardMap = dynamic(
   () => import("@/components/CameraYardMap").then((mod) => mod.CameraYardMap),
@@ -96,18 +97,25 @@ export default function NewCamera() {
         </Button>
       </div>
 
-      <div className="flex gap-4">
-        <div className="w-2/3">
-          {videoSrc && <video src={videoSrc} width={640} height={480} />}
-          <CameraTransformationMap
-            points={transformPoints}
-            setPoints={setTransformPoints}
-            setYardPoints={setYardPoints}
-          />
-        </div>
+      <div className="flex flex-col items-start lg:flex-row gap-4">
+        <CameraTransformationMap
+          points={transformPoints}
+          setPoints={setTransformPoints}
+          setYardPoints={setYardPoints}
+        />
 
-        <div className="w-1/3">
+        <div className="flex lg:w-1/2 lg:flex-col gap-4">
+          {/* {videoSrc && <video src={videoSrc} width={640} height={480} />} */}
           <CameraYardMap />
+
+          <div>
+            <PointVisualization
+              points={transformPoints}
+              setPoints={setTransformPoints}
+              setYardPoints={setYardPoints}
+              transformCamera
+            />
+          </div>
         </div>
       </div>
     </div>

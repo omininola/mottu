@@ -6,7 +6,7 @@ import { areaCreationStore } from "@/lib/valtio";
 import { toKonvaPoints } from "@/lib/utils";
 
 export function CameraYardMap() {
-  const MAP_WIDTH = window.innerWidth;
+  const MAP_WIDTH = window.innerWidth / 3;
   const MAP_HEIGHT = window.innerHeight / 2;
   const CENTER_X = MAP_WIDTH / 2;
   const CENTER_Y = MAP_HEIGHT / 2;

@@ -11,6 +11,11 @@ export const MAP_COLORS = {
     }
   },
   
+  camera: {
+    fill: "#cbd5e1",
+    stroke: "#94a3b8",
+  },
+
   area: {
     broken: {
       fill: "#fda4af",
