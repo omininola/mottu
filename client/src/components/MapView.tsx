@@ -208,7 +208,6 @@ export function MapView({
                     key={"yard" + yardMongo.yard.id}
                     points={toKonvaPoints(
                       yardMongo.yard.boundary as Point[],
-                      { x: CENTER_X, y: CENTER_Y },
                       yardOffsetX
                     )}
                     yardName={yardMongo.yard.name}
@@ -218,10 +217,7 @@ export function MapView({
                     <AreaDraw
                       key={"area" + area.id}
                       status={area.status}
-                      points={toKonvaPoints(area.boundary as Point[], {
-                        x: CENTER_X,
-                        y: CENTER_Y,
-                      })}
+                      points={toKonvaPoints(area.boundary as Point[])}
                     />
                   ))}
 
@@ -231,15 +227,12 @@ export function MapView({
                         <AreaDraw
                           status={snapAreaCreation.status}
                           points={toKonvaPoints(
-                            snapAreaCreation.points as Point[],
-                            { x: CENTER_X, y: CENTER_Y }
-                          )}
+                            snapAreaCreation.points as Point[])}
                         />
 
                         {snapAreaCreation.points.map((point, idx) => {
                           const pointKonva = toKonvaPoints(
                             [{ x: point.x, y: point.y }],
-                            { x: CENTER_X, y: CENTER_Y }
                           );
                           const isFirstOrLast =
                             idx == 0 ||

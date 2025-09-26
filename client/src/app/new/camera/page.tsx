@@ -10,7 +10,7 @@ import dynamic from "next/dynamic";
 import { Point } from "@/lib/types";
 import { PointControl } from "@/components/PointControl";
 import { Button } from "@/components/ui/button";
-import { SquarePlus } from "lucide-react";
+import { Eye, EyeOff, SquarePlus } from "lucide-react";
 import axios from "axios";
 import { NEXT_PUBLIC_JAVA_URL } from "@/lib/environment";
 import { useSnapshot } from "valtio";
@@ -38,6 +38,8 @@ export default function NewCamera() {
   const [transformPoints, setTransformPoints] = React.useState<Point[]>([]);
   const [yardPoints, setYardPoints] = React.useState<Point[]>([]);
   const [videoSrc, setVideoSrc] = React.useState<string>("");
+
+  const [isYardShowing, setYardShowing] = React.useState<boolean>(false);
 
   const [notification, setNotification] = React.useState<string>("");
 
@@ -71,51 +73,73 @@ export default function NewCamera() {
     <div className="flex flex-col gap-4 p-4 w-full">
       {notification && <Notification title="Câmera" message={notification} />}
 
-      <div className="flex items-center gap-4">
-        <SubsidiaryCombobox />
-        <YardCombobox />
-
+      <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4">
-          <Label htmlFor="uriAccess">Camera URI</Label>
-          <Input
-            onChange={(e) => setVideoSrc(e.target.value)}
-            value={videoSrc}
-          />
+          <SubsidiaryCombobox />
+          <YardCombobox />
+
+          <Button variant="secondary" onClick={() => setYardShowing(isYardShowing => !isYardShowing)}>
+            {isYardShowing ? (
+              <>
+                <EyeOff />
+                Esconder
+              </>
+            ) : (
+              <>
+                <Eye />
+                Mostrar
+              </>
+            )} pátio
+          </Button>
         </div>
 
-        <PointControl
-          reset={() => setTransformPoints([])}
-          rollback={() => setTransformPoints((points) => points.slice(0, -1))}
-          disabled={transformPoints.length < 1}
-        />
-
-        <Button
-          onClick={handleCameraCreation}
-          disabled={!isDataOk}
-        >
-          <SquarePlus />Cadastrar câmera
-        </Button>
-      </div>
-
-      <div className="flex flex-col items-start lg:flex-row gap-4">
-        <CameraTransformationMap
-          points={transformPoints}
-          setPoints={setTransformPoints}
-          setYardPoints={setYardPoints}
-        />
-
-        <div className="flex lg:w-1/2 lg:flex-col gap-4">
-          {/* {videoSrc && <video src={videoSrc} width={640} height={480} />} */}
-          <CameraYardMap />
-
-          <div>
-            <PointVisualization
-              points={transformPoints}
-              setPoints={setTransformPoints}
-              setYardPoints={setYardPoints}
-              transformCamera
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
+            <Label htmlFor="uriAccess">Camera URI</Label>
+            <Input
+              onChange={(e) => setVideoSrc(e.target.value)}
+              value={videoSrc}
             />
           </div>
+
+          <PointControl
+            reset={() => setTransformPoints([])}
+            rollback={() => setTransformPoints((points) => points.slice(0, -1))}
+            disabled={transformPoints.length < 1}
+          />
+
+          <Button
+            onClick={handleCameraCreation}
+            disabled={!isDataOk}
+          >
+            <SquarePlus />Cadastrar câmera
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-start md:flex-row gap-4">
+        <div className="w-full md:w-1/2 relative">
+          {/* {videoSrc && <video src={videoSrc} width={640} height={480} />} */}
+          <CameraTransformationMap
+            points={transformPoints}
+            setPoints={setTransformPoints}
+            setYardPoints={setYardPoints}
+          />
+
+          {isYardShowing && (
+            <div className="absolute top-0 right-0 z-10 w-[300px]">
+              <CameraYardMap />
+            </div>
+          )}
+        </div>
+
+        <div className="w-full gap-4">
+          <PointVisualization
+            points={transformPoints}
+            setPoints={setTransformPoints}
+            setYardPoints={setYardPoints}
+            transformCamera
+          />
         </div>
       </div>
     </div>

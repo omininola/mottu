@@ -6,21 +6,19 @@ import { areaCreationStore } from "@/lib/valtio";
 import { toKonvaPoints } from "@/lib/utils";
 
 export function CameraYardMap() {
-  const MAP_WIDTH = window.innerWidth / 3;
-  const MAP_HEIGHT = window.innerHeight / 2;
-  const CENTER_X = MAP_WIDTH / 2;
-  const CENTER_Y = MAP_HEIGHT / 2;
+  const MAP_WIDTH = window.innerWidth / 4;
+  const MAP_HEIGHT = window.innerHeight / 3;
 
   const stageRef = React.useRef(null);
   const snapAreaCreation = useSnapshot(areaCreationStore);
 
   return (
-    <div className="border-1 rounded-xl w-full p-2 shadow">
+    <div className="border-1 rounded-md w-full p-1 bg-slate-300">
       <Stage
         ref={stageRef}
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
-        className="border-2 rounded-lg overflow-hidden bg-slate-100"
+        className="border-2 rounded overflow-hidden bg-slate-100"
       >
         <Layer>
           {snapAreaCreation.yard != null && (
@@ -30,7 +28,6 @@ export function CameraYardMap() {
                   x: p.x,
                   y: p.y,
                 })),
-                { x: CENTER_X, y: CENTER_Y }
               )}
               yardName={snapAreaCreation.yard.name}
             />

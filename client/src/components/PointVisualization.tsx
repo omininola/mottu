@@ -76,7 +76,7 @@ export function PointVisualization({
               />
             </TableCell>
             {(transformCamera && setYardPoints) && (
-              <TableCell>
+              <TableCell className="w-1/3">
                 <YardPointDropdown setYardPoints={setYardPoints} arrayPos={idx} />
               </TableCell>
             )}
@@ -146,18 +146,16 @@ function YardPointDropdown({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {yardPoint && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <Label>Eixo X</Label>
-            <Badge>{yardPoint.x}</Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label>Eixo Y</Label>
-            <Badge>{yardPoint.y}</Badge>
-          </div>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Label>Eixo X</Label>
+          <Badge>{yardPoint?.x || 0}</Badge>
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          <Label>Eixo Y</Label>
+          <Badge>{yardPoint?.y || 0}</Badge>
+        </div>
+      </div>
     </div>
   );
 }

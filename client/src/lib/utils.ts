@@ -66,21 +66,14 @@ export function pointInPolygon(
   return inside;
 }
 
-function centerPoints(points: Point[], center: Point): Point[] {
-  return points.map((pt) => ({
-    x: pt.x + center.x,
-    y: pt.y + center.y,
-  }));
-}
-
 export function toKonvaPoints(
   points: Point[],
-  center: Point,
   offsetX?: number
 ): number[] {
-  return centerPoints(points, center).flatMap((pt) => [
-    pt.x + (offsetX || 0),
-    pt.y,
+  const padding: Point = { x: 20, y: 40 };
+  return points.flatMap((pt) => [
+    pt.x + (offsetX || 0) + padding.x,
+    pt.y + padding.y,
   ]);
 }
 

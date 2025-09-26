@@ -17,6 +17,9 @@ export function CameraTransformationMap({
   setPoints: React.Dispatch<React.SetStateAction<Point[]>>;
   setYardPoints: React.Dispatch<React.SetStateAction<Point[]>>;
 }) {
+  const MAP_WIDTH = 640;
+  const MAP_HEIGHT = 480;
+
   const webcamRef = React.useRef(null);
   const stageRef = React.useRef<Konva.Stage>(null);
 
@@ -36,8 +39,8 @@ export function CameraTransformationMap({
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/png"
-        width={640}
-        height={480}
+        width={MAP_WIDTH}
+        height={MAP_HEIGHT}
         className="rounded-lg"
         videoConstraints={{ facingMode: "environment" }}
       />
@@ -45,8 +48,8 @@ export function CameraTransformationMap({
       <Stage
         ref={stageRef}
         className="absolute w-full h-full top-0 border-2 rounded-lg overflow-hidden bg-transparent"
-        width={640}
-        height={480}
+        width={MAP_WIDTH}
+        height={MAP_HEIGHT}
         onClick={addPoint}
       >
         <Layer>
