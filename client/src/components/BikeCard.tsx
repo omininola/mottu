@@ -38,7 +38,6 @@ export function BikeCard({
   setBike: () => void;
 }) {
   const snapSubsidiary = useSnapshot(subsidiaryStore);
-  const snapStage = useSnapshot(stageStore);
 
   const [notification, setNotification] = React.useState<string | undefined>(
     undefined
@@ -87,8 +86,7 @@ export function BikeCard({
     );
     const tag = yard?.tags.find((tag) => tag.tag.code == bike.tagCode);
     const konvaPos = toKonvaPoints(
-      [tag?.position] as Point[],
-      snapStage.center
+      [tag?.position] as Point[]
     );
 
     // IDK why this math works, but it works :D

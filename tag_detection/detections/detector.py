@@ -2,7 +2,7 @@ import cv2
 import pupil_apriltags as apriltag
 
 class TagDetector:
-    def __init__(self, yard_information):
+    def __init__(self):
         self.detector = apriltag.Detector(
             families="tag16h5",
             nthreads=4,
@@ -11,7 +11,6 @@ class TagDetector:
             refine_edges=1,
             decode_sharpening=0.25,
         )
-        self.yard_information = yard_information
 
     def detect_tags(self, frame, W, H, transform):
         """
@@ -26,7 +25,7 @@ class TagDetector:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         detections = self.detector.detect(gray)
 
-        MIN_MARGIN = 25 # Confiança minima
+        MIN_MARGIN = 35 # Confiança minima
 
         # Filtra as tags de acordo com a confiança minima e o total de cantos que a tag possui
         filtered = []

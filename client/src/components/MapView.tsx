@@ -254,8 +254,8 @@ export function MapView({
                     )}
                   {yardMongo.tags.map((tag) => {
                     const centerTagPos = {
-                      x: tag.position.x + CENTER_X + yardOffsetX,
-                      y: tag.position.y + CENTER_Y,
+                      x: tag.position.x + yardOffsetX,
+                      y: tag.position.y,
                     };
 
                     if (tag.bike != null) {

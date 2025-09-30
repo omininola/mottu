@@ -25,7 +25,7 @@ export function TagDraw({
 
   const pathRef = React.useRef<Konva.Path>(null);
 
-  const scale = 0.3;
+  const scale = 0.8;
   const [offset, setOffset] = React.useState<Point>({
     x: 0,
     y: 0,

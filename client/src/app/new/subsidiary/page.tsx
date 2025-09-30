@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Subsidiary, SubsidiaryRequest } from "@/lib/types";
+import { SubsidiaryRequest } from "@/lib/types";
 import React from "react";
 
 /** 
@@ -17,6 +17,12 @@ import React from "react";
 */
 
 export default function NewSubsidiary() {
+  return (
+    <div>
+      Nova Filial
+    </div>
+  );
+
   const [subsidiary, setSubsidiary] = React.useState<SubsidiaryRequest>({
     name: "Exemplo",
     address: {
@@ -36,7 +42,6 @@ export default function NewSubsidiary() {
     <div className="p-4">
       <FormField text="Nome" />
       <FormField text="CEP" />
-
     </div>
   );
 }
