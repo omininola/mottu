@@ -77,14 +77,12 @@ export default function Home() {
           <NewAreaCreation />
         </div>
 
-        <div className="border-1 rounded-xl w-full p-2 shadow">
-          <MapView
-            setBikeSummary={setBike}
-            setTag={setTag}
-            apriltag={tag}
-            bike={bike}
-          />
-        </div>
+        <MapView
+          setBikeSummary={setBike}
+          setTag={setTag}
+          apriltag={tag}
+          bike={bike}
+        />
       </div>
 
       <div className="col-span-2 flex flex-col gap-4">

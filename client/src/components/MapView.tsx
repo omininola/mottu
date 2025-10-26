@@ -167,7 +167,7 @@ export function MapView({
         ref={stage}
         width={MAP_WIDTH}
         height={MAP_HEIGHT}
-        className="border-2 rounded-lg overflow-hidden bg-slate-100"
+        className="border-2 rounded-lg overflow-hidden bg-accent"
         scaleX={snapStage.scale}
         scaleY={snapStage.scale}
         x={snapStage.pos.x}
@@ -253,16 +253,17 @@ export function MapView({
                       </>
                     )}
                   {yardMongo.tags.map((tag) => {
-                    const centerTagPos = {
-                      x: tag.position.x + yardOffsetX,
-                      y: tag.position.y,
-                    };
+                    const pointKonva = toKonvaPoints(
+                      [{ x: tag.position.x, y: tag.position.y }],
+                    );
+
+                    const pos: Point = { x: pointKonva[0], y: pointKonva[1] };
 
                     if (tag.bike != null) {
                       return (
                         <BikeDraw
                           key={"bike" + tag.bike.id}
-                          pos={{ x: centerTagPos.x, y: centerTagPos.y }}
+                          pos={pos}
                           isSelected={bike?.id == tag.bike.id}
                           inRightArea={tag.inRightArea}
                           bikeSummary={bike}
@@ -274,7 +275,7 @@ export function MapView({
                       return (
                         <TagDraw
                           key={"tag" + tag.tag.id}
-                          pos={{ x: centerTagPos.x, y: centerTagPos.y }}
+                          pos={pos}
                           isSelected={apriltag?.id == tag.tag.id}
                           tag={tag.tag}
                           setTag={setTag}

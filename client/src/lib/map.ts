@@ -2,18 +2,18 @@ export const METERS_PER_PIXEL = 0.1; // 1px = 1m
 
 export const MAP_COLORS = {
   yard: {
-    fill: "#cbd5e1",
-    stroke: "#94a3b8",
-    text: "#94a3b8",
+    fill: "oklch(1 0 0)",
+    stroke: "oklch(0.84 0 0)",
+    text: "oklch(0.84 0 0)",
     creation: {
-      snapping: "#16a34a",
-      notSnapping: "#f97316",
+      snapping: "oklch(0.6636 0.2049 143.8100)",
+      notSnapping: "oklch(0.84 0 0)",
     }
   },
   
   camera: {
-    fill: "#cbd5e1",
-    stroke: "#94a3b8",
+    fill: "oklch(0.76 0 0)",
+    stroke: "oklch(0.84 0 0)",
   },
 
   area: {
@@ -32,8 +32,8 @@ export const MAP_COLORS = {
   },
 
   bike: {
-    searched: "#4f46e5",
-    selected: "#16a34a",
+    searched: "oklch(0.4208 0.2274 292.8500)",
+    selected: "oklch(0.6636 0.2049 143.8100)",
     notSelected: "#64748b",
     inRightArea: "#fff",
     notInRightArea: "#ec4899",

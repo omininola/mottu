@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
 import { Eraser, Undo } from "lucide-react";
+import { ButtonGroup, ButtonGroupSeparator } from "./ui/button-group";
 
 export function PointControl({
   reset,
@@ -19,11 +20,14 @@ export function PointControl({
   }
 
   return (
-    <>
+    <ButtonGroup>
       <Button variant="outline" disabled={disabled} onClick={handleResetPoints}>
         <Eraser className="h-4 w-4" />
         Limpar pontos
       </Button>
+
+      <ButtonGroupSeparator/>
+
       <Button
         variant="outline"
         disabled={disabled}
@@ -32,6 +36,6 @@ export function PointControl({
         <Undo className="h-4 w-4" />
         Voltar ultimo ponto
       </Button>
-    </>
+    </ButtonGroup>
   );
 }
