@@ -48,6 +48,7 @@ export function YardDraw({
           fillPatternImage={backgroundImage}
           fillPatternRepeat="no-repeat"
           fillPatternScale={{ x: 0.7, y: 0.7 }}
+          opacity={0.4}
           stroke={MAP_COLORS.yard.stroke}
           strokeWidth={2}
           listening={false}

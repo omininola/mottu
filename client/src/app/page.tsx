@@ -23,7 +23,7 @@ const MapView = dynamic(
 );
 
 export default function Home() {
-  const UPDATE_DATA_TIME = 2 * 1000; // 2 seconds
+  const UPDATE_DATA_TIME = 0.2 * 1000; // 2 seconds
 
   const snapSubsidiary = useSnapshot(subsidiaryStore);
 
