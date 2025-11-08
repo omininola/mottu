@@ -17,10 +17,10 @@ JAVA_PORT = os.getenv("JAVA_PORT", "8080")
 YARD_ID = int(os.getenv("YARD_ID", "1"))
 UPDATE_TAG_INTERVAL = int(os.getenv("UPDATE_TAG_INTERVAL", "10"))
 
-java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}/", YARD_ID)
-# yard_information = java_client.get_yard_information()
+java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}", YARD_ID)
+yard_info = java_client.get_yard_information()
 
-detector = TagDetector()
+detector = TagDetector(yard_info)
 
 def gen_frames():
     """

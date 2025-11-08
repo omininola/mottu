@@ -2,7 +2,8 @@ import cv2
 import pupil_apriltags as apriltag
 
 class TagDetector:
-    def __init__(self):
+    def __init__(self, yard_info):
+        self.yard_info = yard_info
         self.detector = apriltag.Detector(
             families="tag16h5",
             nthreads=4,
