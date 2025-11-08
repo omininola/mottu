@@ -56,7 +56,7 @@ export function SearchBike() {
             type="text"
             name="plate"
             id="plate"
-            placeholder="123-ABC"
+            placeholder="ABC123"
             className="w-full"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
