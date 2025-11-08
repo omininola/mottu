@@ -195,6 +195,7 @@ export function YardCreationMap() {
                 <YardDraw
                   points={points.flatMap((p) => [p.x, p.y])}
                   yardName={yardName}
+                  imageSrc=""
                 />
               )}
 

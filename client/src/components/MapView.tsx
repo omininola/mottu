@@ -211,6 +211,7 @@ export function MapView({
                       yardOffsetX
                     )}
                     yardName={yardMongo.yard.name}
+                    imageSrc={yardMongo.yard.image}
                   />
 
                   {yardMongo.yard.areas.map((area) => (

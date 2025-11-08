@@ -15,7 +15,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const links = [
   { href: "/", text: "Mapa" },
   { href: "/tags", text: "Tags" },
-  { href: "/new/subsidiary", text: "Filial" },
+  // { href: "/new/subsidiary", text: "Filial" },
   { href: "/new/yard", text: "Pátio" },
   { href: "/new/camera", text: "Câmera" },
 ];

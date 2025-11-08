@@ -86,7 +86,7 @@ export function TagCard({
               <Input
                 className="w-full"
                 type="text"
-                placeholder="123-ABC"
+                placeholder="ABC123"
                 id="plate"
                 value={plate}
                 onChange={(e) => setPlate(e.target.value)}

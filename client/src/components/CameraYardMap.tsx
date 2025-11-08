@@ -30,6 +30,7 @@ export function CameraYardMap() {
                 })),
               )}
               yardName={snapAreaCreation.yard.name}
+              imageSrc={snapAreaCreation.yard.image}
             />
           )}
         </Layer>

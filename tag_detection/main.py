@@ -15,7 +15,7 @@ VIDEO_CAPTURE_ID = int(os.getenv("VIDEO_CAPTURE_ID", "0"))
 JAVA_HOST = os.getenv("JAVA_HOST", "server")
 JAVA_PORT = os.getenv("JAVA_PORT", "8080")
 YARD_ID = int(os.getenv("YARD_ID", "1"))
-UPDATE_TAG_INTERVAL = int(os.getenv("UPDATE_TAG_INTERVAL", "10"))
+UPDATE_TAG_INTERVAL = float(os.getenv("UPDATE_TAG_INTERVAL", "0.2"))
 
 java_client = JavaAPIClient(f"http://{JAVA_HOST}:{JAVA_PORT}", YARD_ID)
 yard_info = java_client.get_yard_information()

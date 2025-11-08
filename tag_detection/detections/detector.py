@@ -68,8 +68,8 @@ class TagDetector:
         Retorna o ponto vinculado
         """
         X0, Y0 = 0, 0        
-        X1 = 256 
-        Y1 = 144
+        X1 = 400
+        Y1 = 260
 
         x = X0 + (u / W) * (X1 - X0)
         y = Y0 + (v / H) * (Y1 - Y0)

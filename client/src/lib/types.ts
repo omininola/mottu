@@ -20,6 +20,7 @@ export type SubsidiaryTags = {
 export type Yard = {
   id: number;
   name: string;
+  image: string;
   subsidiary: string;
   areas: Area[];
   boundary: Point[];
