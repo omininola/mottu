@@ -34,6 +34,9 @@ public class Yard {
     @Column(name = "nm_yard", nullable = false)
     private String name;
 
+    @Column(name = "yard_image", nullable = false)
+    private String image;
+
     @ManyToOne
     @JoinColumn(name = "subsidiary_id")
     private Subsidiary subsidiary;

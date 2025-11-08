@@ -57,6 +57,7 @@ public class YardMapper {
         YardResponse response = new YardResponse();
         response.setId(yard.getId());
         response.setName(yard.getName());
+        response.setImage(yard.getImage());
         response.setSubsidiary(yard.getSubsidiary().getName());
         response.setBoundary(boundary);
         response.setAreas(areas);
@@ -73,6 +74,7 @@ public class YardMapper {
 
         Yard yard = new Yard();
         yard.setName(request.getName());
+        yard.setImage(request.getImage());
         yard.setSubsidiary(subsidiary.get());
         return yard;
     }

@@ -18,6 +18,9 @@ public class YardRequest {
     @NotBlank(message = "O nome do pátio é obrigatório")
     private String name;
 
+    @NotBlank(message = "A url da imagem é obrigatória")
+    private String image;
+
     @Valid
     @NotNull(message = "A lista de pontos da limitação do pátio é obrigatória")
     private List<PointRequest> boundary;

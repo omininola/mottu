@@ -15,6 +15,7 @@ public class YardResponse {
     
     private Long id;
     private String name;
+    private String image;
     private String subsidiary;
     private List<AreaResponse> areas;
     private List<PointResponse> boundary;
